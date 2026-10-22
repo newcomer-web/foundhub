@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Item } from '@/lib/types';
-import { CURRENT_USER } from '@/lib/store';
+import { dataStore } from '@/lib/store';
 import { ShieldAlert, ShieldCheck, AlertTriangle, CheckCircle, X, Send } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -45,10 +45,11 @@ export default function ClaimModal({
         // ignore
       }
 
+      const activeUser = dataStore.getCurrentUser();
       onClaimSubmitted({
         itemId: item.id,
-        claimantId: CURRENT_USER.id,
-        claimant: CURRENT_USER,
+        claimantId: activeUser.id,
+        claimant: activeUser,
         proofMessage,
       });
 

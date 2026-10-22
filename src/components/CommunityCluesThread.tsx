@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Comment, CommentType } from '@/lib/types';
-import { CURRENT_USER } from '@/lib/store';
+import { CURRENT_USER, DEFAULT_AVATAR, dataStore } from '@/lib/store';
 import { formatRelativeTime } from '@/lib/utils';
 import {
   MessageSquare,
@@ -50,10 +50,11 @@ export default function CommunityCluesThread({
 
     setIsSubmitting(true);
     setTimeout(() => {
+      const activeUser = dataStore.getCurrentUser();
       onAddComment({
         itemId,
-        userId: CURRENT_USER.id,
-        user: CURRENT_USER,
+        userId: activeUser.id,
+        user: activeUser,
         content: content.trim(),
         commentType,
         taggedOwnerInfo: commentType === 'OWNER_LEAD' && taggedOwnerInfo.trim() ? taggedOwnerInfo.trim() : null,
@@ -203,7 +204,7 @@ export default function CommunityCluesThread({
 
         <div className="flex items-center justify-between pt-1">
           <p className="text-[11px] text-slate-400">
-            Posting as <strong>{CURRENT_USER.fullName}</strong>
+            Posting as <strong>{dataStore.getCurrentUser().fullName}</strong>
           </p>
           <button
             type="submit"
@@ -241,9 +242,9 @@ export default function CommunityCluesThread({
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-center gap-2.5">
                     <img
-                      src={comment.user?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'}
+                      src={comment.user?.avatarUrl || DEFAULT_AVATAR}
                       alt={comment.user?.fullName || 'User'}
-                      className="w-7 h-7 rounded-full object-cover border border-slate-200"
+                      className="w-7 h-7 rounded-full object-cover border border-slate-200 bg-white"
                     />
                     <div>
                       <div className="flex items-center gap-2">

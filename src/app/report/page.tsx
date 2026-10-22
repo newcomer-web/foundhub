@@ -180,9 +180,10 @@ function ReportWizardContent() {
 
     setSubmitting(true);
     try {
+      const activeUser = dataStore.getCurrentUser();
       const newItem = dataStore.addItem({
-        userId: CURRENT_USER.id,
-        user: CURRENT_USER,
+        userId: activeUser.id,
+        user: activeUser,
         type: itemType,
         title: title.trim(),
         category,
@@ -643,7 +644,7 @@ function ReportWizardContent() {
                 />
               </div>
               <p className="text-[11px] text-slate-500">
-                Verified member: <strong>{CURRENT_USER.fullName}</strong> ({CURRENT_USER.email})
+                Verified member: <strong>{dataStore.getCurrentUser().fullName}</strong> ({dataStore.getCurrentUser().email})
               </p>
             </div>
           </div>

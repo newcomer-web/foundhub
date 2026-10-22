@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Item, ItemClaim } from '@/lib/types';
-import { dataStore, CURRENT_USER } from '@/lib/store';
+import { Item, ItemClaim, User } from '@/lib/types';
+import { dataStore, DEFAULT_AVATAR } from '@/lib/store';
 import { getSimulatedTelegramFeed, TelegramRelayMessage } from '@/lib/telegram';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
 import confetti from 'canvas-confetti';
+import EditProfileModal from '@/components/EditProfileModal';
+import AuthModal from '@/components/AuthModal';
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -22,34 +24,43 @@ import {
   Sparkles,
   RotateCcw,
   Clock,
-  User,
+  User as UserIcon,
   Radio,
   FileText,
+  Edit3,
+  LogIn,
 } from 'lucide-react';
 
 export default function DashboardPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [activeTab, setActiveTab] = useState<'incoming_claims' | 'my_listings' | 'my_claims' | 'telegram_feed'>('incoming_claims');
   const [telegramFeed, setTelegramFeed] = useState<TelegramRelayMessage[]>([]);
+  const [currentUser, setCurrentUser] = useState<User>(() => dataStore.getCurrentUser());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => dataStore.getIsAuthenticated());
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   useEffect(() => {
     setItems(dataStore.getItems());
     setTelegramFeed(getSimulatedTelegramFeed());
+    setCurrentUser(dataStore.getCurrentUser());
+    setIsAuthenticated(dataStore.getIsAuthenticated());
 
     const unsub = dataStore.subscribe(() => {
       setItems(dataStore.getItems());
       setTelegramFeed(getSimulatedTelegramFeed());
+      setCurrentUser(dataStore.getCurrentUser());
+      setIsAuthenticated(dataStore.getIsAuthenticated());
     });
     return unsub;
   }, []);
 
   // Items created by current user
-  const myListings = items.filter((i) => i.userId === CURRENT_USER.id);
+  const myListings = items.filter((i) => i.userId === currentUser.id);
 
   // Incoming claims on items created by current user
   const incomingClaimsList: { item: Item; claim: ItemClaim }[] = [];
   items.forEach((item) => {
-    // If current user is the owner/finder, or for demonstration allow managing any item with claims
     if (item.claims && item.claims.length > 0) {
       item.claims.forEach((claim) => {
         incomingClaimsList.push({ item, claim });
@@ -62,7 +73,7 @@ export default function DashboardPage() {
   items.forEach((item) => {
     if (item.claims) {
       item.claims.forEach((claim) => {
-        if (claim.claimantId === CURRENT_USER.id) {
+        if (claim.claimantId === currentUser.id) {
           mySubmittedClaims.push({ item, claim });
         }
       });
@@ -101,34 +112,68 @@ export default function DashboardPage() {
       {/* Header Profile Bar */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <img
-            src={CURRENT_USER.avatarUrl!}
-            alt={CURRENT_USER.fullName}
-            className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-500 shadow-sm"
-          />
+          <div
+            onClick={() => setIsEditProfileOpen(true)}
+            className="relative group cursor-pointer shrink-0"
+            title="Rasmni o'zgartirish"
+          >
+            <img
+              src={currentUser.avatarUrl || DEFAULT_AVATAR}
+              alt={currentUser.fullName}
+              className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-200 shadow-sm bg-white"
+            />
+            <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+              <Edit3 className="w-5 h-5" />
+            </div>
+          </div>
+
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900">
-                {CURRENT_USER.fullName}
+                {currentUser.fullName}
               </h1>
               <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-                Verified Custodian
+                {isAuthenticated ? 'Faol A\'zo' : 'Mehmon Profil'}
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
-              {CURRENT_USER.email} • Telegram: @{CURRENT_USER.telegramUsername} • Phone: {CURRENT_USER.phone}
+            <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-2">
+              <span>{currentUser.email}</span>
+              {currentUser.telegramUsername && (
+                <span>• Telegram: <strong>@{currentUser.telegramUsername}</strong></span>
+              )}
+              {currentUser.phone && (
+                <span>• Tel: <strong>{currentUser.phone}</strong></span>
+              )}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={() => setIsEditProfileOpen(true)}
+            className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+          >
+            <Edit3 className="w-3.5 h-3.5 text-emerald-400" />
+            Profilni Tahrirlash
+          </button>
+
+          {!isAuthenticated && (
+            <button
+              onClick={() => setIsAuthOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              Kirish
+            </button>
+          )}
+
           <button
             onClick={handleResetData}
-            className="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-colors"
             title="Reset to initial mock items"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Reset Seed Data
+            Tozalash
           </button>
 
           <Link
@@ -136,7 +181,7 @@ export default function DashboardPage() {
             className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5"
           >
             <PlusCircle className="w-4 h-4" />
-            Post New Item
+            E'lon Qo'shish
           </Link>
         </div>
       </div>
@@ -538,6 +583,17 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Edit Profile and Auth Modals */}
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+      />
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
     </div>
   );
 }
