@@ -242,3 +242,16 @@ class StoreManager {
 }
 
 export const dataStore = new StoreManager();
+
+export function openAuthModal(options?: { mode?: 'login' | 'register'; reason?: string }) {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('foundhub:open-auth', { detail: options || {} }));
+  }
+}
+
+export function openEditProfileModal() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('foundhub:open-edit-profile'));
+  }
+}
+

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Item, CATEGORY_MAP } from '@/lib/types';
-import { dataStore, CURRENT_USER } from '@/lib/store';
+import { dataStore, CURRENT_USER, openAuthModal } from '@/lib/store';
 import { findSmartMatches, MatchResult } from '@/lib/aiMatching';
 import CustodyInfoCard from '@/components/CustodyInfoCard';
 import ClaimModal from '@/components/ClaimModal';
@@ -244,8 +244,17 @@ export default function ItemDetailPage() {
           <div className="space-y-3 pt-2">
             {isFound && !isReturned && (
               <button
-                onClick={() => setIsClaimModalOpen(true)}
-                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-emerald-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5"
+                onClick={() => {
+                  if (!dataStore.getIsAuthenticated()) {
+                    openAuthModal({
+                      mode: 'login',
+                      reason: 'Please sign in or create an account to submit a proof-of-ownership claim.',
+                    });
+                    return;
+                  }
+                  setIsClaimModalOpen(true);
+                }}
+                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-emerald-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
               >
                 <ShieldCheck className="w-5 h-5 text-white" />
                 <span>Claim This Item (Prove Ownership)</span>
@@ -253,8 +262,17 @@ export default function ItemDetailPage() {
             )}
 
             <button
-              onClick={() => setIsContactModalOpen(true)}
-              className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+              onClick={() => {
+                if (!dataStore.getIsAuthenticated()) {
+                  openAuthModal({
+                    mode: 'login',
+                    reason: 'Please sign in or create an account to view custodian contact information.',
+                  });
+                  return;
+                }
+                setIsContactModalOpen(true);
+              }}
+              className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <MessageSquare className="w-4 h-4 text-emerald-400" />
               <span>Contact Finder / Custodian</span>

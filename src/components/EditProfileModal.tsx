@@ -13,7 +13,6 @@ import {
   RotateCcw,
   CheckCircle,
   Save,
-  ShieldCheck,
 } from 'lucide-react';
 
 interface EditProfileModalProps {
@@ -50,7 +49,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert('Rasm hajmi 5MB dan oshmasligi kerak.');
+        alert('Image file size must be less than 5MB.');
         return;
       }
       const reader = new FileReader();
@@ -70,15 +69,15 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim()) {
-      alert('Iltimos, ism-familiyangizni kiriting.');
+      alert('Please enter your full name.');
       return;
     }
 
     dataStore.updateUserProfile({
       fullName: fullName.trim(),
       email: email.trim(),
-      phone: phone.trim() || null,
-      telegramUsername: telegramUsername.trim().replace(/^@/, '') || null,
+      phone: phone.trim() || undefined,
+      telegramUsername: telegramUsername.trim().replace(/^@/, '') || undefined,
       avatarUrl: avatarUrl || DEFAULT_AVATAR,
     });
 
@@ -86,7 +85,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     setTimeout(() => {
       setSavedSuccess(false);
       onClose();
-    }, 1200);
+    }, 1000);
   };
 
   return (
@@ -99,14 +98,14 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
               <UserIcon className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <h3 className="font-bold text-base leading-tight">Profilni Tahrirlash</h3>
-              <p className="text-xs text-slate-300">Shaxsiy ma'lumotlar va profilingiz rasmi</p>
+              <h3 className="font-bold text-base leading-tight">Edit Profile</h3>
+              <p className="text-xs text-slate-300">Personal details and avatar photo</p>
             </div>
           </div>
           <button
             onClick={onClose}
             className="p-2 rounded-full hover:bg-white/20 transition-colors text-white"
-            aria-label="Yopish"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -117,7 +116,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
           {savedSuccess && (
             <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-2xl border border-emerald-200 flex items-center gap-2 text-xs font-bold animate-fade-in">
               <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Profil ma'lumotlari muvaffaqiyatli saqlandi!</span>
+              <span>Profile information updated successfully!</span>
             </div>
           )}
 
@@ -133,16 +132,16 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute inset-0 bg-black/40 hover:bg-black/60 rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                title="Rasm yuklash"
+                title="Upload Photo"
               >
                 <Camera className="w-6 h-6" />
               </button>
             </div>
 
             <div className="flex-1 text-center sm:text-left space-y-2">
-              <p className="text-xs font-bold text-slate-900">Profilingiz Rasmi</p>
+              <p className="text-xs font-bold text-slate-900">Your Avatar Photo</p>
               <p className="text-[11px] text-slate-500">
-                Siz yuklagan rasm default holatda turadi. O'z xohishingizga ko'ra yangi rasm yuklashingiz mumkin.
+                Your custom uploaded photo is set as default. You can upload a new photo anytime or reset to default.
               </p>
               <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
                 <input
@@ -155,20 +154,20 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Camera className="w-3.5 h-3.5" />
-                  Rasm yuklash
+                  Upload Photo
                 </button>
 
                 {avatarUrl !== DEFAULT_AVATAR && (
                   <button
                     type="button"
                     onClick={handleResetToDefaultAvatar}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition-colors flex items-center gap-1.5"
+                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <RotateCcw className="w-3 h-3 text-slate-500" />
-                    Default rasm
+                    Reset to Default
                   </button>
                 )}
               </div>
@@ -180,7 +179,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
             {/* Full Name */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Ism va Familiya <span className="text-rose-500">*</span>
+                Full Name <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <UserIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -188,7 +187,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Masalan: Sardor Aliyev"
+                  placeholder="e.g. Alex Johnson"
                   required
                   className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -198,7 +197,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
             {/* Email */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Email Manzil
+                Email Address
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -215,7 +214,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
             {/* Phone */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Telefon Raqam (Bog'lanish uchun)
+                Phone Number (For Contact)
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -223,7 +222,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+998 (90) 123-45-67"
+                  placeholder="+1 (555) 000-0000"
                   className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
@@ -232,7 +231,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
             {/* Telegram Username */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Telegram Username (@belgisiz)
+                Telegram Username (without @)
               </label>
               <div className="relative">
                 <Send className="w-4 h-4 text-sky-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -240,12 +239,12 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                   type="text"
                   value={telegramUsername}
                   onChange={(e) => setTelegramUsername(e.target.value)}
-                  placeholder="masalan: sardor_dev"
+                  placeholder="e.g. alex_dev"
                   className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <p className="text-[11px] text-slate-400 mt-1">
-                E'lonlaringizda topuvchi yoki egasi siz bilan Telegram orqali oson bog'lanishi mumkin bo'ladi.
+                Allows finders and owners to securely reach you via Telegram.
               </p>
             </div>
           </div>
@@ -255,16 +254,16 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
             >
-              Bekor qilish
+              Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
-              Saqlash
+              Save Changes
             </button>
           </div>
         </form>

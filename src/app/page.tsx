@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Item, ItemType, ItemCategory, CATEGORY_MAP } from '@/lib/types';
-import { dataStore } from '@/lib/store';
+import { dataStore, openAuthModal } from '@/lib/store';
 import ItemCard from '@/components/ItemCard';
 import LeafletMap from '@/components/LeafletMap';
 import {
@@ -70,6 +71,19 @@ export default function HomePage() {
   const activeFound = items.filter((i) => i.type === 'FOUND' && i.status === 'ACTIVE').length;
   const activeLost = items.filter((i) => i.type === 'LOST' && i.status === 'ACTIVE').length;
 
+  const handleReportClick = (e: React.MouseEvent, type: 'FOUND' | 'LOST') => {
+    if (!dataStore.getIsAuthenticated()) {
+      e.preventDefault();
+      openAuthModal({
+        mode: 'login',
+        reason:
+          type === 'FOUND'
+            ? 'Please sign in or create an account to report a found item.'
+            : 'Please sign in or create an account to post a lost item alert.',
+      });
+    }
+  };
+
   return (
     <div className="space-y-10 pb-16">
       {/* Hero Section */}
@@ -98,7 +112,8 @@ export default function HomePage() {
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/report?type=FOUND"
-              className="w-full sm:w-auto px-7 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-sm rounded-2xl shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5"
+              onClick={(e) => handleReportClick(e, 'FOUND')}
+              className="w-full sm:w-auto px-7 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-sm rounded-2xl shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
             >
               <PlusCircle className="w-5 h-5 text-slate-950" />
               <span>Report a Found Item</span>
@@ -106,7 +121,8 @@ export default function HomePage() {
 
             <Link
               href="/report?type=LOST"
-              className="w-full sm:w-auto px-7 py-4 bg-white/10 hover:bg-white/15 text-white font-bold text-sm rounded-2xl border border-white/20 backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5"
+              onClick={(e) => handleReportClick(e, 'LOST')}
+              className="w-full sm:w-auto px-7 py-4 bg-white/10 hover:bg-white/15 text-white font-bold text-sm rounded-2xl border border-white/20 backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
             >
               <AlertCircle className="w-5 h-5 text-amber-400" />
               <span>I Lost Something</span>
@@ -312,14 +328,16 @@ export default function HomePage() {
                 <div className="pt-2 flex items-center justify-center gap-3">
                   <Link
                     href="/report?type=FOUND"
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5"
+                    onClick={(e) => handleReportClick(e, 'FOUND')}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
                   >
                     <PlusCircle className="w-4 h-4" />
                     Report a Found Item
                   </Link>
                   <Link
                     href="/report?type=LOST"
-                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-200"
+                    onClick={(e) => handleReportClick(e, 'LOST')}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-200 cursor-pointer"
                   >
                     <AlertCircle className="w-4 h-4 text-amber-500" />
                     Report a Lost Item

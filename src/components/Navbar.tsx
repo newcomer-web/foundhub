@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { User } from '@/lib/types';
-import { dataStore, DEFAULT_AVATAR } from '@/lib/store';
+import { dataStore, DEFAULT_AVATAR, openAuthModal } from '@/lib/store';
 import AuthModal from './AuthModal';
 import EditProfileModal from './EditProfileModal';
 import {
@@ -22,11 +22,14 @@ import {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   // Auth and profile modals
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authReason, setAuthReason] = useState<string | undefined>(undefined);
+  const [authDefaultMode, setAuthDefaultMode] = useState<'login' | 'register'>('login');
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   // Reactive state
@@ -41,12 +44,47 @@ export default function Navbar() {
       setCurrentUser(dataStore.getCurrentUser());
       setIsAuthenticated(dataStore.getIsAuthenticated());
     });
-    return unsub;
+
+    // Listen to global auth trigger events
+    const handleOpenAuth = (e: any) => {
+      const detail = e.detail || {};
+      setAuthDefaultMode(detail.mode || 'login');
+      setAuthReason(detail.reason || undefined);
+      setIsAuthModalOpen(true);
+    };
+
+    const handleOpenEditProfile = () => {
+      if (!dataStore.getIsAuthenticated()) {
+        setAuthReason('Please sign in to edit your profile.');
+        setAuthDefaultMode('login');
+        setIsAuthModalOpen(true);
+      } else {
+        setIsEditProfileModalOpen(true);
+      }
+    };
+
+    window.addEventListener('foundhub:open-auth', handleOpenAuth);
+    window.addEventListener('foundhub:open-edit-profile', handleOpenEditProfile);
+
+    return () => {
+      unsub();
+      window.removeEventListener('foundhub:open-auth', handleOpenAuth);
+      window.removeEventListener('foundhub:open-edit-profile', handleOpenEditProfile);
+    };
   }, []);
+
+  const handlePostItemClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      setAuthReason('Please sign in or create an account to report a found item or lost belonging.');
+      setAuthDefaultMode('login');
+      setIsAuthModalOpen(true);
+    }
+  };
 
   const navLinks = [
     { label: 'Explore Items', href: '/', icon: Compass },
-    { label: 'Report Lost or Found', href: '/report', icon: PlusCircle },
+    { label: 'Report Lost or Found', href: '/report', icon: PlusCircle, requiresAuth: true },
     { label: 'Dashboard & Claims', href: '/dashboard', icon: LayoutDashboard },
   ];
 
@@ -80,6 +118,14 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    onClick={(e) => {
+                      if (link.requiresAuth && !isAuthenticated) {
+                        e.preventDefault();
+                        setAuthReason('Please sign in or create an account to post a lost or found item.');
+                        setAuthDefaultMode('login');
+                        setIsAuthModalOpen(true);
+                      }
+                    }}
                     className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
                       isActive
                         ? 'bg-slate-900 text-white shadow-sm'
@@ -97,7 +143,8 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               <Link
                 href="/report"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-1.5"
+                onClick={handlePostItemClick}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
                 Post Item
@@ -108,7 +155,7 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center gap-2 p-1.5 pr-3 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-colors border border-slate-200"
+                    className="flex items-center gap-2 p-1.5 pr-3 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-colors border border-slate-200 cursor-pointer"
                   >
                     <img
                       src={currentUser.avatarUrl || DEFAULT_AVATAR}
@@ -120,7 +167,7 @@ export default function Navbar() {
                         {currentUser.fullName}
                       </p>
                       <p className="text-[9px] text-emerald-600 font-semibold leading-tight">
-                        Faol A'zo
+                        Active Member
                       </p>
                     </div>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
@@ -139,10 +186,10 @@ export default function Navbar() {
                           setUserDropdownOpen(false);
                           setIsEditProfileModalOpen(true);
                         }}
-                        className="w-full px-3 py-2 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                        className="w-full px-3 py-2 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
                       >
                         <Edit3 className="w-4 h-4 text-emerald-600" />
-                        Profilni Tahrirlash
+                        Edit Profile
                       </button>
 
                       <Link
@@ -151,7 +198,7 @@ export default function Navbar() {
                         className="w-full px-3 py-2 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                       >
                         <LayoutDashboard className="w-4 h-4 text-indigo-600" />
-                        Boshqaruv Paneli
+                        Dashboard
                       </Link>
 
                       <div className="border-t border-slate-100 my-1" />
@@ -161,21 +208,25 @@ export default function Navbar() {
                           setUserDropdownOpen(false);
                           dataStore.logout();
                         }}
-                        className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 flex items-center gap-2"
+                        className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 flex items-center gap-2 cursor-pointer"
                       >
                         <LogOut className="w-4 h-4 text-rose-500" />
-                        Chiqish (Logout)
+                        Sign Out
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
                 <button
-                  onClick={() => setIsAuthModalOpen(true)}
-                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                  onClick={() => {
+                    setAuthReason(undefined);
+                    setAuthDefaultMode('login');
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <LogIn className="w-3.5 h-3.5 text-emerald-400" />
-                  Kirish / Akkaunt
+                  Sign In / Register
                 </button>
               )}
             </div>
@@ -184,8 +235,8 @@ export default function Navbar() {
             <div className="md:hidden flex items-center gap-2">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-xl text-slate-600 hover:bg-slate-100"
-                aria-label="Menyu"
+                className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer"
+                aria-label="Menu"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -204,7 +255,15 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      setMobileMenuOpen(false);
+                      if (link.requiresAuth && !isAuthenticated) {
+                        e.preventDefault();
+                        setAuthReason('Please sign in or create an account to post a lost or found item.');
+                        setAuthDefaultMode('login');
+                        setIsAuthModalOpen(true);
+                      }
+                    }}
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold ${
                       isActive
                         ? 'bg-slate-900 text-white'
@@ -237,39 +296,44 @@ export default function Navbar() {
                       setMobileMenuOpen(false);
                       setIsEditProfileModalOpen(true);
                     }}
-                    className="w-full py-2 px-3 text-left text-xs font-semibold text-slate-700 bg-slate-100 rounded-xl flex items-center gap-2"
+                    className="w-full py-2 px-3 text-left text-xs font-semibold text-slate-700 bg-slate-100 rounded-xl flex items-center gap-2 cursor-pointer"
                   >
                     <Edit3 className="w-4 h-4 text-emerald-600" />
-                    Profilni Tahrirlash
+                    Edit Profile
                   </button>
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);
                       dataStore.logout();
                     }}
-                    className="w-full py-2 px-3 text-left text-xs font-semibold text-rose-600 bg-rose-50 rounded-xl flex items-center gap-2"
+                    className="w-full py-2 px-3 text-left text-xs font-semibold text-rose-600 bg-rose-50 rounded-xl flex items-center gap-2 cursor-pointer"
                   >
                     <LogOut className="w-4 h-4 text-rose-500" />
-                    Chiqish (Logout)
+                    Sign Out
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
+                    setAuthReason(undefined);
+                    setAuthDefaultMode('login');
                     setIsAuthModalOpen(true);
                   }}
-                  className="w-full py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2"
+                  className="w-full py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <LogIn className="w-4 h-4 text-emerald-400" />
-                  Kirish / Ro'yxatdan o'tish
+                  Sign In / Register
                 </button>
               )}
 
               <Link
                 href="/report"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm"
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  handlePostItemClick(e);
+                }}
+                className="w-full py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
                 Post an Item
@@ -282,7 +346,12 @@ export default function Navbar() {
       {/* Auth and Edit Profile Modals */}
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          setAuthReason(undefined);
+        }}
+        defaultMode={authDefaultMode}
+        reason={authReason}
       />
 
       <EditProfileModal

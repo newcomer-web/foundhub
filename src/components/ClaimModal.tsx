@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Item } from '@/lib/types';
-import { dataStore } from '@/lib/store';
+import { dataStore, openAuthModal } from '@/lib/store';
 import { ShieldAlert, ShieldCheck, AlertTriangle, CheckCircle, X, Send } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -27,6 +27,13 @@ export default function ClaimModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!dataStore.getIsAuthenticated()) {
+      openAuthModal({
+        mode: 'login',
+        reason: 'Please sign in or create an account to submit a proof-of-ownership claim.',
+      });
+      return;
+    }
     if (!proofMessage.trim()) return;
 
     setSubmitting(true);

@@ -113,9 +113,15 @@ export default function DashboardPage() {
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div
-            onClick={() => setIsEditProfileOpen(true)}
+            onClick={() => {
+              if (!isAuthenticated) {
+                setIsAuthOpen(true);
+              } else {
+                setIsEditProfileOpen(true);
+              }
+            }}
             className="relative group cursor-pointer shrink-0"
-            title="Rasmni o'zgartirish"
+            title="Change avatar photo"
           >
             <img
               src={currentUser.avatarUrl || DEFAULT_AVATAR}
@@ -133,7 +139,7 @@ export default function DashboardPage() {
                 {currentUser.fullName}
               </h1>
               <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-                {isAuthenticated ? 'Faol A\'zo' : 'Mehmon Profil'}
+                {isAuthenticated ? 'Active Member' : 'Guest Account'}
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-2">
@@ -150,38 +156,50 @@ export default function DashboardPage() {
 
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
-            onClick={() => setIsEditProfileOpen(true)}
-            className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+            onClick={() => {
+              if (!isAuthenticated) {
+                setIsAuthOpen(true);
+              } else {
+                setIsEditProfileOpen(true);
+              }
+            }}
+            className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5 text-emerald-400" />
-            Profilni Tahrirlash
+            Edit Profile
           </button>
 
           {!isAuthenticated && (
             <button
               onClick={() => setIsAuthOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
-              Kirish
+              Sign In
             </button>
           )}
 
           <button
             onClick={handleResetData}
-            className="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
             title="Reset to initial mock items"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Tozalash
+            Reset Data
           </button>
 
           <Link
             href="/report"
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5"
+            onClick={(e) => {
+              if (!isAuthenticated) {
+                e.preventDefault();
+                setIsAuthOpen(true);
+              }
+            }}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
-            E'lon Qo'shish
+            Post Item
           </Link>
         </div>
       </div>

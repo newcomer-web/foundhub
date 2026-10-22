@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ItemType, ItemCategory, CATEGORY_MAP } from '@/lib/types';
-import { dataStore, CURRENT_USER } from '@/lib/store';
+import { dataStore, CURRENT_USER, openAuthModal } from '@/lib/store';
 import { findSmartMatches, MatchResult } from '@/lib/aiMatching';
 import LeafletMap from '@/components/LeafletMap';
 import PiiMaskingGuide from '@/components/PiiMaskingGuide';
@@ -92,6 +92,22 @@ function ReportWizardContent() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => dataStore.getIsAuthenticated());
+
+  useEffect(() => {
+    setIsAuthenticated(dataStore.getIsAuthenticated());
+    const unsub = dataStore.subscribe(() => {
+      setIsAuthenticated(dataStore.getIsAuthenticated());
+    });
+    // If user enters report page unauthenticated, politely open sign-in modal
+    if (!dataStore.getIsAuthenticated()) {
+      openAuthModal({
+        mode: 'login',
+        reason: 'Please sign in or create an account to post a lost or found report.',
+      });
+    }
+    return unsub;
+  }, []);
 
   // Form State
   const [itemType, setItemType] = useState<ItemType>(initialType);
@@ -275,6 +291,37 @@ function ReportWizardContent() {
 
       {/* Main Wizard Form Container */}
       <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
+        {/* Authentication Notice Banner */}
+        {!isAuthenticated && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-in">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-amber-100 text-amber-700 rounded-xl">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-amber-950">
+                  Account Sign-in Required to Report Items
+                </p>
+                <p className="text-[11px] text-amber-800">
+                  Please sign in or register so community members can verify ownership and contact you safely.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                openAuthModal({
+                  mode: 'login',
+                  reason: 'Please sign in or create an account to post a lost or found report.',
+                })
+              }
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
+            >
+              Sign In / Register
+            </button>
+          </div>
+        )}
+
         {/* STEP 1: Classification */}
         {currentStep === 1 && (
           <div className="space-y-6 animate-fade-in">
@@ -290,10 +337,16 @@ function ReportWizardContent() {
               <button
                 type="button"
                 onClick={() => {
+                  if (!isAuthenticated) {
+                    openAuthModal({
+                      mode: 'login',
+                      reason: 'Please sign in or create an account to report a found item.',
+                    });
+                  }
                   setItemType('FOUND');
                   setCurrentHoldingLocation("Campus Dean's Office / Security Desk Room 102");
                 }}
-                className={`p-5 rounded-2xl border-2 text-left transition-all ${
+                className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
                   itemType === 'FOUND'
                     ? 'border-emerald-600 bg-emerald-50/70 shadow-md'
                     : 'border-slate-200 hover:border-slate-300'
@@ -311,10 +364,16 @@ function ReportWizardContent() {
               <button
                 type="button"
                 onClick={() => {
+                  if (!isAuthenticated) {
+                    openAuthModal({
+                      mode: 'login',
+                      reason: 'Please sign in or create an account to post a lost item alert.',
+                    });
+                  }
                   setItemType('LOST');
                   setCurrentHoldingLocation('LOST - Searching actively');
                 }}
-                className={`p-5 rounded-2xl border-2 text-left transition-all ${
+                className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
                   itemType === 'LOST'
                     ? 'border-amber-500 bg-amber-50/70 shadow-md'
                     : 'border-slate-200 hover:border-slate-300'
@@ -765,13 +824,20 @@ function ReportWizardContent() {
             <button
               type="button"
               onClick={() => {
+                if (!isAuthenticated) {
+                  openAuthModal({
+                    mode: 'login',
+                    reason: `Please sign in or create an account to proceed with reporting this ${itemType === 'FOUND' ? 'found' : 'lost'} item.`,
+                  });
+                  return;
+                }
                 if (currentStep === 2 && !title.trim()) {
                   alert('Please enter an item title before proceeding.');
                   return;
                 }
                 setCurrentStep(currentStep + 1);
               }}
-              className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
             >
               Next Step
               <ArrowRight className="w-4 h-4" />
@@ -779,9 +845,18 @@ function ReportWizardContent() {
           ) : (
             <button
               type="button"
-              onClick={handleSubmit}
+              onClick={(e) => {
+                if (!isAuthenticated) {
+                  openAuthModal({
+                    mode: 'login',
+                    reason: 'Please sign in or create an account to publish this report.',
+                  });
+                  return;
+                }
+                handleSubmit(e);
+              }}
               disabled={submitting}
-              className="px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-black shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2"
+              className="px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-black shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Check className="w-4 h-4" />
               {submitting ? 'Publishing Report...' : 'Publish Item to Community'}
