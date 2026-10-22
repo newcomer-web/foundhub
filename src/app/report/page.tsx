@@ -102,7 +102,7 @@ function ReportWizardContent() {
   const [customImageUrl, setCustomImageUrl] = useState('');
 
   // Location & Time
-  const [incidentLocation, setIncidentLocation] = useState('University Central Library 2nd Floor');
+  const [incidentLocation, setIncidentLocation] = useState('');
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({
     lat: 37.7749,
     lng: -122.4194,
@@ -115,12 +115,10 @@ function ReportWizardContent() {
   // Custody & Contact
   const [currentHoldingLocation, setCurrentHoldingLocation] = useState(
     itemType === 'FOUND'
-      ? "Campus Dean's Office / Security Desk Room 102"
-      : 'LOST - Searching actively'
+      ? ''
+      : 'Searching actively'
   );
-  const [finderContactPreference, setFinderContactPreference] = useState(
-    'In-app message or Telegram: @' + (CURRENT_USER.telegramUsername || 'user')
-  );
+  const [finderContactPreference, setFinderContactPreference] = useState('');
 
   // Anti-fraud
   const [secretVerificationQuestion, setSecretVerificationQuestion] = useState('');
@@ -129,13 +127,6 @@ function ReportWizardContent() {
 
   // Live AI matches
   const [liveMatches, setLiveMatches] = useState<MatchResult[]>([]);
-
-  // Auto-fill sample photo when category changes if empty
-  useEffect(() => {
-    if (imageUrls.length === 0 && SAMPLE_PHOTOS[category]?.[0]) {
-      setImageUrls([SAMPLE_PHOTOS[category][0]]);
-    }
-  }, [category]);
 
   // Calculate live AI matches when reaching Step 5
   useEffect(() => {
@@ -196,7 +187,7 @@ function ReportWizardContent() {
         title: title.trim(),
         category,
         description: description.trim(),
-        imageUrls: imageUrls.length > 0 ? imageUrls : [SAMPLE_PHOTOS[category][0]],
+        imageUrls: imageUrls,
         eventDate: new Date(eventDate).toISOString(),
         incidentLocation: incidentLocation.trim(),
         latitude: coordinates.lat,

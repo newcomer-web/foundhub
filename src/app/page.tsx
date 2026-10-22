@@ -300,7 +300,33 @@ export default function HomePage() {
           </div>
         ) : (
           <div>
-            {filteredItems.length === 0 ? (
+            {items.length === 0 ? (
+              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-4">
+                <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto text-emerald-600">
+                  <Compass className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800">No items reported yet</h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Be the first to post a found item or report something you lost to start reuniting community belongings.
+                </p>
+                <div className="pt-2 flex items-center justify-center gap-3">
+                  <Link
+                    href="/report?type=FOUND"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    Report a Found Item
+                  </Link>
+                  <Link
+                    href="/report?type=LOST"
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-200"
+                  >
+                    <AlertCircle className="w-4 h-4 text-amber-500" />
+                    Report a Lost Item
+                  </Link>
+                </div>
+              </div>
+            ) : filteredItems.length === 0 ? (
               <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-4">
                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
                   <Search className="w-8 h-8" />
