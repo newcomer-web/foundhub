@@ -1,6 +1,5 @@
 -- ========================================================
 -- FoundHub: Supabase PostgreSQL Schema & Setup Script
--- Paste this script into Supabase SQL Editor and click RUN
 -- ========================================================
 
 -- 1. Create items table
@@ -61,31 +60,36 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. Indexes for fast exploration and queries
-CREATE INDEX IF NOT EXISTS idx_items_status ON public.items(status);
-CREATE INDEX IF NOT EXISTS idx_items_type ON public.items(type);
-CREATE INDEX IF NOT EXISTS idx_items_category ON public.items(category);
-CREATE INDEX IF NOT EXISTS idx_comments_item_id ON public.comments(item_id);
-CREATE INDEX IF NOT EXISTS idx_claims_item_id ON public.claims(item_id);
-
--- 6. Enable Row Level Security (RLS) & Public access policies
+-- 5. Enable Row Level Security (RLS) & Public access policies
 ALTER TABLE public.items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.claims ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access to active items & comments
+DO $$ 
+BEGIN
+    DROP POLICY IF EXISTS "Public items access" ON public.items;
+    DROP POLICY IF EXISTS "Public comments access" ON public.comments;
+    DROP POLICY IF EXISTS "Public claims access" ON public.claims;
+    DROP POLICY IF EXISTS "Public profiles access" ON public.profiles;
+END $$;
+
 CREATE POLICY "Public items access" ON public.items FOR ALL USING (true);
 CREATE POLICY "Public comments access" ON public.comments FOR ALL USING (true);
 CREATE POLICY "Public claims access" ON public.claims FOR ALL USING (true);
 CREATE POLICY "Public profiles access" ON public.profiles FOR ALL USING (true);
 
--- 7. Create storage bucket for item images
+-- 6. Storage bucket for item images
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('item-images', 'item-images', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Storage policies for image uploads
+DO $$ 
+BEGIN
+    DROP POLICY IF EXISTS "Public Access item images" ON storage.objects;
+    DROP POLICY IF EXISTS "Public Upload item images" ON storage.objects;
+END $$;
+
 CREATE POLICY "Public Access item images" 
 ON storage.objects FOR SELECT 
 USING (bucket_id = 'item-images');

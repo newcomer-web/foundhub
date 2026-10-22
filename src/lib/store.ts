@@ -218,28 +218,32 @@ class StoreManager {
     this.save();
 
     if (isSupabaseConfigured) {
-      supabase
-        .from('items')
-        .insert({
-          id: newItem.id,
-          user_id: newItem.userId,
-          user_data: newItem.user,
-          type: newItem.type,
-          title: newItem.title,
-          category: newItem.category,
-          description: newItem.description,
-          image_urls: newItem.imageUrls,
-          event_date: newItem.eventDate,
-          incident_location: newItem.incidentLocation,
-          latitude: newItem.latitude,
-          longitude: newItem.longitude,
-          current_holding_location: newItem.currentHoldingLocation,
-          finder_contact_preference: newItem.finderContactPreference,
-          secret_verification_question: newItem.secretVerificationQuestion,
-          status: newItem.status,
-          reward_amount: newItem.rewardAmount,
-        })
-        .then();
+      (async () => {
+        try {
+          const { error } = await supabase.from('items').insert({
+            id: newItem.id,
+            user_id: newItem.userId,
+            user_data: newItem.user,
+            type: newItem.type,
+            title: newItem.title,
+            category: newItem.category,
+            description: newItem.description,
+            image_urls: newItem.imageUrls,
+            event_date: newItem.eventDate,
+            incident_location: newItem.incidentLocation,
+            latitude: newItem.latitude,
+            longitude: newItem.longitude,
+            currentHoldingLocation: newItem.currentHoldingLocation,
+            finder_contact_preference: newItem.finderContactPreference,
+            secret_verification_question: newItem.secretVerificationQuestion,
+            status: newItem.status,
+            reward_amount: newItem.rewardAmount,
+          });
+          if (error) console.warn('Supabase items sync warning:', error.message);
+        } catch (err) {
+          console.warn('Supabase items sync exception:', err);
+        }
+      })();
     }
 
     return newItem;

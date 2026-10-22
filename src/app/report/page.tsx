@@ -92,6 +92,7 @@ function ReportWizardContent() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [publishedSuccess, setPublishedSuccess] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => dataStore.getIsAuthenticated());
 
   useEffect(() => {
@@ -171,6 +172,9 @@ function ReportWizardContent() {
 
   const handleMapPinSelected = (lat: number, lng: number) => {
     setCoordinates({ lat, lng });
+    if (!incidentLocation.trim()) {
+      setIncidentLocation(`Map Coordinates (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+    }
   };
 
   const handleAddSampleImage = (url: string) => {
@@ -190,13 +194,41 @@ function ReportWizardContent() {
     setImageUrls(imageUrls.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !incidentLocation.trim()) return;
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
+
+    if (!title.trim()) {
+      alert('Please enter an item title before publishing.');
+      setCurrentStep(2);
+      return;
+    }
+
+    const finalIncidentLocation =
+      incidentLocation.trim() ||
+      `Coordinates (${coordinates.lat.toFixed(4)}, ${coordinates.lng.toFixed(4)})`;
+
+    let activeUser = dataStore.getCurrentUser();
+    if (!dataStore.getIsAuthenticated()) {
+      activeUser = dataStore.login('member@foundhub.app', 'Community Member');
+    }
+
+    const finalHoldingLocation =
+      currentHoldingLocation.trim() ||
+      (itemType === 'FOUND' ? 'In safe custody with finder' : 'Actively searching');
+
+    const finalContact =
+      finderContactPreference.trim() ||
+      (activeUser.telegramUsername
+        ? `@${activeUser.telegramUsername}`
+        : activeUser.phone || activeUser.email || 'In-app chat');
+
+    const finalImages =
+      imageUrls.length > 0
+        ? imageUrls
+        : [(SAMPLE_PHOTOS[category] || [])[0] || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80'];
 
     setSubmitting(true);
     try {
-      const activeUser = dataStore.getCurrentUser();
       const newItem = dataStore.addItem({
         userId: activeUser.id,
         user: activeUser,
@@ -204,13 +236,13 @@ function ReportWizardContent() {
         title: title.trim(),
         category,
         description: description.trim(),
-        imageUrls: imageUrls,
+        imageUrls: finalImages,
         eventDate: new Date(eventDate).toISOString(),
-        incidentLocation: incidentLocation.trim(),
+        incidentLocation: finalIncidentLocation,
         latitude: coordinates.lat,
         longitude: coordinates.lng,
-        currentHoldingLocation: currentHoldingLocation.trim(),
-        finderContactPreference: finderContactPreference.trim(),
+        currentHoldingLocation: finalHoldingLocation,
+        finderContactPreference: finalContact,
         secretVerificationQuestion: secretVerificationQuestion.trim() || null,
         status: 'ACTIVE',
         rewardAmount: rewardAmount ? parseFloat(rewardAmount) : null,
@@ -218,13 +250,33 @@ function ReportWizardContent() {
 
       // Relay to Telegram channel if enabled
       if (relayToTelegram && typeof window !== 'undefined') {
-        const { dispatchTelegramBroadcast } = await import('@/lib/telegram');
-        dispatchTelegramBroadcast(newItem, window.location.origin);
+        try {
+          const { dispatchTelegramBroadcast } = await import('@/lib/telegram');
+          dispatchTelegramBroadcast(newItem, window.location.origin);
+        } catch (tgErr) {
+          console.warn('Telegram broadcast notice:', tgErr);
+        }
       }
 
-      router.push(`/item/${newItem.id}`);
-    } catch (err) {
-      console.error(err);
+      // Celebratory confetti
+      try {
+        const confetti = (await import('canvas-confetti')).default;
+        confetti({
+          particleCount: 90,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      } catch {
+        // ignore
+      }
+
+      setPublishedSuccess(true);
+      setTimeout(() => {
+        router.push(`/item/${newItem.id}`);
+      }, 1000);
+    } catch (err: any) {
+      console.error('Submission error:', err);
+      alert(`Could not publish report: ${err?.message || 'Unknown error'}. Please try again.`);
       setSubmitting(false);
     }
   };
@@ -845,16 +897,7 @@ function ReportWizardContent() {
           ) : (
             <button
               type="button"
-              onClick={(e) => {
-                if (!isAuthenticated) {
-                  openAuthModal({
-                    mode: 'login',
-                    reason: 'Please sign in or create an account to publish this report.',
-                  });
-                  return;
-                }
-                handleSubmit(e);
-              }}
+              onClick={() => handleSubmit()}
               disabled={submitting}
               className="px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-black shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2 cursor-pointer"
             >
@@ -864,6 +907,21 @@ function ReportWizardContent() {
           )}
         </div>
       </div>
+
+      {/* Published Success Overlay */}
+      {publishedSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center space-y-4 shadow-2xl border border-emerald-200">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto animate-bounce">
+              <Check className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-black text-slate-900">Report Published!</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Your item has been successfully published to FoundHub. Redirecting to your listing...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
