@@ -1,0 +1,105 @@
+// Prisma Schema for FoundHub - Community-Driven Lost & Found Platform
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ItemType {
+  FOUND
+  LOST
+}
+
+enum ItemCategory {
+  ELECTRONICS
+  DOCUMENTS_AND_IDS
+  WALLETS_AND_BAGS
+  KEYS
+  JEWELRY_AND_WATCHES
+  CLOTHING
+  PETS
+  OTHER
+}
+
+enum ItemStatus {
+  ACTIVE
+  CLAIM_PENDING
+  RETURNED_TO_OWNER
+  ARCHIVED
+}
+
+enum CommentType {
+  GENERAL
+  OWNER_LEAD       // "I know whose item this is"
+  OFFICIAL_UPDATE  // Updated storage status
+}
+
+model User {
+  id               String       @id @default(uuid())
+  email            String       @unique
+  fullName         String
+  phone            String?
+  telegramUsername String?
+  avatarUrl        String?
+  createdAt        DateTime     @default(now())
+  items            Item[]
+  comments         Comment[]
+  claims           ItemClaim[]
+}
+
+model Item {
+  id                          String       @id @default(uuid())
+  userId                      String
+  user                        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type                        ItemType     @default(FOUND)
+  title                       String
+  category                    ItemCategory
+  description                 String
+  imageUrls                   String[]     // Array of storage URLs
+  
+  // Incident details
+  eventDate                   DateTime     // Date when lost or found
+  incidentLocation            String       // e.g. "Library 2nd Floor, Central Campus"
+  latitude                    Float?
+  longitude                   Float?
+  
+  // Current Custody & Finder info
+  currentHoldingLocation      String       // e.g. "With finder", "Campus Security Office Room 102"
+  finderContactPreference     String       // e.g. "Telegram only", "Phone calls after 5 PM"
+  
+  // Anti-Fraud Verification
+  secretVerificationQuestion  String?      // e.g. "What is written on the keychain?"
+  
+  status                      ItemStatus   @default(ACTIVE)
+  rewardAmount                Decimal?     // Optional reward for lost items
+  createdAt                   DateTime     @default(now())
+  updatedAt                   DateTime     @updatedAt
+  comments                    Comment[]
+  claims                      ItemClaim[]
+}
+
+model Comment {
+  id              String       @id @default(uuid())
+  itemId          String
+  item            Item         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content         String
+  commentType     CommentType  @default(GENERAL)
+  taggedOwnerInfo String?      // e.g. "@username or phone of potential owner"
+  createdAt       DateTime     @default(now())
+}
+
+model ItemClaim {
+  id              String       @id @default(uuid())
+  itemId          String
+  item            Item         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  claimantId      String
+  claimant        User         @relation(fields: [claimantId], references: [id], onDelete: Cascade)
+  proofMessage    String       // Answer to secret question / detailed proof
+  status          String       @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt       DateTime     @default(now())
+}
