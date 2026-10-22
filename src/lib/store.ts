@@ -249,6 +249,64 @@ class StoreManager {
     return newItem;
   }
 
+  public updateItem(id: string, updates: Partial<Item>): boolean {
+    const index = this.items.findIndex((i) => i.id === id);
+    if (index === -1) return false;
+
+    this.items[index] = {
+      ...this.items[index],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    this.save();
+
+    if (isSupabaseConfigured) {
+      (async () => {
+        try {
+          const payload: Record<string, any> = {};
+          if (updates.title !== undefined) payload.title = updates.title;
+          if (updates.category !== undefined) payload.category = updates.category;
+          if (updates.description !== undefined) payload.description = updates.description;
+          if (updates.incidentLocation !== undefined) payload.incident_location = updates.incidentLocation;
+          if (updates.currentHoldingLocation !== undefined) payload.current_holding_location = updates.currentHoldingLocation;
+          if (updates.finderContactPreference !== undefined) payload.finder_contact_preference = updates.finderContactPreference;
+          if (updates.secretVerificationQuestion !== undefined) payload.secret_verification_question = updates.secretVerificationQuestion;
+          if (updates.rewardAmount !== undefined) payload.reward_amount = updates.rewardAmount;
+          if (updates.status !== undefined) payload.status = updates.status;
+          if (updates.imageUrls !== undefined) payload.image_urls = updates.imageUrls;
+
+          const { error } = await supabase.from('items').update(payload).eq('id', id);
+          if (error) console.warn('Supabase update item error:', error.message);
+        } catch (err) {
+          console.warn('Supabase update item exception:', err);
+        }
+      })();
+    }
+
+    return true;
+  }
+
+  public deleteItem(id: string): boolean {
+    const index = this.items.findIndex((i) => i.id === id);
+    if (index === -1) return false;
+
+    this.items.splice(index, 1);
+    this.save();
+
+    if (isSupabaseConfigured) {
+      (async () => {
+        try {
+          const { error } = await supabase.from('items').delete().eq('id', id);
+          if (error) console.warn('Supabase delete item error:', error.message);
+        } catch (err) {
+          console.warn('Supabase delete item exception:', err);
+        }
+      })();
+    }
+
+    return true;
+  }
+
   public updateItemStatus(id: string, status: ItemStatus): boolean {
     const item = this.items.find((i) => i.id === id);
     if (!item) return false;
