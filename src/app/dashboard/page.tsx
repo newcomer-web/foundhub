@@ -426,11 +426,16 @@ export default function DashboardPage() {
                           {item.title}
                         </h3>
                       </div>
-                      <img
-                        src={item.imageUrls[0]}
-                        alt={item.title}
-                        className="w-14 h-14 rounded-xl object-cover shrink-0 border border-slate-200"
-                      />
+                      {item.imageUrls?.[0] ? (
+                        <img
+                          src={item.imageUrls[0]}
+                          alt={item.title}
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                          className="w-14 h-14 rounded-xl object-cover shrink-0 border border-slate-200 bg-slate-100"
+                        />
+                      ) : null}
                     </div>
 
                     <div className="text-xs text-slate-500 space-y-1">
@@ -520,11 +525,16 @@ export default function DashboardPage() {
                   className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3">
-                    <img
-                      src={item.imageUrls[0]}
-                      alt={item.title}
-                      className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
-                    />
+                    {item.imageUrls?.[0] ? (
+                      <img
+                        src={item.imageUrls[0]}
+                        alt={item.title}
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                        className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100"
+                      />
+                    ) : null}
                     <div>
                       <Link href={`/item/${item.id}`} className="font-bold text-sm text-slate-900 hover:underline">
                         {item.title}

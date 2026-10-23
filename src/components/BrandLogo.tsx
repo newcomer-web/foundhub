@@ -1,0 +1,55 @@
+import React from 'react';
+
+interface BrandLogoProps {
+  className?: string;
+  size?: number;
+}
+
+export default function BrandLogo({ className = 'w-9 h-9', size = 36 }: BrandLogoProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <defs>
+        <linearGradient id="fhGradient" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#10b981" />
+          <stop offset="1" stopColor="#059669" />
+        </linearGradient>
+        <linearGradient id="fhGlow" x1="16" y1="12" x2="32" y2="36" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#34d399" />
+          <stop offset="1" stopColor="#059669" />
+        </linearGradient>
+      </defs>
+      {/* Sleek Dark Base */}
+      <rect width="48" height="48" rx="14" fill="#090d16" />
+      <rect width="48" height="48" rx="14" stroke="#1e293b" strokeWidth="1.5" />
+
+      {/* Modern Pin-Search Aperture Mark */}
+      <path
+        d="M24 10C17.3726 10 12 15.3726 12 22C12 29.5 21.2 37.3 23.1 38.8C23.65 39.2 24.35 39.2 24.9 38.8C26.8 37.3 36 29.5 36 22C36 15.3726 30.6274 10 24 10Z"
+        stroke="url(#fhGradient)"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle
+        cx="24"
+        cy="21"
+        r="5.5"
+        stroke="url(#fhGlow)"
+        strokeWidth="2.5"
+      />
+      <circle
+        cx="24"
+        cy="21"
+        r="2"
+        fill="#34d399"
+      />
+    </svg>
+  );
+}

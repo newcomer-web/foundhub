@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Compass, ShieldCheck, Lock, MapPin, Send, Heart } from 'lucide-react';
+import BrandLogo from './BrandLogo';
+import { ShieldCheck, Lock, MapPin, Send, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -12,9 +13,7 @@ export default function Footer() {
           {/* Brand info */}
           <div className="space-y-3 md:col-span-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white">
-                <Compass className="w-4 h-4" />
-              </div>
+              <BrandLogo size={32} className="w-8 h-8 shrink-0" />
               <span className="font-black text-lg text-white">Found<span className="text-emerald-500">Hub</span></span>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">

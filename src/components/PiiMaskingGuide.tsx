@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { maskSensitiveInfo } from '@/lib/utils';
-import { ShieldCheck, AlertOctagon, EyeOff, Sparkles, Check } from 'lucide-react';
+import { ShieldCheck, AlertOctagon, EyeOff, Check } from 'lucide-react';
 
 interface PiiMaskingGuideProps {
   onApplyMaskedText?: (maskedText: string) => void;
@@ -65,7 +65,7 @@ export default function PiiMaskingGuide({ onApplyMaskedText }: PiiMaskingGuidePr
                 onClick={handleApply}
                 className="text-[10px] bg-rose-100 hover:bg-rose-200 text-rose-800 font-sans font-bold px-2 py-0.5 rounded transition-colors flex items-center gap-1"
               >
-                {copied ? <Check className="w-3 h-3 text-emerald-600" /> : <Sparkles className="w-3 h-3 text-rose-600" />}
+                {copied ? <Check className="w-3 h-3 text-emerald-600" /> : <EyeOff className="w-3 h-3 text-rose-600" />}
                 {copied ? 'Applied' : 'Use Mask'}
               </button>
             )}

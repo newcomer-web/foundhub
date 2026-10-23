@@ -3,7 +3,7 @@
 import React from 'react';
 import { MatchResult } from '@/lib/aiMatching';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, ShieldCheck, MapPin, Building2, CheckCircle2 } from 'lucide-react';
+import { SearchCheck, ArrowRight, ShieldCheck, MapPin, Building2, CheckCircle2 } from 'lucide-react';
 
 interface SmartMatchBannerProps {
   matches: MatchResult[];
@@ -21,17 +21,17 @@ export default function SmartMatchBanner({ matches, targetType }: SmartMatchBann
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30">
-            <Sparkles className="w-5 h-5 text-indigo-300 animate-pulse" />
+            <SearchCheck className="w-5 h-5 text-indigo-300" />
           </div>
           <div>
             <h4 className="font-bold text-base flex items-center gap-2">
-              Smart AI Matching Engine
+              Automated Correlation Matches
               <span className="text-[10px] bg-indigo-500 text-white px-2 py-0.5 rounded-full font-bold">
                 {matches.length} Potential {counterTypeName} Match{matches.length > 1 ? 'es' : ''}
               </span>
             </h4>
             <p className="text-xs text-slate-300">
-              FoundHub AI detected existing {counterTypeName.toLowerCase()} reports matching your item's description and coordinates!
+              FoundHub cross-referenced existing {counterTypeName.toLowerCase()} reports matching item characteristics and coordinates.
             </p>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default function SmartMatchBanner({ matches, targetType }: SmartMatchBann
                         : 'bg-indigo-400 text-slate-950'
                     }`}
                   >
-                    {score}% AI Match
+                    {score}% Match
                   </span>
                   <span className="text-[10px] text-slate-400 font-mono uppercase">
                     {item.type}

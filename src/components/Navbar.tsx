@@ -7,6 +7,7 @@ import { User } from '@/lib/types';
 import { dataStore, DEFAULT_AVATAR, openAuthModal } from '@/lib/store';
 import AuthModal from './AuthModal';
 import EditProfileModal from './EditProfileModal';
+import BrandLogo from './BrandLogo';
 import {
   Compass,
   PlusCircle,
@@ -95,9 +96,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                <Compass className="w-5 h-5 text-white" />
-              </div>
+              <BrandLogo size={40} className="w-10 h-10 group-hover:scale-105 transition-transform shrink-0" />
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="font-black text-xl tracking-tight text-slate-900">Found</span>

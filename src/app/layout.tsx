@@ -7,7 +7,9 @@ export const metadata: Metadata = {
   title: 'FoundHub - Community-Driven Lost and Found Platform',
   description: 'Connect finders and owners with geolocation tracking, anti-fraud proof-of-ownership verification, custody tracking, and community identification threads.',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
   },
 };
 

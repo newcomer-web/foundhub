@@ -39,7 +39,7 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                {isFound ? '📍 Found Location' : '📍 Lost Location'}
+                {isFound ? 'Found Location' : 'Lost Location'}
               </p>
               <p className="text-sm font-bold text-slate-900 mt-0.5">
                 {item.incidentLocation}
@@ -74,7 +74,7 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                📅 {isFound ? 'Found Date & Time' : 'Lost Date & Time'}
+                {isFound ? 'Found Date & Time' : 'Lost Date & Time'}
               </p>
               <p className="text-sm font-bold text-slate-900 mt-0.5">
                 {formatDate(item.eventDate)}
@@ -89,7 +89,7 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-indigo-900 flex items-center gap-1.5">
-                🏢 Current Holding Location
+                Current Holding Location
               </p>
               <p className="text-sm font-semibold text-slate-900 mt-1">
                 {item.currentHoldingLocation}
@@ -108,7 +108,7 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
               </div>
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                  👤 {isFound ? 'Finder / Custodian' : 'Reported By'}
+                  {isFound ? 'Finder / Custodian' : 'Reported By'}
                 </p>
                 <p className="text-sm font-semibold text-slate-900 mt-0.5">
                   {item.user?.fullName || 'Community Member'}

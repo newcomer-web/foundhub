@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   Send,
   Tag,
-  Sparkles,
+  Lightbulb,
   HelpCircle,
   Filter,
   LogIn,
@@ -114,7 +114,7 @@ export default function CommunityCluesThread({
               filter === 'OWNER_LEAD' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Sparkles className="w-3 h-3" />
+            <Lightbulb className="w-3 h-3" />
             Owner Leads
           </button>
           <button
@@ -183,7 +183,7 @@ export default function CommunityCluesThread({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Sparkles className="w-3 h-3 text-indigo-500" />
+                <Lightbulb className="w-3 h-3 text-indigo-500" />
                 Owner Lead
               </button>
               <button
@@ -300,7 +300,7 @@ export default function CommunityCluesThread({
                         </span>
                         {isLead && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 border border-indigo-200">
-                            <Sparkles className="w-2.5 h-2.5" />
+                            <Lightbulb className="w-2.5 h-2.5" />
                             Owner Lead
                           </span>
                         )}

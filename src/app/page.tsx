@@ -18,7 +18,6 @@ import {
   CheckCircle2,
   ShieldCheck,
   Send,
-  Sparkles,
   ArrowRight,
   SlidersHorizontal,
   X,

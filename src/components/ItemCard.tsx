@@ -38,27 +38,35 @@ const ICON_COMPONENTS: Record<string, React.ElementType> = {
 };
 
 export default function ItemCard({ item }: ItemCardProps) {
+  const [imageError, setImageError] = React.useState(false);
   const isFound = item.type === 'FOUND';
   const categoryMeta = CATEGORY_MAP[item.category] || CATEGORY_MAP.OTHER;
   const CategoryIcon = ICON_COMPONENTS[categoryMeta.iconName] || HelpCircle;
 
   const isReturned = item.status === 'RETURNED_TO_OWNER';
   const isClaimPending = item.status === 'CLAIM_PENDING';
+  const hasValidPhoto = Boolean(item.imageUrls && item.imageUrls[0]) && !imageError;
 
   return (
     <div className="group relative bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-300 flex flex-col overflow-hidden">
       {/* Top Media Showcase */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
-        {item.imageUrls && item.imageUrls[0] ? (
+        {hasValidPhoto ? (
           <img
             src={item.imageUrls[0]}
             alt={item.title}
+            onError={() => setImageError(true)}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
-            <CategoryIcon className="w-12 h-12" />
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 gap-1.5 p-4">
+            <div className="p-3 bg-white rounded-2xl shadow-xs border border-slate-200/80 text-slate-600">
+              <CategoryIcon className="w-7 h-7" />
+            </div>
+            <span className="text-[10px] font-bold tracking-wide uppercase text-slate-500">
+              {categoryMeta.label}
+            </span>
           </div>
         )}
 
@@ -88,7 +96,7 @@ export default function ItemCard({ item }: ItemCardProps) {
             }`}
           >
             {isReturned
-              ? '✓ Reunited'
+              ? 'Reunited'
               : isClaimPending
               ? 'Claim Pending'
               : 'Active'}

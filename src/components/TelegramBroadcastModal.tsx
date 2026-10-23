@@ -34,10 +34,10 @@ export default function TelegramBroadcastModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="px-6 py-5 bg-[#229ED9] text-white flex items-center justify-between">
+        <div className="px-6 py-5 bg-[#229ED9] text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
               <Bot className="w-5 h-5 text-white" />
@@ -56,7 +56,7 @@ export default function TelegramBroadcastModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
           <p className="text-xs text-slate-600">
             FoundHub automatically relays verified listings to the <strong>@FoundHub_Community</strong> Telegram channel so neighborhood and campus members get notified immediately.
           </p>

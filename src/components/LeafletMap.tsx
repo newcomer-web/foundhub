@@ -102,8 +102,8 @@ export default function LeafletMap({
                     ${item.title}
                   </h4>
                   <div style="font-size: 11px; color: #475569; margin-bottom: 6px; line-height: 1.4;">
-                    📍 ${item.incidentLocation}<br/>
-                    🏢 <i>${item.currentHoldingLocation}</i>
+                    <strong>Location:</strong> ${item.incidentLocation}<br/>
+                    <strong>Custody:</strong> <i>${item.currentHoldingLocation}</i>
                   </div>
                   <a href="/item/${item.id}" style="display: block; text-align: center; background: #0f172a; color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; margin-top: 6px;">
                     View Details & Claim →

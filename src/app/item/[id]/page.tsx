@@ -30,6 +30,7 @@ import {
   Printer,
   HelpCircle,
   AlertTriangle,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 export default function ItemDetailPage() {
@@ -40,6 +41,7 @@ export default function ItemDetailPage() {
   const [item, setItem] = useState<Item | null>(null);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [mainImageError, setMainImageError] = useState(false);
 
   // Modals state
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
@@ -51,6 +53,7 @@ export default function ItemDetailPage() {
   const [matches, setMatches] = useState<MatchResult[]>([]);
 
   useEffect(() => {
+    setMainImageError(false);
     const current = dataStore.getItemById(itemId);
     if (current) {
       setItem(current);
@@ -138,15 +141,20 @@ export default function ItemDetailPage() {
         {/* Left Column: Media Showcase (7 cols) */}
         <div className="lg:col-span-7 space-y-3">
           <div className="relative aspect-[16/11] w-full rounded-3xl overflow-hidden border border-slate-200/90 shadow-md bg-slate-900 group">
-            {item.imageUrls[activePhotoIndex] ? (
+            {item.imageUrls[activePhotoIndex] && !mainImageError ? (
               <img
                 src={item.imageUrls[activePhotoIndex]}
                 alt={item.title}
+                onError={() => setMainImageError(true)}
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-500">
-                No Photo Available
+              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-slate-400 gap-2 p-6">
+                <div className="p-4 bg-white/10 rounded-2xl border border-white/10 text-slate-300">
+                  <ImageIcon className="w-8 h-8" />
+                </div>
+                <span className="text-xs font-bold text-slate-300">No Photo Available</span>
+                <span className="text-[11px] text-slate-500">Item details & verified custody listed below</span>
               </div>
             )}
 
@@ -169,7 +177,7 @@ export default function ItemDetailPage() {
                     : 'bg-white/90 text-slate-900 border border-white/50'
                 }`}
               >
-                {isReturned ? '✓ Reunited to Owner' : isClaimPending ? 'Claim Pending' : 'Active'}
+                {isReturned ? 'Reunited to Owner' : isClaimPending ? 'Claim Pending' : 'Active'}
               </span>
             </div>
 
