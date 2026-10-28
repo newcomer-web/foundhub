@@ -114,7 +114,7 @@ export default function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header Profile Bar */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200/90 shadow-[0_2px_8px_rgba(28,25,23,0.04)] flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div
             onClick={() => {
@@ -130,7 +130,7 @@ export default function DashboardPage() {
             <img
               src={currentUser.avatarUrl || DEFAULT_AVATAR}
               alt={currentUser.fullName}
-              className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-200 shadow-sm bg-white"
+              className="w-16 h-16 rounded-2xl object-cover border-2 border-stone-200 shadow-2xs bg-stone-100"
             />
             <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
               <Edit3 className="w-5 h-5" />
@@ -139,14 +139,14 @@ export default function DashboardPage() {
 
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900">
+              <h1 className="text-xl sm:text-2xl font-black text-stone-900">
                 {currentUser.fullName}
               </h1>
               <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
                 {isAuthenticated ? 'Active Member' : 'Guest Account'}
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-2">
+            <p className="text-xs text-stone-500 mt-1 flex flex-wrap items-center gap-2">
               <span>{currentUser.email}</span>
               {currentUser.telegramUsername && (
                 <span>• Telegram: <strong>@{currentUser.telegramUsername}</strong></span>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
                 setIsEditProfileOpen(true);
               }
             }}
-            className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5 text-emerald-400" />
             Edit Profile
@@ -176,7 +176,7 @@ export default function DashboardPage() {
           {!isAuthenticated && (
             <button
               onClick={() => setIsAuthOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
               Sign In

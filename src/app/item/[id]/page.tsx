@@ -101,37 +101,44 @@ export default function ItemDetailPage() {
   const isReturned = item.status === 'RETURNED_TO_OWNER';
   const isClaimPending = item.status === 'CLAIM_PENDING';
   const categoryMeta = CATEGORY_MAP[item.category] || CATEGORY_MAP.OTHER;
+  const caseId = `FH-${(item.id || '0000').slice(0, 6).toUpperCase()}`;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Top Breadcrumb & Action Bar */}
-      <div className="flex items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Listings
-        </Link>
+      {/* Top Archival Case File Header & Action Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200/90">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-stone-100"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Noticeboard</span>
+          </Link>
+          <span className="text-stone-300">/</span>
+          <span className="font-mono text-xs font-semibold text-stone-500">
+            CASE #{caseId}
+          </span>
+        </div>
 
         <div className="flex items-center gap-2">
           {/* Telegram Relay button */}
           <button
             onClick={() => setIsTelegramModalOpen(true)}
-            className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-xl text-xs font-bold border border-sky-200 transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 rounded-xl text-xs font-bold border border-sky-200 transition-all flex items-center gap-1.5 cursor-pointer"
             title="Preview or dispatch Telegram channel broadcast"
           >
-            <Send className="w-3.5 h-3.5 text-sky-500" />
+            <Send className="w-3.5 h-3.5 text-sky-600" />
             <span className="hidden sm:inline">Telegram Relay</span>
           </button>
 
           {/* Share & Printable Flyer button */}
           <button
             onClick={() => setIsFlyerModalOpen(true)}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold border border-slate-200 transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-white hover:bg-stone-50 text-stone-800 rounded-xl text-xs font-bold border border-stone-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Share2 className="w-3.5 h-3.5 text-slate-600" />
-            <span>Share & Flyer QR</span>
+            <Printer className="w-3.5 h-3.5 text-stone-600" />
+            <span>Print Street Flyer (QR)</span>
           </button>
         </div>
       </div>
@@ -140,7 +147,7 @@ export default function ItemDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Media Showcase (7 cols) */}
         <div className="lg:col-span-7 space-y-3">
-          <div className="relative aspect-[16/11] w-full rounded-3xl overflow-hidden border border-slate-200/90 shadow-md bg-slate-900 group">
+          <div className="relative aspect-[16/11] w-full rounded-2xl overflow-hidden border border-stone-200/90 shadow-2xs bg-stone-900 group">
             {item.imageUrls[activePhotoIndex] && !mainImageError ? (
               <img
                 src={item.imageUrls[activePhotoIndex]}
@@ -149,42 +156,42 @@ export default function ItemDetailPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-slate-400 gap-2 p-6">
-                <div className="p-4 bg-white/10 rounded-2xl border border-white/10 text-slate-300">
-                  <ImageIcon className="w-8 h-8" />
+              <div className="w-full h-full flex flex-col items-center justify-center bg-stone-100 text-stone-400 gap-2 p-6 border-b border-stone-200/60">
+                <div className="p-4 bg-stone-200/60 rounded-2xl border border-stone-300/60 text-stone-500">
+                  <ImageIcon className="w-8 h-8" strokeWidth={1.5} />
                 </div>
-                <span className="text-xs font-bold text-slate-300">No Photo Available</span>
-                <span className="text-[11px] text-slate-500">Item details & verified custody listed below</span>
+                <span className="text-xs font-mono uppercase tracking-wider font-semibold text-stone-600">No Photo Attached</span>
+                <span className="text-[11px] text-stone-400 font-sans">Physical description and holding custody recorded below</span>
               </div>
             )}
 
             {/* Top Badges */}
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2 pointer-events-none">
               <span
-                className={`px-3 py-1 rounded-full text-xs font-black shadow-lg ${
-                  isFound ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'
+                className={`px-3 py-1 rounded-md text-xs font-mono uppercase tracking-wider font-bold shadow-md ${
+                  isFound ? 'bg-emerald-800 text-white' : 'bg-amber-600 text-white'
                 }`}
               >
-                {isFound ? 'FOUND ITEM' : 'LOST REPORT'}
+                {isFound ? 'IN SAFE CUSTODY' : 'MISSING NOTICE'}
               </span>
 
               <span
-                className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md ${
+                className={`px-3 py-1 rounded-md text-xs font-bold shadow-md backdrop-blur-md ${
                   isReturned
                     ? 'bg-blue-600 text-white'
                     : isClaimPending
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-white/90 text-slate-900 border border-white/50'
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-white/95 text-stone-900 border border-stone-200'
                 }`}
               >
-                {isReturned ? 'Reunited to Owner' : isClaimPending ? 'Claim Pending' : 'Active'}
+                {isReturned ? 'Reunited to Owner' : isClaimPending ? 'Claim Pending' : 'Active Notice'}
               </span>
             </div>
 
             {/* Zoom Inspection Trigger */}
             <button
               onClick={() => setIsZoomOpen(true)}
-              className="absolute bottom-4 right-4 p-2.5 bg-black/60 hover:bg-black/80 text-white rounded-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all shadow-md"
+              className="absolute bottom-4 right-4 p-2.5 bg-black/60 hover:bg-black/80 text-white rounded-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer"
               aria-label="Inspect Full Photo"
             >
               <Maximize2 className="w-4 h-4" />
@@ -198,10 +205,10 @@ export default function ItemDetailPage() {
                 <button
                   key={i}
                   onClick={() => setActivePhotoIndex(i)}
-                  className={`relative w-20 h-16 rounded-2xl overflow-hidden border-2 transition-all ${
+                  className={`relative w-20 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                     activePhotoIndex === i
-                      ? 'border-emerald-600 shadow-md scale-105'
-                      : 'border-slate-200 opacity-70 hover:opacity-100'
+                      ? 'border-emerald-700 shadow-sm scale-102'
+                      : 'border-stone-200 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img src={url} alt={`thumb-${i}`} className="w-full h-full object-cover" />
@@ -218,32 +225,32 @@ export default function ItemDetailPage() {
               <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${categoryMeta.badgeClass}`}>
                 {categoryMeta.label}
               </span>
-              {item.rewardAmount && (
-                <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 flex items-center gap-1 shadow-sm">
+              {item.rewardAmount && !isReturned && (
+                <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-amber-500 text-stone-950 flex items-center gap-1 shadow-2xs font-mono">
                   <Award className="w-3.5 h-3.5" />
-                  ${item.rewardAmount} Reward Offered
+                  ${item.rewardAmount} REWARD OFFERED
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-stone-900 leading-tight">
               {item.title}
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
               {item.description}
             </p>
           </div>
 
           {/* Anti-Fraud Protection Notice */}
           {item.secretVerificationQuestion && isFound && (
-            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2">
+            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200/90 space-y-2">
               <div className="flex items-center gap-2 text-xs font-black text-emerald-950 uppercase tracking-wider">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                Anti-Fraud Verification Enforced
+                <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                Anti-Fraud Proof Question Active
               </div>
-              <p className="text-xs text-emerald-800">
-                To claim this item, claimant must answer the secret verification question set by the finder. Dishonest claims are blocked.
+              <p className="text-xs text-emerald-800 leading-relaxed">
+                To prevent false claims, claimant must answer the confidential verification challenge set by the custodian.
               </p>
             </div>
           )}
@@ -262,10 +269,10 @@ export default function ItemDetailPage() {
                   }
                   setIsClaimModalOpen(true);
                 }}
-                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-emerald-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                className="w-full py-4 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-sm rounded-xl shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer"
               >
                 <ShieldCheck className="w-5 h-5 text-white" />
-                <span>Claim This Item (Prove Ownership)</span>
+                <span>Claim This Belonging (Prove Ownership)</span>
               </button>
             )}
 
@@ -280,10 +287,10 @@ export default function ItemDetailPage() {
                 }
                 setIsContactModalOpen(true);
               }}
-              className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <MessageSquare className="w-4 h-4 text-emerald-400" />
-              <span>Contact Finder / Custodian</span>
+              <span>Contact Custodian / Finder</span>
             </button>
           </div>
         </div>

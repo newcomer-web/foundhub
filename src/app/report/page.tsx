@@ -293,18 +293,21 @@ function ReportWizardContent() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Page Title */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-          {itemType === 'FOUND' ? 'Report a Found Item' : 'Post a Lost Item Alert'}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-stone-100 border border-stone-200 text-stone-600 text-[11px] font-mono tracking-wide mb-1">
+          <span>CIVIC INTAKE DISPATCH</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">
+          {itemType === 'FOUND' ? 'Register a Found Belonging' : 'Post a Missing Item Alert'}
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto">
-          Help reunite community belongings with transparent custody tracking, geolocation pins, and anti-fraud verification.
+        <p className="text-xs sm:text-sm text-stone-500 max-w-xl mx-auto font-normal">
+          Log holding custody, geotagged incident coordinates, and anti-fraud proof challenges to reunite items safely.
         </p>
       </div>
 
       {/* Multi-Step Indicator */}
-      <div className="bg-white p-4 rounded-3xl border border-slate-200/90 shadow-sm">
+      <div className="bg-white p-4 rounded-2xl border border-stone-200/90 shadow-[0_2px_8px_rgba(28,25,23,0.03)]">
         <div className="flex items-center justify-between relative">
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -translate-y-1/2 z-0 hidden sm:block" />
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-stone-100 -translate-y-1/2 z-0 hidden sm:block" />
           {steps.map((s) => {
             const isCompleted = currentStep > s.num;
             const isCurrent = currentStep === s.num;
@@ -318,19 +321,19 @@ function ReportWizardContent() {
                 }}
               >
                 <div
-                  className={`w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-black transition-all ${
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
                     isCompleted
-                      ? 'bg-emerald-600 text-white shadow-sm'
+                      ? 'bg-emerald-800 text-white shadow-2xs'
                       : isCurrent
-                      ? 'bg-slate-900 text-white ring-4 ring-emerald-100 scale-110 shadow-md'
-                      : 'bg-slate-100 text-slate-400'
+                      ? 'bg-stone-900 text-white ring-4 ring-emerald-100 scale-105 shadow-xs'
+                      : 'bg-stone-100 text-stone-400'
                   }`}
                 >
                   {isCompleted ? <Check className="w-4 h-4" /> : s.num}
                 </div>
                 <span
                   className={`text-[11px] font-bold hidden sm:block ${
-                    isCurrent ? 'text-slate-900' : 'text-slate-400'
+                    isCurrent ? 'text-stone-900' : 'text-stone-400'
                   }`}
                 >
                   {s.title}
@@ -342,7 +345,7 @@ function ReportWizardContent() {
       </div>
 
       {/* Main Wizard Form Container */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
+      <div className="bg-white rounded-2xl border border-stone-200/90 shadow-[0_2px_8px_rgba(28,25,23,0.03)] p-6 sm:p-8">
         {/* Authentication Notice Banner */}
         {!isAuthenticated && (
           <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-in">
