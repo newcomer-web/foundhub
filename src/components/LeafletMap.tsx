@@ -44,9 +44,10 @@ export default function LeafletMap({
         const map = L.map(containerRef.current).setView(center, zoom);
         mapRef.current = map;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
           maxZoom: 19,
-          attribution: '© OpenStreetMap contributors',
+          subdomains: 'abcd',
+          attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
         }).addTo(map);
 
         const markersLayer = L.layerGroup().addTo(map);
@@ -77,7 +78,7 @@ export default function LeafletMap({
               const isFound = item.type === 'FOUND';
               const pinColor =
                 item.status === 'RETURNED_TO_OWNER'
-                  ? '#3b82f6'
+                  ? '#60a5fa'
                   : isFound
                   ? '#10b981'
                   : '#f59e0b';
@@ -85,11 +86,11 @@ export default function LeafletMap({
               const customIcon = L.divIcon({
                 className: 'custom-map-pin',
                 html: `
-                  <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); cursor: pointer;">
+                  <div style="filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6)); cursor: pointer;">
                     <svg width="30" height="38" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M16 0C7.163 0 0 7.163 0 16C0 26 16 40 16 40C16 40 32 26 32 16C32 7.163 24.837 0 16 0Z" fill="${pinColor}"/>
-                      <circle cx="16" cy="15" r="6" fill="white"/>
-                      <circle cx="16" cy="15" r="3" fill="${pinColor}"/>
+                      <circle cx="16" cy="15" r="6" fill="#090a0f"/>
+                      <circle cx="16" cy="15" r="3.5" fill="${pinColor}"/>
                     </svg>
                   </div>
                 `,
@@ -99,19 +100,19 @@ export default function LeafletMap({
               });
 
               const popupHtml = `
-                <div style="font-family: inherit; width: 230px; padding: 4px;">
-                  <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: ${pinColor}; margin-bottom: 2px;">
-                    ${item.type} • ${item.category.replace(/_/g, ' ')}
+                <div style="font-family: inherit; width: 230px; padding: 10px 12px; background: #12151e; color: #f4f4f5; border-radius: 12px;">
+                  <div style="font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 0.08em; text-transform: uppercase; color: ${pinColor}; margin-bottom: 4px;">
+                    ● ${item.type} • ${item.category.replace(/_/g, ' ')}
                   </div>
-                  <h4 style="font-size: 13px; font-weight: 700; line-height: 1.25; margin: 0 0 6px 0; color: #0f172a;">
+                  <h4 style="font-size: 13px; font-weight: 700; line-height: 1.3; margin: 0 0 6px 0; color: #ffffff;">
                     ${item.title}
                   </h4>
-                  <div style="font-size: 11px; color: #475569; margin-bottom: 6px; line-height: 1.4;">
-                    <strong>Location:</strong> ${item.incidentLocation}<br/>
-                    <strong>Custody:</strong> <i>${item.currentHoldingLocation}</i>
+                  <div style="font-size: 11px; color: #94a3b8; margin-bottom: 8px; line-height: 1.45;">
+                    <span style="color: #64748b;">Incident:</span> ${item.incidentLocation}<br/>
+                    <span style="color: #64748b;">Holding:</span> <span style="color: #cbd5e1;">${item.currentHoldingLocation}</span>
                   </div>
-                  <a href="/item/${item.id}" style="display: block; text-align: center; background: #0f172a; color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; margin-top: 6px;">
-                    View Details & Claim →
+                  <a href="/item/${item.id}" style="display: block; text-align: center; background: #232734; hover:background: #2f3547; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-decoration: none; border: 1px solid #383f52;">
+                    Inspect Case & Claim →
                   </a>
                 </div>
               `;
@@ -176,25 +177,25 @@ export default function LeafletMap({
   }, [selectedLocation]);
 
   return (
-    <div className={`relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm ${className}`}>
+    <div className={`relative w-full rounded-2xl overflow-hidden border border-[#232733] shadow-2xl bg-[#090a0f] ${className}`}>
       <div ref={containerRef} className="w-full h-full min-h-[300px]" />
       
       {mode === 'select' && (
-        <div className="absolute top-3 left-3 z-[400] bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-200 shadow-md text-xs">
-          <p className="font-semibold text-slate-800 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            Click anywhere on the map or drag the pin
+        <div className="absolute top-3 left-3 z-[400] bg-[#12151e]/95 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-[#282d3c] shadow-lg text-xs">
+          <p className="font-bold text-zinc-100 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            Click map or drag pin to geotag
           </p>
           {selectedCoords && (
-            <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-              Lat: {selectedCoords.lat.toFixed(5)}, Lng: {selectedCoords.lng.toFixed(5)}
+            <p className="text-[11px] text-zinc-400 font-mono mt-1">
+              {selectedCoords.lat.toFixed(5)}° N, {selectedCoords.lng.toFixed(5)}° E
             </p>
           )}
         </div>
       )}
 
-      <div className="absolute bottom-2 right-2 z-[400] bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-medium text-slate-500 border border-slate-200 shadow-sm">
-        Map data © <a href="https://openstreetmap.org" target="_blank" rel="noreferrer" className="underline hover:text-slate-800">OpenStreetMap</a>
+      <div className="absolute bottom-2 right-2 z-[400] bg-[#12151e]/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-mono text-zinc-500 border border-[#282d3c] shadow-sm">
+        CartoDB Dark · OpenStreetMap
       </div>
     </div>
   );

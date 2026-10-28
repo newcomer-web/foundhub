@@ -112,9 +112,9 @@ export default function DashboardPage() {
   const pendingIncomingCount = incomingClaimsList.filter((c) => c.claim.status === 'PENDING').length;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 bg-[#090a0f] text-zinc-100 min-h-screen">
       {/* Header Profile Bar */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200/90 shadow-[0_2px_8px_rgba(28,25,23,0.04)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-[#12151e] p-6 sm:p-8 rounded-2xl border border-[#232733] shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div
             onClick={() => {
@@ -130,29 +130,29 @@ export default function DashboardPage() {
             <img
               src={currentUser.avatarUrl || DEFAULT_AVATAR}
               alt={currentUser.fullName}
-              className="w-16 h-16 rounded-2xl object-cover border-2 border-stone-200 shadow-2xs bg-stone-100"
+              className="w-16 h-16 rounded-2xl object-cover border-2 border-zinc-700 shadow-sm bg-zinc-900"
             />
-            <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
-              <Edit3 className="w-5 h-5" />
+            <div className="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+              <Edit3 className="w-5 h-5 text-emerald-400" />
             </div>
           </div>
 
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-stone-900">
+              <h1 className="text-xl sm:text-2xl font-black text-white">
                 {currentUser.fullName}
               </h1>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-                {isAuthenticated ? 'Active Member' : 'Guest Account'}
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 text-[10px] font-mono font-bold">
+                {isAuthenticated ? 'VERIFIED NODE' : 'GUEST NODE'}
               </span>
             </div>
-            <p className="text-xs text-stone-500 mt-1 flex flex-wrap items-center gap-2">
+            <p className="text-xs text-zinc-400 mt-1 flex flex-wrap items-center gap-2 font-mono">
               <span>{currentUser.email}</span>
               {currentUser.telegramUsername && (
-                <span>• Telegram: <strong>@{currentUser.telegramUsername}</strong></span>
+                <span>• TG: <strong className="text-zinc-200">@{currentUser.telegramUsername}</strong></span>
               )}
               {currentUser.phone && (
-                <span>• Tel: <strong>{currentUser.phone}</strong></span>
+                <span>• TEL: <strong className="text-zinc-200">{currentUser.phone}</strong></span>
               )}
             </p>
           </div>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
                 setIsEditProfileOpen(true);
               }
             }}
-            className="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold border border-zinc-700 transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5 text-emerald-400" />
             Edit Profile
@@ -176,7 +176,7 @@ export default function DashboardPage() {
           {!isAuthenticated && (
             <button
               onClick={() => setIsAuthOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-black text-xs font-black transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
               Sign In
@@ -191,26 +191,26 @@ export default function DashboardPage() {
                 setIsAuthOpen(true);
               }
             }}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-black rounded-xl text-xs font-black shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <PlusCircle className="w-4 h-4" />
-            Post Item
+            <PlusCircle className="w-4 h-4 text-black" strokeWidth={2.5} />
+            Deploy Signal
           </Link>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto text-xs font-bold">
+      <div className="flex items-center gap-2 border-b border-[#1f2330] pb-2 overflow-x-auto text-xs font-bold font-mono">
         <button
           onClick={() => setActiveTab('incoming_claims')}
           className={`px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'incoming_claims'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-zinc-800 text-white border border-zinc-700 shadow-sm'
+              : 'text-zinc-400 hover:text-white hover:bg-[#12151e]'
           }`}
         >
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          Review Incoming Claims
+          Incoming Claim Requests
           {pendingIncomingCount > 0 && (
             <span className="w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center font-black">
               {pendingIncomingCount}

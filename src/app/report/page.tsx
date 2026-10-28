@@ -290,24 +290,24 @@ function ReportWizardContent() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 bg-[#090a0f] text-zinc-100 min-h-screen">
       {/* Page Title */}
       <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-stone-100 border border-stone-200 text-stone-600 text-[11px] font-mono tracking-wide mb-1">
-          <span>CIVIC INTAKE DISPATCH</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141722] border border-[#262c3e] text-zinc-300 text-[11px] font-mono tracking-wider mb-1">
+          <span>CIVIC TELEMETRY INTAKE DISPATCH</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">
-          {itemType === 'FOUND' ? 'Register a Found Belonging' : 'Post a Missing Item Alert'}
+        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          {itemType === 'FOUND' ? 'Register Secured Property' : 'Deploy Lost Property Beacon'}
         </h1>
-        <p className="text-xs sm:text-sm text-stone-500 max-w-xl mx-auto font-normal">
-          Log holding custody, geotagged incident coordinates, and anti-fraud proof challenges to reunite items safely.
+        <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto font-normal">
+          Log verified holding custody, geotag incident coordinates, and enforce anti-fraud proof challenges.
         </p>
       </div>
 
       {/* Multi-Step Indicator */}
-      <div className="bg-white p-4 rounded-2xl border border-stone-200/90 shadow-[0_2px_8px_rgba(28,25,23,0.03)]">
+      <div className="bg-[#12151e] p-4 rounded-2xl border border-[#232733] shadow-xl">
         <div className="flex items-center justify-between relative">
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-stone-100 -translate-y-1/2 z-0 hidden sm:block" />
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-[#1f2330] -translate-y-1/2 z-0 hidden sm:block" />
           {steps.map((s) => {
             const isCompleted = currentStep > s.num;
             const isCurrent = currentStep === s.num;
@@ -321,19 +321,19 @@ function ReportWizardContent() {
                 }}
               >
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-mono font-black transition-all ${
                     isCompleted
-                      ? 'bg-emerald-800 text-white shadow-2xs'
+                      ? 'bg-emerald-500 text-black shadow-md'
                       : isCurrent
-                      ? 'bg-stone-900 text-white ring-4 ring-emerald-100 scale-105 shadow-xs'
-                      : 'bg-stone-100 text-stone-400'
+                      ? 'bg-zinc-800 text-white ring-4 ring-emerald-500/20 scale-105 shadow-md border border-zinc-600'
+                      : 'bg-[#090a0f] text-zinc-600 border border-[#232733]'
                   }`}
                 >
-                  {isCompleted ? <Check className="w-4 h-4" /> : s.num}
+                  {isCompleted ? <Check className="w-4 h-4 text-black" strokeWidth={3} /> : s.num}
                 </div>
                 <span
-                  className={`text-[11px] font-bold hidden sm:block ${
-                    isCurrent ? 'text-stone-900' : 'text-stone-400'
+                  className={`text-[11px] font-mono font-bold hidden sm:block ${
+                    isCurrent ? 'text-white' : 'text-zinc-500'
                   }`}
                 >
                   {s.title}
@@ -345,20 +345,20 @@ function ReportWizardContent() {
       </div>
 
       {/* Main Wizard Form Container */}
-      <div className="bg-white rounded-2xl border border-stone-200/90 shadow-[0_2px_8px_rgba(28,25,23,0.03)] p-6 sm:p-8">
+      <div className="bg-[#12151e] rounded-2xl border border-[#232733] shadow-2xl p-6 sm:p-8 text-zinc-100">
         {/* Authentication Notice Banner */}
         {!isAuthenticated && (
-          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-in">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-amber-100 text-amber-700 rounded-xl">
+          <div className="mb-6 p-4 rounded-xl bg-amber-950/40 border border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-in">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg">
                 <AlertCircle className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-amber-950">
-                  Account Sign-in Required to Report Items
+                <p className="text-xs font-bold text-amber-300">
+                  Authentication Required to Deploy Reports
                 </p>
-                <p className="text-[11px] text-amber-800">
-                  Please sign in or register so community members can verify ownership and contact you safely.
+                <p className="text-[11px] text-amber-400/80">
+                  Please sign in or register so finders and owners can exchange verification proof safely.
                 </p>
               </div>
             </div>
@@ -370,9 +370,9 @@ function ReportWizardContent() {
                   reason: 'Please sign in or create an account to post a lost or found report.',
                 })
               }
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-black rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer font-mono"
             >
-              Sign In / Register
+              Sign In
             </button>
           </div>
         )}
@@ -381,8 +381,8 @@ function ReportWizardContent() {
         {currentStep === 1 && (
           <div className="space-y-6 animate-fade-in">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Step 1: Classification</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h2 className="text-lg font-bold text-white font-mono">STEP 1: CLASSIFICATION</h2>
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Are you reporting an item you recovered, or searching for an item you lost?
               </p>
             </div>
@@ -399,20 +399,20 @@ function ReportWizardContent() {
                     });
                   }
                   setItemType('FOUND');
-                  setCurrentHoldingLocation("Campus Dean's Office / Security Desk Room 102");
+                  setCurrentHoldingLocation("Campus Security Hub / Desk Room 102");
                 }}
-                className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
                   itemType === 'FOUND'
-                    ? 'border-emerald-600 bg-emerald-50/70 shadow-md'
-                    : 'border-slate-200 hover:border-slate-300'
+                    ? 'border-emerald-500 bg-emerald-950/40 shadow-lg'
+                    : 'border-[#232733] bg-[#0d0f16] hover:border-zinc-700'
                 }`}
               >
-                <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center mb-3">
-                  <PlusCircle className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-black flex items-center justify-center mb-3">
+                  <PlusCircle className="w-5 h-5 text-black" strokeWidth={2.5} />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">I Found an Item</h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  You picked up an item and want to safely store and return it to its rightful owner.
+                <h3 className="font-bold text-sm text-white">I Recovered an Item</h3>
+                <p className="text-xs text-zinc-400 mt-1">
+                  You safeguarded an item and want to securely verify and return it to its true owner.
                 </p>
               </button>
 
@@ -428,16 +428,16 @@ function ReportWizardContent() {
                   setItemType('LOST');
                   setCurrentHoldingLocation('LOST - Searching actively');
                 }}
-                className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
                   itemType === 'LOST'
-                    ? 'border-amber-500 bg-amber-50/70 shadow-md'
-                    : 'border-slate-200 hover:border-slate-300'
+                    ? 'border-amber-500 bg-amber-950/40 shadow-lg'
+                    : 'border-[#232733] bg-[#0d0f16] hover:border-zinc-700'
                 }`}
               >
-                <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center mb-3">
-                  <AlertCircle className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center mb-3">
+                  <AlertCircle className="w-5 h-5 text-black" strokeWidth={2.5} />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">I Lost Something</h3>
+                <h3 className="font-bold text-sm text-white">I Lost Something</h3>
                 <p className="text-xs text-slate-500 mt-1">
                   You misplaced a personal belonging and want community members to report leads.
                 </p>

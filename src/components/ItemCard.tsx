@@ -46,68 +46,80 @@ export default function ItemCard({ item }: ItemCardProps) {
   const isReturned = item.status === 'RETURNED_TO_OWNER';
   const isClaimPending = item.status === 'CLAIM_PENDING';
   const hasValidPhoto = Boolean(item.imageUrls && item.imageUrls[0]) && !imageError;
-  const caseId = `FH-${(item.id || '0000').slice(0, 6).toUpperCase()}`;
+  const beaconId = `SIG-${(item.id || '0000').slice(0, 6).toUpperCase()}`;
 
   return (
-    <article className="group relative bg-white rounded-2xl border border-stone-200/90 shadow-[0_2px_8px_rgba(28,25,23,0.04)] hover:shadow-[0_8px_24px_rgba(28,25,23,0.08)] hover:border-stone-400/80 transition-all duration-300 flex flex-col overflow-hidden">
-      {/* Top Archival Header Bar */}
-      <div className="px-4 py-2.5 bg-stone-50 border-b border-stone-200/80 flex items-center justify-between text-[11px] font-mono">
+    <article className="group relative bg-[#12151e] rounded-2xl border border-[#232733] hover:border-[#383f52] shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden">
+      {/* Top Telemetry Header Bar */}
+      <div className="px-4 py-2.5 bg-[#0d0f16] border-b border-[#1f2330] flex items-center justify-between text-[11px] font-mono">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-stone-600 tracking-wider">#{caseId}</span>
-          <span className="text-stone-300">|</span>
-          <span className="text-stone-500 font-sans font-medium">{categoryMeta.label}</span>
+          <span className="font-bold text-zinc-400 tracking-wider">#{beaconId}</span>
+          <span className="text-zinc-600">/</span>
+          <span className="text-zinc-400 font-sans font-medium text-[11px]">{categoryMeta.label}</span>
         </div>
 
-        {/* Notice Type Badge */}
+        {/* Telemetry Status Beacon Badge */}
         {isReturned ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-sans font-bold text-[10px] tracking-wide">
-            ✓ REUNITED
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-950/80 text-blue-400 border border-blue-800/60 font-mono font-bold text-[10px] tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+            REUNITED
           </span>
         ) : isClaimPending ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-sans font-bold text-[10px] tracking-wide">
-            ⏳ CLAIM PENDING
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-950/80 text-purple-400 border border-purple-800/60 font-mono font-bold text-[10px] tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+            CLAIM REVIEW
           </span>
         ) : isFound ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300/80 font-sans font-bold text-[10px] tracking-wide">
-            <ShieldCheck className="w-3 h-3 text-emerald-700" />
-            IN SAFE CUSTODY
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-mono font-bold text-[10px] tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            IN CUSTODY
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-300/80 font-sans font-bold text-[10px] tracking-wide">
-            MISSING NOTICE
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-800/60 font-mono font-bold text-[10px] tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            LOST BEACON
           </span>
         )}
       </div>
 
       {/* Media Showcase */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#090a0f]">
         {hasValidPhoto ? (
           <img
             src={item.imageUrls[0]}
             alt={item.title}
             onError={() => setImageError(true)}
-            className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 opacity-90 group-hover:opacity-100"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-stone-100 text-stone-400 gap-2 p-6 border-b border-stone-200/50">
-            <CategoryIcon className="w-9 h-9 text-stone-400" strokeWidth={1.5} />
+          <div className="w-full h-full flex flex-col items-center justify-center bg-[#0d0f16] text-zinc-500 gap-2 p-6 border-b border-[#1f2330]">
+            <div className="p-3 bg-[#151822] rounded-xl border border-[#232733] text-zinc-400">
+              <CategoryIcon className="w-7 h-7" strokeWidth={1.5} />
+            </div>
             <div className="text-center">
-              <span className="text-[11px] font-mono tracking-wider uppercase text-stone-500 block">
-                Evidence Photo Pending
+              <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-500 block">
+                TELEMETRY REGISTERED
               </span>
-              <span className="text-[10px] text-stone-400 font-sans">
-                Physical description recorded
+              <span className="text-[10px] text-zinc-600 font-mono">
+                {item.latitude && item.longitude ? `${item.latitude.toFixed(3)}°N, ${item.longitude.toFixed(3)}°E` : 'No Image Provided'}
               </span>
             </div>
           </div>
         )}
 
-        {/* Reward strip if available */}
+        {/* Coordinates Watermark in corner */}
+        {item.latitude != null && item.longitude != null && (
+          <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-[#090a0f]/80 backdrop-blur-md rounded text-[9px] font-mono text-zinc-400 border border-white/10 pointer-events-none">
+            {item.latitude.toFixed(4)}°, {item.longitude.toFixed(4)}°
+          </div>
+        )}
+
+        {/* Bounty tag if available */}
         {item.rewardAmount && !isReturned && (
-          <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-amber-500 text-stone-950 text-xs font-black px-3 py-1 rounded-full shadow-md border border-amber-400">
-            <Award className="w-3.5 h-3.5 text-stone-950" strokeWidth={2} />
-            <span>${item.rewardAmount} Reward</span>
+          <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-amber-500/20 backdrop-blur-md text-amber-300 text-xs font-mono font-bold px-3 py-1 rounded-lg shadow-lg border border-amber-500/40">
+            <Award className="w-3.5 h-3.5 text-amber-400" strokeWidth={2} />
+            <span>BOUNTY: ${item.rewardAmount}</span>
           </div>
         )}
       </div>
@@ -116,34 +128,34 @@ export default function ItemCard({ item }: ItemCardProps) {
       <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div className="space-y-3">
           {/* Title */}
-          <Link href={`/item/${item.id}`} className="block group-hover:text-emerald-800 transition-colors">
-            <h3 className="font-bold text-stone-900 text-base leading-snug line-clamp-2">
+          <Link href={`/item/${item.id}`} className="block group-hover:text-emerald-400 transition-colors">
+            <h3 className="font-bold text-white text-base leading-snug line-clamp-2">
               {item.title}
             </h3>
           </Link>
 
           {/* Description snippet if available */}
           {item.description && (
-            <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed font-normal">
+            <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed font-normal">
               {item.description}
             </p>
           )}
 
           {/* Incident location */}
-          <div className="flex items-start gap-1.5 text-xs text-stone-600 pt-1">
-            <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0 mt-0.5" strokeWidth={1.75} />
-            <span className="line-clamp-1 font-medium">{item.incidentLocation}</span>
+          <div className="flex items-start gap-2 text-xs text-zinc-400 pt-1">
+            <MapPin className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5" strokeWidth={1.75} />
+            <span className="line-clamp-1">{item.incidentLocation}</span>
           </div>
 
           {/* Holding / Safe custody location */}
-          <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/80 text-[11px] text-stone-700">
-            <div className="flex items-start gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-stone-500 shrink-0 mt-0.5" strokeWidth={1.75} />
+          <div className="p-2.5 rounded-xl bg-[#171a24] border border-[#262b3a] text-[11px] text-zinc-300">
+            <div className="flex items-start gap-2">
+              <Building2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" strokeWidth={1.75} />
               <div className="min-w-0 flex-1">
-                <span className="text-stone-500 block text-[10px] uppercase font-mono tracking-wider">
-                  Current Custody Desk:
+                <span className="text-zinc-500 block text-[9px] uppercase font-mono tracking-wider">
+                  Holding Hub:
                 </span>
-                <span className="font-semibold text-stone-900 line-clamp-1">
+                <span className="font-semibold text-zinc-200 line-clamp-1 font-mono text-[11px]">
                   {item.currentHoldingLocation}
                 </span>
               </div>
@@ -152,18 +164,18 @@ export default function ItemCard({ item }: ItemCardProps) {
         </div>
 
         {/* Card Footer */}
-        <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-          <div className="flex items-center gap-1.5 font-mono text-[11px] text-stone-500">
-            <Calendar className="w-3.5 h-3.5 text-stone-400" />
+        <div className="pt-3.5 border-t border-[#1f2330] flex items-center justify-between text-xs text-zinc-500">
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-500">
+            <Calendar className="w-3.5 h-3.5 text-zinc-600" />
             <span>{formatRelativeTime(item.eventDate)}</span>
           </div>
 
           <Link
             href={`/item/${item.id}`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-stone-900 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs hover:shadow-sm transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1d212c] hover:bg-emerald-500 hover:text-black text-zinc-200 rounded-xl text-xs font-bold border border-[#2d3345] shadow-sm transition-all"
           >
-            <span>{isFound ? 'Inspect & Claim' : 'View Notice'}</span>
-            <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.75} />
+            <span>{isFound ? 'Inspect & Claim' : 'View Beacon'}</span>
+            <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
           </Link>
         </div>
       </div>

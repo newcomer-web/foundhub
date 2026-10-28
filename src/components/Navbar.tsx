@@ -91,24 +91,24 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top Editorial Dispatch Bar */}
-      <div className="bg-stone-900 text-stone-300 text-[11px] font-mono py-1.5 px-4 sm:px-6 lg:px-8 border-b border-stone-800">
+      {/* Top Telemetry Dispatch Bar */}
+      <div className="bg-[#0c0d12] text-zinc-400 text-[11px] font-mono py-1.5 px-4 sm:px-6 lg:px-8 border-b border-[#1b1e2a]">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 truncate">
+          <div className="flex items-center gap-2.5 truncate">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="font-semibold text-stone-200 tracking-wider">FOUNDHUB CIVIC DISPATCH</span>
-            <span className="hidden sm:inline text-stone-600">·</span>
-            <span className="hidden sm:inline text-stone-400">Neighborhood Lost & Found Registry</span>
+            <span className="font-bold text-zinc-200 tracking-wider">FOUNDHUB TELEMETRY NETWORK</span>
+            <span className="hidden sm:inline text-zinc-600">·</span>
+            <span className="hidden sm:inline text-zinc-400">Civic Geolocation & Safe Custody Grid</span>
           </div>
-          <div className="hidden md:flex items-center gap-4 text-stone-400 text-[10px]">
-            <span>PROOF-OF-OWNERSHIP SECURED</span>
+          <div className="hidden md:flex items-center gap-4 text-zinc-500 text-[10px]">
+            <span>ZERO-KNOWLEDGE CHALLENGE</span>
             <span>·</span>
-            <span>PUBLIC NOTICEBOARD</span>
+            <span>CARTODB RADAR INTEGRATED</span>
           </div>
         </div>
       </div>
 
-      <header className="sticky top-0 z-40 bg-[#faf8f5]/95 backdrop-blur-md border-b border-stone-200/90 transition-all">
+      <header className="sticky top-0 z-40 bg-[#090a0f]/95 backdrop-blur-xl border-b border-[#1f2330] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -116,14 +116,14 @@ export default function Navbar() {
               <BrandLogo size={38} className="w-9 h-9 group-hover:scale-105 transition-transform shrink-0" />
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-xl tracking-tight text-stone-900">Found</span>
-                  <span className="font-black text-xl tracking-tight text-emerald-700">Hub</span>
-                  <span className="ml-1 text-[9px] font-mono uppercase bg-stone-200/80 text-stone-700 px-1.5 py-0.5 rounded border border-stone-300/80">
-                    DISPATCH
+                  <span className="font-black text-xl tracking-tight text-white">Found</span>
+                  <span className="font-black text-xl tracking-tight text-emerald-400">Hub</span>
+                  <span className="ml-1 text-[9px] font-mono uppercase bg-emerald-950/80 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800/60 font-bold">
+                    RADAR
                   </span>
                 </div>
-                <p className="text-[10px] font-medium text-stone-500 tracking-wide -mt-0.5">
-                  Community Noticeboard & Registry
+                <p className="text-[10px] font-mono text-zinc-500 tracking-wider -mt-0.5 uppercase">
+                  Telemetry & Custody Network
                 </p>
               </div>
             </Link>
@@ -147,8 +147,8 @@ export default function Navbar() {
                     }}
                     className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
                       isActive
-                        ? 'bg-stone-900 text-white shadow-xs'
-                        : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
+                        ? 'bg-zinc-800/90 text-white border border-zinc-700/80 shadow-inner'
+                        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/60'
                     }`}
                   >
                     <Icon className="w-4 h-4" strokeWidth={1.75} />
@@ -163,10 +163,10 @@ export default function Navbar() {
               <Link
                 href="/report"
                 onClick={handlePostItemClick}
-                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-black text-xs font-black rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4" strokeWidth={1.75} />
-                Post Notice
+                <PlusCircle className="w-4 h-4 text-black" strokeWidth={2} />
+                <span>Deploy Signal</span>
               </Link>
 
               {/* Authentication Status Pill */}
@@ -174,30 +174,30 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center gap-2 p-1.5 pr-3 bg-white hover:bg-stone-50 rounded-xl transition-colors border border-stone-200 shadow-2xs cursor-pointer"
+                    className="flex items-center gap-2 p-1.5 pr-3 bg-[#12151e] hover:bg-[#181c28] rounded-xl transition-colors border border-[#232733] shadow-sm cursor-pointer"
                   >
                     <img
                       src={currentUser.avatarUrl || DEFAULT_AVATAR}
                       alt={currentUser.fullName}
-                      className="w-7 h-7 rounded-lg object-cover bg-stone-100"
+                      className="w-7 h-7 rounded-lg object-cover bg-zinc-900 border border-zinc-700"
                     />
                     <div className="text-left">
-                      <p className="text-[11px] font-bold text-stone-900 leading-tight">
+                      <p className="text-[11px] font-bold text-zinc-100 leading-tight">
                         {currentUser.fullName}
                       </p>
-                      <p className="text-[9px] text-emerald-700 font-semibold leading-tight">
-                        Verified Member
+                      <p className="text-[9px] text-emerald-400 font-mono font-semibold leading-tight">
+                        VERIFIED NODE
                       </p>
                     </div>
-                    <ChevronDown className="w-3.5 h-3.5 text-stone-400 ml-0.5" />
+                    <ChevronDown className="w-3.5 h-3.5 text-zinc-500 ml-0.5" />
                   </button>
 
                   {/* Dropdown Menu */}
                   {userDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-stone-200 py-2 z-50 animate-fade-in text-xs font-semibold">
-                      <div className="px-3 py-2 border-b border-stone-100 mb-1">
-                        <p className="text-stone-900 font-bold truncate">{currentUser.fullName}</p>
-                        <p className="text-[11px] text-stone-500 truncate">{currentUser.email}</p>
+                    <div className="absolute right-0 mt-2 w-52 bg-[#12151e] rounded-2xl shadow-2xl border border-[#282d3c] py-2 z-50 animate-fade-in text-xs font-semibold">
+                      <div className="px-3 py-2 border-b border-zinc-800/80 mb-1">
+                        <p className="text-white font-bold truncate">{currentUser.fullName}</p>
+                        <p className="text-[11px] text-zinc-500 truncate font-mono">{currentUser.email}</p>
                       </div>
 
                       <button
@@ -205,31 +205,31 @@ export default function Navbar() {
                           setUserDropdownOpen(false);
                           setIsEditProfileModalOpen(true);
                         }}
-                        className="w-full px-3 py-2 text-left text-stone-700 hover:bg-stone-50 flex items-center gap-2 cursor-pointer"
+                        className="w-full px-3 py-2 text-left text-zinc-300 hover:bg-zinc-800/60 flex items-center gap-2 cursor-pointer"
                       >
-                        <Edit3 className="w-4 h-4 text-emerald-700" />
+                        <Edit3 className="w-4 h-4 text-emerald-400" />
                         Edit Profile
                       </button>
 
                       <Link
                         href="/dashboard"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="w-full px-3 py-2 text-left text-stone-700 hover:bg-stone-50 flex items-center gap-2"
+                        className="w-full px-3 py-2 text-left text-zinc-300 hover:bg-zinc-800/60 flex items-center gap-2"
                       >
-                        <LayoutDashboard className="w-4 h-4 text-stone-700" />
-                        Dashboard & My Notices
+                        <LayoutDashboard className="w-4 h-4 text-zinc-400" />
+                        Dashboard & Signals
                       </Link>
 
-                      <div className="border-t border-stone-100 my-1" />
+                      <div className="border-t border-zinc-800/80 my-1" />
 
                       <button
                         onClick={() => {
                           setUserDropdownOpen(false);
                           dataStore.logout();
                         }}
-                        className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 flex items-center gap-2 cursor-pointer"
+                        className="w-full px-3 py-2 text-left text-rose-400 hover:bg-rose-950/30 flex items-center gap-2 cursor-pointer"
                       >
-                        <LogOut className="w-4 h-4 text-rose-500" />
+                        <LogOut className="w-4 h-4 text-rose-400" />
                         Sign Out
                       </button>
                     </div>
@@ -242,10 +242,10 @@ export default function Navbar() {
                     setAuthDefaultMode('login');
                     setIsAuthModalOpen(true);
                   }}
-                  className="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 border border-zinc-700/80 text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <LogIn className="w-3.5 h-3.5 text-emerald-400" />
-                  Sign In / Register
+                  Sign In
                 </button>
               )}
             </div>
@@ -254,7 +254,7 @@ export default function Navbar() {
             <div className="md:hidden flex items-center gap-2">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-xl text-stone-700 hover:bg-stone-100 cursor-pointer"
+                className="p-2 rounded-xl text-zinc-400 hover:bg-zinc-900 cursor-pointer"
                 aria-label="Menu"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -265,7 +265,7 @@ export default function Navbar() {
 
         {/* Mobile Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-b border-stone-200 px-4 pt-2 pb-5 space-y-3">
+          <div className="md:hidden bg-[#0c0d12] border-b border-zinc-800 px-4 pt-2 pb-5 space-y-3">
             <nav className="space-y-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -285,8 +285,8 @@ export default function Navbar() {
                     }}
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold ${
                       isActive
-                        ? 'bg-stone-900 text-white'
-                        : 'text-stone-700 hover:bg-stone-100'
+                        ? 'bg-zinc-800 text-white'
+                        : 'text-zinc-400 hover:bg-zinc-900'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -296,18 +296,18 @@ export default function Navbar() {
               })}
             </nav>
 
-            <div className="pt-2 border-t border-stone-100 space-y-2">
+            <div className="pt-2 border-t border-zinc-800 space-y-2">
               {isAuthenticated ? (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-3 p-2 bg-stone-50 rounded-xl">
+                  <div className="flex items-center gap-3 p-2 bg-[#12151e] rounded-xl border border-zinc-800">
                     <img
                       src={currentUser.avatarUrl || DEFAULT_AVATAR}
                       alt={currentUser.fullName}
-                      className="w-9 h-9 rounded-full object-cover bg-white"
+                      className="w-9 h-9 rounded-full object-cover bg-zinc-900"
                     />
                     <div>
-                      <p className="text-xs font-bold text-stone-900">{currentUser.fullName}</p>
-                      <p className="text-[10px] text-stone-500">{currentUser.email}</p>
+                      <p className="text-xs font-bold text-white">{currentUser.fullName}</p>
+                      <p className="text-[10px] text-zinc-500 font-mono">{currentUser.email}</p>
                     </div>
                   </div>
                   <button
@@ -315,9 +315,9 @@ export default function Navbar() {
                       setMobileMenuOpen(false);
                       setIsEditProfileModalOpen(true);
                     }}
-                    className="w-full py-2 px-3 text-left text-xs font-semibold text-stone-700 bg-stone-100 rounded-xl flex items-center gap-2 cursor-pointer"
+                    className="w-full py-2 px-3 text-left text-xs font-semibold text-zinc-300 bg-zinc-900 rounded-xl flex items-center gap-2 cursor-pointer"
                   >
-                    <Edit3 className="w-4 h-4 text-emerald-700" />
+                    <Edit3 className="w-4 h-4 text-emerald-400" />
                     Edit Profile
                   </button>
                   <button
@@ -325,9 +325,9 @@ export default function Navbar() {
                       setMobileMenuOpen(false);
                       dataStore.logout();
                     }}
-                    className="w-full py-2 px-3 text-left text-xs font-semibold text-rose-600 bg-rose-50 rounded-xl flex items-center gap-2 cursor-pointer"
+                    className="w-full py-2 px-3 text-left text-xs font-semibold text-rose-400 bg-rose-950/30 rounded-xl flex items-center gap-2 cursor-pointer"
                   >
-                    <LogOut className="w-4 h-4 text-rose-500" />
+                    <LogOut className="w-4 h-4 text-rose-400" />
                     Sign Out
                   </button>
                 </div>
@@ -339,10 +339,10 @@ export default function Navbar() {
                     setAuthDefaultMode('login');
                     setIsAuthModalOpen(true);
                   }}
-                  className="w-full py-2.5 bg-stone-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 bg-zinc-900 border border-zinc-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <LogIn className="w-4 h-4 text-emerald-400" />
-                  Sign In / Register
+                  Sign In
                 </button>
               )}
 
@@ -352,10 +352,10 @@ export default function Navbar() {
                   setMobileMenuOpen(false);
                   handlePostItemClick(e);
                 }}
-                className="w-full py-2.5 bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className="w-full py-2.5 bg-emerald-600 text-black text-xs font-black rounded-xl flex items-center justify-center gap-2 shadow-xs cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4" />
-                Post a Notice
+                <PlusCircle className="w-4 h-4 text-black" strokeWidth={2} />
+                Deploy Signal
               </Link>
             </div>
           </div>

@@ -101,23 +101,23 @@ export default function ItemDetailPage() {
   const isReturned = item.status === 'RETURNED_TO_OWNER';
   const isClaimPending = item.status === 'CLAIM_PENDING';
   const categoryMeta = CATEGORY_MAP[item.category] || CATEGORY_MAP.OTHER;
-  const caseId = `FH-${(item.id || '0000').slice(0, 6).toUpperCase()}`;
+  const caseId = `SIG-${(item.id || '0000').slice(0, 6).toUpperCase()}`;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-[#090a0f] text-zinc-100">
       {/* Top Archival Case File Header & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200/90">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#1f2330]">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-stone-100"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-white transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-zinc-800/60"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Noticeboard</span>
+            <span>Radar Grid</span>
           </Link>
-          <span className="text-stone-300">/</span>
-          <span className="font-mono text-xs font-semibold text-stone-500">
-            CASE #{caseId}
+          <span className="text-zinc-600">/</span>
+          <span className="font-mono text-xs font-bold text-emerald-400">
+            #{caseId}
           </span>
         </div>
 
@@ -125,20 +125,20 @@ export default function ItemDetailPage() {
           {/* Telegram Relay button */}
           <button
             onClick={() => setIsTelegramModalOpen(true)}
-            className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 rounded-xl text-xs font-bold border border-sky-200 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 bg-[#121927] hover:bg-[#1a2336] text-sky-400 rounded-xl text-xs font-bold border border-sky-800/60 transition-all flex items-center gap-1.5 cursor-pointer"
             title="Preview or dispatch Telegram channel broadcast"
           >
-            <Send className="w-3.5 h-3.5 text-sky-600" />
-            <span className="hidden sm:inline">Telegram Relay</span>
+            <Send className="w-3.5 h-3.5 text-sky-400" />
+            <span className="hidden sm:inline font-mono">Telegram Relay</span>
           </button>
 
           {/* Share & Printable Flyer button */}
           <button
             onClick={() => setIsFlyerModalOpen(true)}
-            className="px-3 py-1.5 bg-white hover:bg-stone-50 text-stone-800 rounded-xl text-xs font-bold border border-stone-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 bg-[#12151e] hover:bg-[#1a1e2b] text-zinc-200 rounded-xl text-xs font-bold border border-[#232733] shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Printer className="w-3.5 h-3.5 text-stone-600" />
-            <span>Print Street Flyer (QR)</span>
+            <Printer className="w-3.5 h-3.5 text-zinc-400" />
+            <span className="font-mono">Print Street Notice (QR)</span>
           </button>
         </div>
       </div>
@@ -147,7 +147,7 @@ export default function ItemDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Media Showcase (7 cols) */}
         <div className="lg:col-span-7 space-y-3">
-          <div className="relative aspect-[16/11] w-full rounded-2xl overflow-hidden border border-stone-200/90 shadow-2xs bg-stone-900 group">
+          <div className="relative aspect-[16/11] w-full rounded-2xl overflow-hidden border border-[#232733] shadow-2xl bg-[#090a0f] group">
             {item.imageUrls[activePhotoIndex] && !mainImageError ? (
               <img
                 src={item.imageUrls[activePhotoIndex]}
@@ -156,42 +156,42 @@ export default function ItemDetailPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-stone-100 text-stone-400 gap-2 p-6 border-b border-stone-200/60">
-                <div className="p-4 bg-stone-200/60 rounded-2xl border border-stone-300/60 text-stone-500">
+              <div className="w-full h-full flex flex-col items-center justify-center bg-[#0d0f16] text-zinc-500 gap-2 p-6 border-b border-[#1f2330]">
+                <div className="p-4 bg-[#141722] rounded-2xl border border-[#232733] text-zinc-400">
                   <ImageIcon className="w-8 h-8" strokeWidth={1.5} />
                 </div>
-                <span className="text-xs font-mono uppercase tracking-wider font-semibold text-stone-600">No Photo Attached</span>
-                <span className="text-[11px] text-stone-400 font-sans">Physical description and holding custody recorded below</span>
+                <span className="text-xs font-mono uppercase tracking-widest font-bold text-zinc-400">Telemetry Registered</span>
+                <span className="text-[11px] text-zinc-500 font-mono">Physical description & custody logged below</span>
               </div>
             )}
 
             {/* Top Badges */}
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2 pointer-events-none">
               <span
-                className={`px-3 py-1 rounded-md text-xs font-mono uppercase tracking-wider font-bold shadow-md ${
-                  isFound ? 'bg-emerald-800 text-white' : 'bg-amber-600 text-white'
+                className={`px-3 py-1 rounded-md text-xs font-mono uppercase tracking-wider font-bold shadow-lg ${
+                  isFound ? 'bg-emerald-950/90 text-emerald-400 border border-emerald-800' : 'bg-amber-950/90 text-amber-400 border border-amber-800'
                 }`}
               >
-                {isFound ? 'IN SAFE CUSTODY' : 'MISSING NOTICE'}
+                {isFound ? '● IN SECURED CUSTODY' : '● ACTIVE SIGNAL'}
               </span>
 
               <span
-                className={`px-3 py-1 rounded-md text-xs font-bold shadow-md backdrop-blur-md ${
+                className={`px-3 py-1 rounded-md text-xs font-mono font-bold shadow-lg backdrop-blur-md ${
                   isReturned
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-blue-950/90 text-blue-400 border border-blue-800'
                     : isClaimPending
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-white/95 text-stone-900 border border-stone-200'
+                    ? 'bg-purple-950/90 text-purple-400 border border-purple-800'
+                    : 'bg-[#090a0f]/90 text-zinc-200 border border-[#282d3c]'
                 }`}
               >
-                {isReturned ? 'Reunited to Owner' : isClaimPending ? 'Claim Pending' : 'Active Notice'}
+                {isReturned ? 'REUNITED' : isClaimPending ? 'CLAIM REVIEW' : 'ACTIVE'}
               </span>
             </div>
 
             {/* Zoom Inspection Trigger */}
             <button
               onClick={() => setIsZoomOpen(true)}
-              className="absolute bottom-4 right-4 p-2.5 bg-black/60 hover:bg-black/80 text-white rounded-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer"
+              className="absolute bottom-4 right-4 p-2.5 bg-black/70 hover:bg-black/90 text-white rounded-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer border border-white/10"
               aria-label="Inspect Full Photo"
             >
               <Maximize2 className="w-4 h-4" />
@@ -207,8 +207,8 @@ export default function ItemDetailPage() {
                   onClick={() => setActivePhotoIndex(i)}
                   className={`relative w-20 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                     activePhotoIndex === i
-                      ? 'border-emerald-700 shadow-sm scale-102'
-                      : 'border-stone-200 opacity-70 hover:opacity-100'
+                      ? 'border-emerald-500 shadow-md scale-102'
+                      : 'border-[#232733] opacity-60 hover:opacity-100'
                   }`}
                 >
                   <img src={url} alt={`thumb-${i}`} className="w-full h-full object-cover" />
@@ -222,35 +222,35 @@ export default function ItemDetailPage() {
         <div className="lg:col-span-5 space-y-6">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${categoryMeta.badgeClass}`}>
+              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-[#141722] text-zinc-300 border border-[#282d3c]">
                 {categoryMeta.label}
               </span>
               {item.rewardAmount && !isReturned && (
-                <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-amber-500 text-stone-950 flex items-center gap-1 shadow-2xs font-mono">
-                  <Award className="w-3.5 h-3.5" />
-                  ${item.rewardAmount} REWARD OFFERED
+                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1 shadow-sm">
+                  <Award className="w-3.5 h-3.5 text-amber-400" />
+                  BOUNTY: ${item.rewardAmount}
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-stone-900 leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
               {item.title}
             </h1>
 
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-normal">
               {item.description}
             </p>
           </div>
 
           {/* Anti-Fraud Protection Notice */}
           {item.secretVerificationQuestion && isFound && (
-            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200/90 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-black text-emerald-950 uppercase tracking-wider">
-                <ShieldCheck className="w-4 h-4 text-emerald-700" />
-                Anti-Fraud Proof Question Active
+            <div className="p-4 bg-[#111915] rounded-2xl border border-emerald-800/60 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-black text-emerald-400 uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                Proof-of-Ownership Challenge Enforced
               </div>
-              <p className="text-xs text-emerald-800 leading-relaxed">
-                To prevent false claims, claimant must answer the confidential verification challenge set by the custodian.
+              <p className="text-xs text-emerald-300 leading-relaxed font-normal">
+                To prevent fraudulent claims, the claimant must answer a confidential verification question set by the finder.
               </p>
             </div>
           )}
@@ -269,9 +269,9 @@ export default function ItemDetailPage() {
                   }
                   setIsClaimModalOpen(true);
                 }}
-                className="w-full py-4 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-sm rounded-xl shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-black font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
               >
-                <ShieldCheck className="w-5 h-5 text-white" />
+                <ShieldCheck className="w-5 h-5 text-black" />
                 <span>Claim This Belonging (Prove Ownership)</span>
               </button>
             )}
@@ -287,7 +287,7 @@ export default function ItemDetailPage() {
                 }
                 setIsContactModalOpen(true);
               }}
-              className="w-full py-3.5 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 bg-[#171a24] hover:bg-[#1f2433] text-white font-bold text-xs rounded-xl border border-[#282d3c] shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <MessageSquare className="w-4 h-4 text-emerald-400" />
               <span>Contact Custodian / Finder</span>

@@ -48,9 +48,10 @@ export default function MiniLeafletMap({
 
       mapInstanceRef.current = map;
 
-      // Tile layer
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      // Tile layer (CartoDB Dark Matter)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
+        subdomains: 'abcd',
       }).addTo(map);
 
       // Custom marker icon
@@ -58,11 +59,11 @@ export default function MiniLeafletMap({
       const customIcon = L.divIcon({
         className: 'custom-map-pin',
         html: `
-          <div style="filter: drop-shadow(0 3px 5px rgba(0,0,0,0.25));">
+          <div style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));">
             <svg width="26" height="34" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M16 0C7.163 0 0 7.163 0 16C0 26 16 40 16 40C16 40 32 26 32 16C32 7.163 24.837 0 16 0Z" fill="${pinColor}"/>
-              <circle cx="16" cy="15" r="6" fill="white"/>
-              <circle cx="16" cy="15" r="3" fill="${pinColor}"/>
+              <circle cx="16" cy="15" r="6" fill="#090a0f"/>
+              <circle cx="16" cy="15" r="3.5" fill="${pinColor}"/>
             </svg>
           </div>
         `,
@@ -72,7 +73,7 @@ export default function MiniLeafletMap({
 
       L.marker([latitude, longitude], { icon: customIcon })
         .addTo(map)
-        .bindPopup(`<b>${locationName}</b><br/><span style="font-size: 11px; color: #64748b;">${latitude.toFixed(4)}, ${longitude.toFixed(4)}</span>`);
+        .bindPopup(`<div style="background:#12151e; color:#fff; padding:4px 8px; font-size:11px;"><b>${locationName}</b><br/><span style="font-family:monospace; color: #94a3b8;">${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°</span></div>`);
     }
 
     initMiniMap();
@@ -87,10 +88,10 @@ export default function MiniLeafletMap({
   }, [latitude, longitude, locationName, isFound]);
 
   return (
-    <div className="relative w-full h-36 rounded-xl overflow-hidden border border-slate-200 shadow-inner bg-slate-100">
+    <div className="relative w-full h-36 rounded-xl overflow-hidden border border-[#232733] shadow-inner bg-[#090a0f]">
       <div ref={mapContainerRef} className="w-full h-full" />
-      <div className="absolute bottom-2 right-2 z-20 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-medium text-slate-600 shadow-sm border border-slate-200">
-        © OpenStreetMap
+      <div className="absolute bottom-2 right-2 z-20 bg-[#12151e]/90 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-mono text-zinc-500 shadow-sm border border-[#232733]">
+        CartoDB Dark
       </div>
     </div>
   );
