@@ -9,7 +9,7 @@ import AuthModal from './AuthModal';
 import EditProfileModal from './EditProfileModal';
 import BrandLogo from './BrandLogo';
 import {
-  Compass,
+  Search,
   PlusCircle,
   LayoutDashboard,
   LogIn,
@@ -84,7 +84,7 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { label: 'Explore Items', href: '/', icon: Compass },
+    { label: 'Explore Items', href: '/', icon: Search },
     { label: 'Report Lost or Found', href: '/report', icon: PlusCircle, requiresAuth: true },
     { label: 'Dashboard & Claims', href: '/dashboard', icon: LayoutDashboard },
   ];
@@ -131,7 +131,7 @@ export default function Navbar() {
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4" strokeWidth={1.75} />
                     {link.label}
                   </Link>
                 );
@@ -145,7 +145,7 @@ export default function Navbar() {
                 onClick={handlePostItemClick}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4" />
+                <PlusCircle className="w-4 h-4" strokeWidth={1.75} />
                 Post Item
               </Link>
 

@@ -58,15 +58,16 @@ export default function MiniLeafletMap({
       const customIcon = L.divIcon({
         className: 'custom-map-pin',
         html: `
-          <div style="background-color: ${pinColor}; width: 28px; height: 28px; border-radius: 9999px; border: 3px solid white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: center; color: white;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-              <circle cx="12" cy="10" r="3"/>
+          <div style="filter: drop-shadow(0 3px 5px rgba(0,0,0,0.25));">
+            <svg width="26" height="34" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 0C7.163 0 0 7.163 0 16C0 26 16 40 16 40C16 40 32 26 32 16C32 7.163 24.837 0 16 0Z" fill="${pinColor}"/>
+              <circle cx="16" cy="15" r="6" fill="white"/>
+              <circle cx="16" cy="15" r="3" fill="${pinColor}"/>
             </svg>
           </div>
         `,
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
+        iconSize: [26, 34],
+        iconAnchor: [13, 34],
       });
 
       L.marker([latitude, longitude], { icon: customIcon })

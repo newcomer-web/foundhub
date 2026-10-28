@@ -60,11 +60,9 @@ export default function ItemCard({ item }: ItemCardProps) {
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 gap-1.5 p-4">
-            <div className="p-3 bg-white rounded-2xl shadow-xs border border-slate-200/80 text-slate-600">
-              <CategoryIcon className="w-7 h-7" />
-            </div>
-            <span className="text-[10px] font-bold tracking-wide uppercase text-slate-500">
+          <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400 gap-2 p-4">
+            <CategoryIcon className="w-8 h-8 text-slate-400" strokeWidth={1.5} />
+            <span className="text-[10px] font-semibold tracking-wider uppercase text-slate-400">
               {categoryMeta.label}
             </span>
           </div>
@@ -105,14 +103,14 @@ export default function ItemCard({ item }: ItemCardProps) {
 
         {/* Category Pill Floating on Bottom Left */}
         <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-lg border border-white/20">
-          <CategoryIcon className="w-3.5 h-3.5 text-white" />
+          <CategoryIcon className="w-3.5 h-3.5 text-white" strokeWidth={1.75} />
           <span>{categoryMeta.label}</span>
         </div>
 
         {/* Reward amount tag if available */}
         {item.rewardAmount && (
           <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-amber-500 text-slate-950 text-xs font-black px-2.5 py-1 rounded-lg shadow-md">
-            <Award className="w-3.5 h-3.5" />
+            <Award className="w-3.5 h-3.5" strokeWidth={1.75} />
             <span>${item.rewardAmount} Reward</span>
           </div>
         )}
@@ -130,13 +128,13 @@ export default function ItemCard({ item }: ItemCardProps) {
 
           {/* Incident location */}
           <div className="mt-2.5 flex items-start gap-1.5 text-xs text-slate-600">
-            <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" strokeWidth={1.75} />
             <span className="line-clamp-1">{item.incidentLocation}</span>
           </div>
 
           {/* Current Holding Location pill */}
           <div className="mt-2 flex items-start gap-1.5 p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] text-slate-700">
-            <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5" />
+            <Building2 className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" strokeWidth={1.75} />
             <span className="font-medium line-clamp-1">
               <strong className="text-slate-900">Holding:</strong> {item.currentHoldingLocation}
             </span>

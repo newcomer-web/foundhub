@@ -34,8 +34,8 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
         {/* Location & Mini-map */}
         <div className="space-y-3">
           <div className="flex items-start gap-3">
-            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100 shrink-0 mt-0.5">
-              <MapPin className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+              <MapPin className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -66,11 +66,11 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
         </div>
 
         {/* Date, Custody Holding & Finder */}
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Incident Date */}
           <div className="flex items-start gap-3">
-            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 shrink-0 mt-0.5">
-              <Calendar className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+              <Calendar className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -84,11 +84,11 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
 
           {/* Current Holding Location */}
           <div className="flex items-start gap-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
-            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg shrink-0 mt-0.5">
-              <Building2 className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+              <Building2 className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-indigo-900 flex items-center gap-1.5">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
                 Current Holding Location
               </p>
               <p className="text-sm font-semibold text-slate-900 mt-1">
@@ -103,11 +103,11 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
           {/* Finder / Custodian Information */}
           <div className="flex items-start justify-between gap-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg shrink-0 mt-0.5">
-                <UserCheck className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                <UserCheck className="w-5 h-5" strokeWidth={1.75} />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
                   {isFound ? 'Finder / Custodian' : 'Reported By'}
                 </p>
                 <p className="text-sm font-semibold text-slate-900 mt-0.5">
@@ -115,7 +115,7 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
                 </p>
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-600">
                   <span className="inline-flex items-center gap-1 font-medium bg-white px-2 py-0.5 rounded border border-slate-200">
-                    <Send className="w-3 h-3 text-sky-500" />
+                    <Send className="w-3 h-3 text-slate-500" strokeWidth={1.75} />
                     {item.finderContactPreference}
                   </span>
                 </div>
@@ -125,9 +125,9 @@ export default function CustodyInfoCard({ item, onContactClick }: CustodyInfoCar
             {onContactClick && (
               <button
                 onClick={onContactClick}
-                className="shrink-0 self-center px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+                className="shrink-0 self-center px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <MessageSquare className="w-3.5 h-3.5" />
+                <MessageSquare className="w-3.5 h-3.5" strokeWidth={1.75} />
                 Contact
               </button>
             )}

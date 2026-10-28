@@ -229,19 +229,19 @@ export default function FlyerGeneratorModal({
               {/* Details List */}
               <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2 font-medium">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <MapPin className="w-4 h-4 text-slate-500 shrink-0" strokeWidth={1.75} />
                   <span>
                     <strong>Incident Location:</strong> {item.incidentLocation}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <Building2 className="w-4 h-4 text-slate-500 shrink-0" strokeWidth={1.75} />
                   <span>
                     <strong>Current Custody:</strong> {item.currentHoldingLocation}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
+                  <Calendar className="w-4 h-4 text-slate-500 shrink-0" strokeWidth={1.75} />
                   <span>
                     <strong>Incident Date:</strong> {formatDate(item.eventDate)}
                   </span>

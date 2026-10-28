@@ -462,8 +462,12 @@ function ReportWizardContent() {
                           : 'border-slate-200 hover:border-slate-300 bg-white'
                       }`}
                     >
-                      <div className={`p-2 rounded-xl w-fit ${meta.colorClass}`}>
-                        <Icon className="w-5 h-5" />
+                      <div
+                        className={`p-2.5 rounded-xl w-fit transition-colors ${
+                          isSelected ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" strokeWidth={1.75} />
                       </div>
                       <div>
                         <p className="text-xs font-bold text-slate-900">{meta.label}</p>

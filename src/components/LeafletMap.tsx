@@ -85,12 +85,17 @@ export default function LeafletMap({
               const customIcon = L.divIcon({
                 className: 'custom-map-pin',
                 html: `
-                  <div style="background-color: ${pinColor}; width: 34px; height: 34px; border-radius: 9999px; border: 3px solid white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25); display: flex; align-items: center; justify-content: center; color: white; cursor: pointer;">
-                    <span style="font-size: 11px; font-weight: 800;">${isFound ? 'F' : 'L'}</span>
+                  <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); cursor: pointer;">
+                    <svg width="30" height="38" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16 0C7.163 0 0 7.163 0 16C0 26 16 40 16 40C16 40 32 26 32 16C32 7.163 24.837 0 16 0Z" fill="${pinColor}"/>
+                      <circle cx="16" cy="15" r="6" fill="white"/>
+                      <circle cx="16" cy="15" r="3" fill="${pinColor}"/>
+                    </svg>
                   </div>
                 `,
-                iconSize: [34, 34],
-                iconAnchor: [17, 34],
+                iconSize: [30, 38],
+                iconAnchor: [15, 38],
+                popupAnchor: [0, -34],
               });
 
               const popupHtml = `
@@ -124,15 +129,16 @@ export default function LeafletMap({
           const selectIcon = L.divIcon({
             className: 'custom-map-pin',
             html: `
-              <div style="background-color: #059669; width: 36px; height: 36px; border-radius: 9999px; border: 3px solid white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; color: white; animation: bounce 1s infinite;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                  <circle cx="12" cy="10" r="3"/>
+              <div style="filter: drop-shadow(0 6px 10px rgba(5,150,105,0.4)); cursor: grab;">
+                <svg width="34" height="42" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 0C7.163 0 0 7.163 0 16C0 26 16 40 16 40C16 40 32 26 32 16C32 7.163 24.837 0 16 0Z" fill="#059669"/>
+                  <circle cx="16" cy="15" r="7" fill="white"/>
+                  <path d="M16 11V19M12 15H20" stroke="#059669" stroke-width="2.2" stroke-linecap="round"/>
                 </svg>
               </div>
             `,
-            iconSize: [36, 36],
-            iconAnchor: [18, 36],
+            iconSize: [34, 42],
+            iconAnchor: [17, 42],
           });
 
           const marker = L.marker([selectedCoords.lat, selectedCoords.lng], {
