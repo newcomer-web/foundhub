@@ -1,0 +1,4667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FoundHub - Community-Driven Lost and Found Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Leaflet Map CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Canvas Confetti -->
+<!-- Canvas Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<!-- Supabase Client JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+/* ==========================================================================
+   FOUNDHUB NEO-BRUTALIST DESIGN SYSTEM (STRICTLY PRESERVED)
+   ========================================================================== */
+:root {
+  --bg: #fff;
+  --surf: #fff;
+  --ink: #0a0a0a;
+  --mute: #4a4a4a;
+  --line: #0a0a0a;
+  --found: #ffd93d;
+  --lost: #6c8cff;
+  --tag: #ff8fc7;
+  --tagink: #0a0a0a;
+  --pri: #0a0a0a;
+  --sh: #0a0a0a;
+  --card-bg: #fff;
+  --panel-bg: #f9f9fb;
+  --code-bg: #f0f0f4;
+  --success: #10b981;
+  --lamp-accent: #ffd93d;
+  --lamp-secondary: #ff8c00;
+  --lamp-glow: rgba(255, 217, 61, 0.45);
+  --lamp-cone: rgba(255, 217, 61, 0.16);
+  --lamp-bulb: #fff5c0;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121212;
+    --surf: #1e1e1e;
+    --ink: #f5f5f5;
+    --mute: #c4c4c4;
+    --line: #f5f5f5;
+    --found: #ffd93d;
+    --lost: #6c8cff;
+    --tag: #ff8fc7;
+    --tagink: #0a0a0a;
+    --pri: #f5f5f5;
+    --sh: #f5f5f5;
+    --card-bg: #1e1e1e;
+    --panel-bg: #181818;
+    --code-bg: #282828;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #121212;
+  --surf: #1e1e1e;
+  --ink: #f5f5f5;
+  --mute: #c4c4c4;
+  --line: #f5f5f5;
+  --found: #ffd93d;
+  --lost: #6c8cff;
+  --tag: #ff8fc7;
+  --tagink: #0a0a0a;
+  --pri: #f5f5f5;
+  --sh: #f5f5f5;
+  --card-bg: #1e1e1e;
+  --panel-bg: #181818;
+  --code-bg: #282828;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Archivo, system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .logo {
+  font-family: "Archivo Black", Impact, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.15;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+button { cursor: pointer; }
+:focus-visible {
+  outline: 3px solid var(--tag);
+  outline-offset: 2px;
+}
+
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+/* Telemetry Ribbon Header */
+.telemetry-ribbon {
+  background: var(--ink);
+  color: var(--bg);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 0;
+  border-bottom: 2px solid var(--ink);
+}
+.telemetry-ribbon .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse 1.8s infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Navigation */
+header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 3px solid var(--ink);
+  z-index: 100;
+}
+nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+.logo {
+  font-size: 22px;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.logo i {
+  font-style: normal;
+  background: var(--found);
+  color: #0a0a0a;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 0 8px;
+  box-shadow: 3px 3px 0 var(--sh);
+}
+.logo-tag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  font-weight: 800;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-left: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Neo-Brutalist Buttons */
+.btn {
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 3px 3px 0 var(--sh);
+  font-weight: 700;
+  background: var(--surf);
+  color: var(--ink);
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform .1s, box-shadow .1s, background .15s;
+  text-decoration: none;
+}
+.btn:hover {
+  filter: brightness(0.97);
+}
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--sh);
+}
+.btn.p {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.btn.f {
+  background: var(--found);
+  color: #0a0a0a;
+  border-color: var(--ink);
+}
+.btn.l {
+  background: var(--lost);
+  color: #0a0a0a;
+  border-color: var(--ink);
+}
+.btn.s {
+  padding: 5px 12px;
+  font-size: 13px;
+}
+.btn.on {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+/* Hero Section */
+.hero {
+  background: var(--found);
+  color: #0a0a0a;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 8px 8px 0 var(--sh);
+  padding: 32px 26px;
+  margin: 22px 0 20px;
+}
+.hero-tagline {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.hero h1 {
+  font-size: clamp(32px, 6.5vw, 64px);
+  line-height: 1.05;
+  margin-bottom: 10px;
+}
+.hero p {
+  color: #0a0a0a;
+  max-width: 54ch;
+  font-size: 16px;
+  margin: 0 0 18px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.hero .row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Metrics Counter Grid */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0 0 22px;
+}
+@media (max-width: 600px) {
+  .telemetry-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.metric-box {
+  background: var(--surf);
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--sh);
+  padding: 12px 16px;
+}
+.metric-box .label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--mute);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.metric-box .val {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 26px;
+  margin-top: 3px;
+  line-height: 1;
+}
+
+/* Simplified Filter & View Bar */
+.filter-bar {
+  background: var(--surf);
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--sh);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.search-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-row input {
+  flex: 1 1 240px;
+}
+.search-row select {
+  max-width: 200px;
+}
+.view-switch {
+  display: inline-flex;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-left: auto;
+}
+.view-switch button {
+  border: none;
+  background: var(--surf);
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-right: 1.5px solid var(--ink);
+}
+.view-switch button:last-child { border-right: none; }
+.view-switch button.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.type-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.pill {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--surf);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--sh);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform .1s;
+}
+.pill:active {
+  transform: translate(1px, 1px);
+}
+.pill.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+.pill.active.f {
+  background: var(--found);
+  color: #0a0a0a;
+}
+.pill.active.l {
+  background: var(--lost);
+  color: #0a0a0a;
+}
+
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--surf);
+  color: var(--ink);
+  padding: 9px 12px;
+  width: 100%;
+  font-size: 15px;
+}
+input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 var(--sh);
+}
+input[type="checkbox"], input[type="radio"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--ink);
+  flex-shrink: 0;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Grid & Cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+  padding-bottom: 40px;
+}
+.card {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  column-gap: 14px;
+  row-gap: 4px;
+  align-items: start;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 5px 5px 0 var(--sh);
+  padding: 16px;
+  background: var(--surf);
+  text-align: left;
+  transition: transform .15s, box-shadow .15s;
+  cursor: pointer;
+}
+.card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--sh);
+}
+.card > *:not(.glyph) {
+  grid-column: 2;
+  justify-self: start;
+}
+.card .glyph {
+  grid-row: 1 / span 5;
+  width: 56px;
+  height: 56px;
+  background: var(--surf);
+  color: var(--ink);
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+  box-shadow: 2px 2px 0 var(--sh);
+}
+.card .glyph img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card .glyph svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+.card:has(.badge.FOUND) .glyph { background: var(--found); }
+.card:has(.badge.LOST) .glyph { background: var(--lost); }
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.badge {
+  display: inline-block;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.badge.FOUND { background: var(--found); color: #0a0a0a; }
+.badge.LOST { background: var(--lost); color: #0a0a0a; }
+
+.meta {
+  color: var(--mute);
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+.bounty-pill {
+  background: var(--tag);
+  color: var(--tagink);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 6px;
+  margin-top: 4px;
+}
+.card-actions {
+  margin-top: 8px;
+  width: 100%;
+}
+
+/* Radar Map Container */
+.map-view-container {
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 6px 6px 0 var(--sh);
+  overflow: hidden;
+  background: var(--surf);
+  margin-bottom: 30px;
+}
+.map-header {
+  padding: 12px 18px;
+  background: var(--ink);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+#radarMap {
+  width: 100%;
+  height: 500px;
+  background: #111;
+}
+
+/* Dialog & Modals */
+dialog {
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 8px 8px 0 var(--sh);
+  background: var(--surf);
+  color: var(--ink);
+  padding: 0;
+  max-width: 640px;
+  width: calc(100% - 28px);
+}
+dialog::backdrop {
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(2px);
+}
+.dlg {
+  padding: 22px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.dlg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  border-bottom: 2.5px solid var(--ink);
+  padding-bottom: 12px;
+}
+
+.panel {
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--panel-bg);
+  padding: 14px 16px;
+  margin: 14px 0;
+}
+.panel dt {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.panel dd {
+  margin: 2px 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.safe-box {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--tag);
+  color: #0a0a0a;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 14px 0;
+  line-height: 1.45;
+}
+
+/* Step Wizard Progress */
+.wizard-steps {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0 20px;
+}
+.wizard-steps .step-bar {
+  height: 10px;
+  flex: 1;
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  background: var(--bg);
+  transition: background .2s;
+}
+.wizard-steps .step-bar.done {
+  background: var(--found);
+}
+.step-title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mute);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* PII Masking Tool Box */
+.pii-mask-tool {
+  background: #fff1f2;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 14px;
+  margin: 14px 0;
+}
+.pii-mask-tool h4 {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #be123c;
+  margin-bottom: 6px;
+}
+.pii-mask-tool p {
+  font-size: 13px;
+  color: #881337;
+  margin: 0 0 10px;
+}
+.pii-input-group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Location Chips */
+.chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 8px 0 12px;
+}
+.chip {
+  background: var(--surf);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background .1s;
+}
+.chip:hover {
+  background: var(--found);
+}
+
+/* Dashboard Tabs */
+.dash-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.dash-profile-card {
+  background: var(--surf);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 6px 6px 0 var(--sh);
+  padding: 16px 20px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.user-node-badge {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Telegram Broadcast Feed */
+.tg-feed-item {
+  background: var(--surf);
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--sh);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.tg-channel-tag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0284c7;
+}
+.tg-content-box {
+  background: var(--code-bg);
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 10px 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  border: 2px solid var(--bg);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 9999;
+  animation: toastUp .2s ease-out;
+}
+@keyframes toastUp {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media print {
+  header, .telemetry-ribbon, #app, .toast, .btn, .map-view-container, .dash-tabs {
+    display: none !important;
+  }
+  body { background: #fff !important; color: #000 !important; }
+}
+
+/* ==========================================================================
+   INTERACTIVE LAMP AUTH MODAL - FULL SCREEN IMMERSIVE
+   ========================================================================== */
+dialog[data-mode="auth"] {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  background: #090a10 !important;
+  color: #fff !important;
+  overflow: hidden !important;
+  z-index: 99999 !important;
+}
+
+dialog[data-mode="auth"]::backdrop {
+  background: #090a10 !important;
+}
+
+dialog[data-mode="auth"] .dlg {
+  padding: 0 !important;
+  min-height: 100vh;
+  max-height: none !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.lamp-modal-wrap {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 140px, #141724 0%, #090a10 75%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Quick Controls Bar */
+.quick-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(9, 10, 16, 0.95);
+  border-bottom: 2.5px solid var(--ink);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  position: relative;
+}
+
+.lamp-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #a0a5b8;
+  text-transform: uppercase;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--lamp-accent);
+  box-shadow: 0 0 10px var(--lamp-accent);
+  transition: all 0.3s;
+}
+
+.lamp-modal-wrap[data-on="false"] .status-indicator {
+  background: #474d61;
+  box-shadow: none;
+}
+
+.color-palette {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.palette-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #71778e;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.color-dot-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  background: var(--dot-color);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 2px 2px 0 #000;
+  outline: none;
+  padding: 0;
+}
+
+.color-dot-btn:hover {
+  transform: scale(1.2);
+}
+
+.color-dot-btn.active {
+  transform: scale(1.25);
+  border-color: #fff;
+  box-shadow: 0 0 12px var(--dot-color), 2px 2px 0 #000;
+}
+
+.btn-close-modal {
+  background: #1b1e2a;
+  border: 2.5px solid #000;
+  color: #fff;
+  padding: 7px 16px;
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-close-modal:hover {
+  background: #ff4757;
+  color: #fff;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #000;
+}
+
+/* Ambient glow */
+.ambient-glow {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 760px;
+  height: 760px;
+  background: radial-gradient(circle, var(--lamp-glow) 0%, transparent 68%);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+}
+
+.lamp-modal-wrap[data-on="true"] .ambient-glow {
+  opacity: 1;
+}
+
+/* Dust Canvas */
+#dustCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.lamp-modal-wrap[data-on="true"] #dustCanvas {
+  opacity: 1;
+}
+
+/* Lamp Area */
+.lamp-stage {
+  position: relative;
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 4;
+}
+
+/* The Light Cone */
+.light-cone {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 620px;
+  background: linear-gradient(180deg, var(--lamp-cone) 0%, rgba(0,0,0,0) 85%);
+  clip-path: polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+
+.lamp-modal-wrap[data-on="true"] .light-cone {
+  opacity: 1;
+}
+
+/* Grand SVG Desk Lamp */
+.lamp-svg {
+  position: relative;
+  width: 280px;
+  height: 130px;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7));
+  z-index: 7;
+  pointer-events: none;
+}
+
+.lamp-bulb {
+  fill: #222634;
+  transition: fill 0.3s, filter 0.3s;
+}
+
+.lamp-modal-wrap[data-on="true"] .lamp-bulb {
+  fill: var(--lamp-bulb);
+  filter: drop-shadow(0 0 18px var(--lamp-accent)) drop-shadow(0 0 35px var(--lamp-accent));
+}
+
+/* Pull Cord Dynamic SVG & Handle */
+.cord-svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 6;
+}
+
+.lamp-cord-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 8px 0px;
+  will-change: transform;
+}
+
+.lamp-cord-wrapper:hover .cord-handle {
+  filter: brightness(1.22);
+  box-shadow: 0 0 10px rgba(255, 217, 61, 0.6), 2.5px 2.5px 0 #000;
+}
+
+.lamp-cord-wrapper.dragging {
+  cursor: grabbing !important;
+}
+
+.lamp-cord-wrapper.dragging .cord-handle {
+  cursor: grabbing !important;
+  filter: brightness(1.35);
+  box-shadow: 0 0 16px rgba(255, 217, 61, 0.85), 3px 3px 0 #000;
+  transform: scale(1.1);
+}
+
+.cord-handle {
+  width: 16px;
+  height: 24px;
+  background: radial-gradient(circle at 35% 30%, #fff176 0%, #ffd93d 40%, #b8860b 85%, #5c4300 100%);
+  border: 1.5px solid #000;
+  border-radius: 3px 3px 6px 6px;
+  box-shadow: 2.5px 2.5px 0 #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 800;
+  color: #332200;
+  pointer-events: auto;
+  transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cord-hint {
+  position: absolute;
+  top: 4px;
+  left: 22px;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  background: #000;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1.5px solid #333;
+  pointer-events: none;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.lamp-modal-wrap[data-on="true"] .cord-hint {
+  opacity: 0;
+}
+
+/* Centered Auth Card Stage */
+.auth-stage {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 20px 60px;
+  z-index: 6;
+}
+
+/* Auth Card */
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 550px;
+  background: #141622;
+  border: 3px solid #000;
+  box-shadow: 6px 6px 0 #000;
+  padding: 28px 32px;
+  z-index: 6;
+  border-radius: 4px;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+  will-change: transform;
+}
+
+.lamp-modal-wrap[data-on="true"] .auth-card {
+  border-color: #000;
+  box-shadow: 6px 6px 0 #000, 0 0 45px var(--lamp-cone);
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 11px 16px;
+  background: #1e2232;
+  border: 2.5px solid #000;
+  color: #9aa0b4;
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 13px;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: var(--lamp-accent);
+  color: #000;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.card-title {
+  margin: 0 0 6px;
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 26px;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.card-subtitle {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: #8b92a8;
+  font-weight: 500;
+}
+
+/* Inputs */
+.auth-form-group {
+  margin-bottom: 16px;
+}
+
+.auth-form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  color: #c0c5d8;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.auth-form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #0d0f17;
+  border: 2.5px solid #000;
+  border-radius: 3px;
+  color: #fff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 15px;
+  box-sizing: border-box;
+  box-shadow: 2px 2px 0 #000 inset;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.auth-form-group input:focus {
+  outline: none;
+  border-color: var(--lamp-accent);
+  box-shadow: 0 0 0 2px var(--lamp-accent), 2px 2px 0 #000 inset;
+}
+
+/* Submit Button */
+.submit-btn {
+  position: relative;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 4px;
+  border: 2.5px solid #000;
+  background: linear-gradient(135deg, var(--lamp-accent) 0%, var(--lamp-secondary) 100%);
+  color: #0b0d10;
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 #000;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.submit-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #000, 0 0 28px var(--lamp-glow);
+}
+
+.submit-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000;
+}
+
+.btn-glow-layer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.submit-btn:hover .btn-glow-layer {
+  left: 100%;
+}
+
+/* Quick Demo Button */
+.demo-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px;
+  background: #1c2030;
+  border: 2px dashed #40465c;
+  color: #ffd93d;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.demo-btn:hover {
+  background: #252b3e;
+  border-color: #ffd93d;
+  border-style: solid;
+}
+
+
+/* Top Palette Styling */
+.top-palette {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.top-palette .palette-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #a0a5b8;
+  text-transform: uppercase;
+}
+.top-palette .color-dot-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  background: var(--dot-color);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 2px 2px 0 #000;
+  outline: none;
+  padding: 0;
+}
+.top-palette .color-dot-btn:hover {
+  transform: scale(1.25);
+}
+.top-palette .color-dot-btn.active {
+  transform: scale(1.3);
+  border-color: #fff;
+  box-shadow: 0 0 10px var(--dot-color), 2px 2px 0 #000;
+}
+
+
+/* Language Switcher */
+.lang-switch-group {
+  display: inline-flex;
+  align-items: center;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 2px 2px 0 var(--sh);
+  background: var(--surf);
+}
+.lang-btn {
+  background: transparent;
+  border: none;
+  border-right: 1.5px solid var(--ink);
+  padding: 5px 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  color: var(--ink);
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+.lang-btn:last-child {
+  border-right: none;
+}
+.lang-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+.lang-btn.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+
+/* Mobile Responsive Enhancements for Auth Card and Search */
+@media (max-width: 640px) {
+  .auth-card {
+    max-width: min(92vw, 380px) !important;
+    padding: 16px 14px !important;
+    box-shadow: 4px 4px 0 #000 !important;
+  }
+  .auth-tabs {
+    gap: 6px !important;
+    margin-bottom: 14px !important;
+  }
+  .tab-btn {
+    padding: 8px 10px !important;
+    font-size: 11px !important;
+  }
+  .auth-body h2 {
+    font-size: 17px !important;
+  }
+  .auth-body p.meta {
+    font-size: 11px !important;
+    margin-bottom: 10px !important;
+  }
+  .auth-card input {
+    padding: 7px 10px !important;
+    font-size: 13px !important;
+  }
+  .filter-bar .search-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .type-pills {
+    flex-wrap: wrap !important;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Telemetry Top Ribbon (With Live Site Theme Color Selector) -->
+<div class="telemetry-ribbon">
+  <div class="wrap">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="pulse-dot"></span>
+      <span style="font-weight:800; letter-spacing:0.5px;">FoundHub</span>
+    </div>
+
+    <!-- Center: Site Theme Light Color Palette -->
+    <div class="color-palette top-palette" id="mainColorPalette" title="Choose Site Theme Color">
+      <span class="palette-label" id="paletteRibbonLabel">LIGHT COLOR:</span>
+      <button type="button" class="color-dot-btn active" data-color="amber" style="--dot-color: #ffd93d;" aria-label="Amber Light" title="Amber (Warm Gold)"></button>
+      <button type="button" class="color-dot-btn" data-color="cyan" style="--dot-color: #00f0ff;" aria-label="Cyan Light" title="Cyan (Cyber Blue)"></button>
+      <button type="button" class="color-dot-btn" data-color="rose" style="--dot-color: #ff3385;" aria-label="Rose Light" title="Rose (Sunset Pink)"></button>
+      <button type="button" class="color-dot-btn" data-color="mint" style="--dot-color: #00e676;" aria-label="Mint Light" title="Mint (Emerald Green)"></button>
+      <button type="button" class="color-dot-btn" data-color="moonlight" style="--dot-color: #d8e5ff;" aria-label="Moonlight" title="Moonlight (Cool White)"></button>
+    </div>
+
+    <div>
+      <span>Muhammadaziz Abdullayev</span>
+    </div>
+  </div>
+</div>
+
+<!-- Header & Navigation -->
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="#" class="logo" data-go="home">
+        <i>Found</i>Hub
+        <span class="logo-tag">RADAR</span>
+      </a>
+      <button class="btn s" data-go="home" id="navExplore">Explore Items</button>
+      <button class="btn s" data-go="dash" id="navDash">My Dashboard <span id="dashBadge"></span></button>
+      <button class="btn p s" data-go="report" id="navReport">Report an Item</button>
+
+      <!-- Language Switcher: EN, UZ, RU (Default: EN) -->
+      <div class="lang-switch-group" id="langSwitchGroup" title="Language / Tilni tanlash / Выбор языка">
+        <button type="button" class="lang-btn active" data-lang="en">EN</button>
+        <button type="button" class="lang-btn" data-lang="uz">UZ</button>
+        <button type="button" class="lang-btn" data-lang="ru">RU</button>
+      </div>
+
+      <div id="navAuthArea" style="display:inline-flex; align-items:center; gap:8px;"></div>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<!-- Main Dialog / Modal -->
+<dialog id="dlg">
+  <div class="dlg" id="dbody"></div>
+</dialog>
+
+<script>
+
+// ==========================================================================
+// COLOR PALETTES & GLOBAL SITE THEME ENGINE
+// ==========================================================================
+const PALETTES = {
+  amber: {
+    accent: "#ffd93d",
+    secondary: "#ff8c00",
+    lost: "#6c8cff",
+    glow: "rgba(255, 217, 61, 0.45)",
+    cone: "rgba(255, 217, 61, 0.16)",
+    bulb: "#fff5c0"
+  },
+  cyan: {
+    accent: "#00f0ff",
+    secondary: "#0077ff",
+    lost: "#3b82f6",
+    glow: "rgba(0, 240, 255, 0.45)",
+    cone: "rgba(0, 240, 255, 0.16)",
+    bulb: "#e0fcff"
+  },
+  rose: {
+    accent: "#ff3385",
+    secondary: "#b8004f",
+    lost: "#a855f7",
+    glow: "rgba(255, 51, 133, 0.45)",
+    cone: "rgba(255, 51, 133, 0.16)",
+    bulb: "#ffe0ed"
+  },
+  mint: {
+    accent: "#00e676",
+    secondary: "#008f4c",
+    lost: "#0ea5e9",
+    glow: "rgba(0, 230, 118, 0.45)",
+    cone: "rgba(0, 230, 118, 0.16)",
+    bulb: "#e0ffe8"
+  },
+  moonlight: {
+    accent: "#e2e8f0",
+    secondary: "#94a3b8",
+    lost: "#64748b",
+    glow: "rgba(216, 229, 255, 0.45)",
+    cone: "rgba(216, 229, 255, 0.18)",
+    bulb: "#ffffff"
+  }
+};
+
+let activeColor = "amber";
+try {
+  activeColor = localStorage.getItem("fh_theme_color") || "amber";
+} catch(e) {}
+
+function applyThemeColor(colorName) {
+  const p = PALETTES[colorName] || PALETTES.amber;
+  activeColor = colorName;
+  try { localStorage.setItem("fh_theme_color", colorName); } catch(e) {}
+
+  const elements = [
+    document.documentElement,
+    document.body,
+    document.getElementById("dlg"),
+    document.getElementById("lampModalWrap")
+  ];
+
+  elements.forEach(el => {
+    if (!el) return;
+    el.style.setProperty("--found", p.accent);
+    el.style.setProperty("--lost", p.lost || "#6c8cff");
+    el.style.setProperty("--theme-accent", p.accent);
+    el.style.setProperty("--theme-secondary", p.secondary);
+    el.style.setProperty("--theme-glow", p.glow);
+
+    el.style.setProperty("--lamp-accent", p.accent);
+    el.style.setProperty("--lamp-secondary", p.secondary);
+    el.style.setProperty("--lamp-glow", p.glow);
+    el.style.setProperty("--lamp-cone", p.cone);
+    el.style.setProperty("--lamp-bulb", p.bulb);
+  });
+
+  // Direct element style overrides for guaranteed instant reactivity
+  const cone = document.querySelector(".light-cone");
+  if (cone) {
+    cone.style.background = "linear-gradient(180deg, " + p.cone + " 0%, rgba(0,0,0,0) 85%)";
+  }
+
+  const glow = document.querySelector(".ambient-glow");
+  if (glow) {
+    glow.style.background = "radial-gradient(circle, " + p.glow + " 0%, transparent 68%)";
+  }
+
+  const activeTabBtn = document.querySelector(".auth-tabs .tab-btn.active");
+  if (activeTabBtn) {
+    activeTabBtn.style.background = p.accent;
+  }
+
+  const submitBtn = document.querySelector(".submit-btn");
+  if (submitBtn) {
+    submitBtn.style.background = "linear-gradient(135deg, " + p.accent + " 0%, " + p.secondary + " 100%)";
+  }
+
+  const metallicRing = document.querySelector(".lamp-svg line[stroke]");
+  if (metallicRing) {
+    metallicRing.setAttribute("stroke", p.accent);
+  }
+
+  // Toggle .active class on all palette buttons on the entire page
+  document.querySelectorAll(".color-dot-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.color === colorName);
+  });
+
+  // Top ribbon status indicator
+  const pulse = document.querySelector(".pulse-dot");
+  if (pulse) {
+    pulse.style.background = p.accent;
+    pulse.style.boxShadow = "0 0 10px " + p.accent;
+  }
+}
+
+
+// ==========================================================================
+// TACTILE MECHANICAL CLICK AUDIO ENGINE (FOR BUTTONS & LAMP CORD)
+// ==========================================================================
+let audioCtx = null;
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) audioCtx = new AudioCtx();
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playMechanicalClick(pitch = "medium") {
+  try {
+    const actx = getAudioContext();
+    if (!actx) return;
+
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+
+    let startFreq = 840;
+    if (pitch === "high") startFreq = 960;
+    else if (pitch === "low") startFreq = 540;
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(startFreq, actx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(110, actx.currentTime + 0.038);
+
+    gain.gain.setValueAtTime(0.18, actx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.005, actx.currentTime + 0.038);
+
+    osc.connect(gain);
+    gain.connect(actx.destination);
+
+    osc.start();
+    osc.stop(actx.currentTime + 0.04);
+  } catch (e) {}
+}
+
+// Global delegated tactile sound on all interactive buttons across the entire website
+document.addEventListener("pointerdown", e => {
+  const target = e.target.closest("button, .btn, .card, .pill, .color-dot-btn, .tab-btn, [data-go], [data-dtab], [data-tp]");
+  if (target) {
+    playMechanicalClick("medium");
+  }
+});
+
+// ==========================================================================
+// FOUNDHUB DATA & AUTH STATE ENGINE
+// ==========================================================================
+
+const ic = p => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+
+const CAT = {
+  ELECTRONICS: ["Electronics", ic('<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/>')],
+  DOCUMENTS_AND_IDS: ["Documents & IDs", ic('<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.6 4.4-1.6 6 0M14.5 10h3M14.5 14h3"/>')],
+  WALLETS_AND_BAGS: ["Wallets & bags", ic('<path d="M9 7a3 3 0 016 0"/><rect x="5" y="7" width="14" height="14" rx="4"/><path d="M9 14h6"/>')],
+  KEYS: ["Keys", ic('<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>')],
+  JEWELRY_AND_WATCHES: ["Jewelry & watches", ic('<circle cx="12" cy="12" r="5"/><path d="M12 9.5V12l2 1M9 7l.7-4h4.6l.7 4M9 17l.7 4h4.6l.7-4"/>')],
+  CLOTHING: ["Clothing", ic('<path d="M8 3L3 6l2 4 3-1v12h8V9l3 1 2-4-5-3a4 4 0 01-8 0z"/>')],
+  PETS: ["Pets", ic('<circle cx="6" cy="11" r="1.7"/><circle cx="9.5" cy="6.5" r="1.7"/><circle cx="14.5" cy="6.5" r="1.7"/><circle cx="18" cy="11" r="1.7"/><path d="M8 17c0-3 2-4.5 4-4.5s4 1.5 4 4.5c0 2-2 2.5-4 2.5s-4-.5-4-2.5z"/>')],
+  OTHER: ["Other", ic('<path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/>')]
+};
+
+const SAMPLE_PHOTOS = {
+  ELECTRONICS: [
+    "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80"
+  ],
+  DOCUMENTS_AND_IDS: [
+    "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&auto=format&fit=crop&q=80"
+  ],
+  WALLETS_AND_BAGS: [
+    "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80"
+  ],
+  KEYS: [
+    "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=800&auto=format&fit=crop&q=80"
+  ],
+  JEWELRY_AND_WATCHES: [
+    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&auto=format&fit=crop&q=80"
+  ],
+  CLOTHING: [
+    "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=80"
+  ],
+  PETS: [
+    "https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80"
+  ],
+  OTHER: [
+    "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80"
+  ]
+};
+
+const LANDMARKS = [
+  { name: "University Central Library 2nd Floor", lat: 37.7749, lng: -122.4194 },
+  { name: "Downtown Metro Station, Platform 3", lat: 37.7833, lng: -122.4167 },
+  { name: "Arts & Design Quad, West Lawn", lat: 37.7712, lng: -122.4289 },
+  { name: "Maplewood Community Park Fountain", lat: 37.7810, lng: -122.4110 },
+  { name: "Engineering Quad Cafe Pathway", lat: 37.7735, lng: -122.4240 }
+];
+
+const MY_ID = "usr-current-1";
+
+const seed = () => ({
+  user: {
+    id: MY_ID,
+    name: "Azizbek",
+    email: "azizbek@foundhub.app",
+    telegram: "@azizbek_lostfound",
+    phone: "+998 90 555 12 34",
+    node: "VERIFIED NODE"
+  },
+  items: [
+    {
+      id: 1,
+      owner: "Azizbek",
+      ownerId: MY_ID,
+      type: "FOUND",
+      title: "Black laptop backpack with stickers",
+      cat: "WALLETS_AND_BAGS",
+      desc: "Black backpack with a grey zipper, found under a table. A white cat sticker on the front pocket.",
+      where: "University Central Library 2nd Floor",
+      lat: 37.7749,
+      lng: -122.4194,
+      date: "2026-10-27T15:30",
+      holding: "Campus Security Office, Room 102",
+      contact: "In-app message & Telegram: @campus_desk",
+      q: "What sticker is on the front pocket?",
+      reward: "",
+      beaconCode: "SIG-2026-01",
+      img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80",
+      status: "ACTIVE"
+    },
+    {
+      id: 2,
+      owner: "Dilnoza",
+      ownerId: "usr-2",
+      type: "FOUND",
+      title: "Passport holder with masked ID",
+      cat: "DOCUMENTS_AND_IDS",
+      desc: "Blue passport cover with an ID card inside. Number is protected: AB ****45.",
+      where: "Downtown Metro Station, Platform 3",
+      lat: 37.7833,
+      lng: -122.4167,
+      date: "2026-10-28T08:10",
+      holding: "Metro Security Dispatch Hub",
+      contact: "Telegram: @dilnoza_safe",
+      q: "What is the card holder’s full middle name?",
+      reward: "",
+      beaconCode: "SIG-2026-02",
+      img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&auto=format&fit=crop&q=80",
+      status: "ACTIVE"
+    },
+    {
+      id: 3,
+      owner: "Timur",
+      ownerId: "usr-3",
+      type: "LOST",
+      title: "Silver watch, cracked leather strap",
+      cat: "JEWELRY_AND_WATCHES",
+      desc: "Lost near the central park fountain on Sunday afternoon. Back bezel has personal initials engraving.",
+      where: "Maplewood Community Park Fountain",
+      lat: 37.7810,
+      lng: -122.4110,
+      date: "2026-10-25T11:00",
+      holding: "Still searching area",
+      contact: "Phone after 5 PM (+998 90 999 88 77)",
+      q: "What initials are engraved on the back?",
+      reward: "$100 Bounty",
+      beaconCode: "SIG-2026-03",
+      img: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&auto=format&fit=crop&q=80",
+      status: "ACTIVE"
+    },
+    {
+      id: 4,
+      owner: "Aziza",
+      ownerId: "usr-4",
+      type: "FOUND",
+      title: "Ring of keys with red keychain",
+      cat: "KEYS",
+      desc: "Three door keys and one mailbox key on a red fabric woven lanyard keychain.",
+      where: "Engineering Quad Cafe Pathway",
+      lat: 37.7735,
+      lng: -122.4240,
+      date: "2026-10-26T18:45",
+      holding: "With finder at student union desk",
+      contact: "In-app message",
+      q: "What word is written on the fabric keychain?",
+      reward: "",
+      beaconCode: "SIG-2026-04",
+      img: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=800&auto=format&fit=crop&q=80",
+      status: "ACTIVE"
+    }
+  ],
+  comments: [
+    { id: 1, item: 1, by: "Malika", type: "OWNER_LEAD", text: "Looks like Jasur’s backpack from the design studio.", flag: 0 }
+  ],
+  claims: [
+    {
+      id: 1,
+      item: 1,
+      claimantId: "usr-jasur",
+      by: "Jasur",
+      proof: "A white cat sticker with 'Meow' text, plus a dark blue laptop sleeve inside.",
+      status: "PENDING",
+      date: "2026-10-28T16:00"
+    }
+  ],
+  myClaims: [
+    {
+      id: 101,
+      item: 3,
+      by: "Azizbek",
+      proof: "Engraving on back has 'T.M. 2022' from my graduation.",
+      status: "PENDING",
+      date: "2026-10-28T18:20"
+    }
+  ],
+  n: 20
+});
+
+let S;
+try {
+  S = JSON.parse(localStorage.getItem("fh_telemetry_v2"));
+} catch (e) {}
+S = S || seed();
+if (S.user === undefined) S.user = seed().user;
+if (!S.myClaims) S.myClaims = seed().myClaims;
+
+const save = () => {
+  try {
+    localStorage.setItem("fh_telemetry_v2", JSON.stringify(S));
+  } catch (e) {
+    console.warn("Storage quota warning:", e);
+    if (typeof toast === "function") toast(t("toast_quota_warn"));
+  }
+  updateDashBadge();
+  updateNavAuth();
+};
+
+// ==========================================================================
+// INTERNATIONALIZATION ENGINE (I18N): EN (Default), UZ, RU
+// ==========================================================================
+
+
+// ==========================================================================
+// SUPABASE REAL-TIME CLOUD DATABASE CLIENT
+// ==========================================================================
+const SUPABASE_URL = "https://gxvjkfpqnubriabieugl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_EpzY-RrxXebHizxNf1GAjA_Qujw83Og";
+let sbClient = null;
+
+try {
+  if (typeof supabase !== "undefined" && supabase.createClient) {
+    sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log("Supabase connected to FoundHub cloud database!");
+  }
+} catch (err) {
+  console.warn("Supabase init error:", err);
+}
+
+async function syncWithSupabase() {
+  if (!sbClient) return;
+  try {
+    const { data, error } = await sbClient.from("items").select("*").order("created_at", { ascending: false });
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const mapped = data.map(row => ({
+        id: row.id,
+        type: row.type,
+        title: row.title,
+        cat: row.category,
+        desc: row.description || "",
+        img: Array.isArray(row.image_urls) && row.image_urls.length > 0 ? row.image_urls[0] : "",
+        date: row.event_date || row.created_at,
+        where: row.incident_location || "",
+        holding: row.current_holding_location || "",
+        contact: row.finder_contact_preference || "",
+        reward: row.reward_amount ? String(row.reward_amount) : "",
+        q: row.secret_verification_question || "",
+        status: row.status || "ACTIVE",
+        owner: (row.user_data && row.user_data.fullName) || "Community Member",
+        ownerId: row.user_id
+      }));
+      const existingIds = new Set(mapped.map(m => m.id));
+      S.items.forEach(it => {
+        if (!existingIds.has(it.id)) mapped.push(it);
+      });
+      S.items = mapped;
+      save();
+      render();
+    }
+  } catch (e) {
+    console.warn("Supabase sync:", e);
+  }
+}
+setTimeout(syncWithSupabase, 1000);
+
+const I18N = {
+  en: {
+    nav_explore: "Explore Items",
+    nav_dashboard: "My Dashboard",
+    nav_report: "Report an Item",
+    nav_login: "Log In",
+    nav_logout: "Log Out",
+    light_color: "LIGHT COLOR:",
+    lamp_status: "LAMP ILLUMINATED",
+    pull_cord: "PULL CORD",
+    return_site: "✕ RETURN TO SITE",
+
+    hero_tagline: "COMMUNITY LOST & FOUND NETWORK",
+    hero_title: "Found something? Lost something?",
+    hero_desc: "Post what you picked up or search for what you lost. Finders keep the item safe, owners prove ownership with a question only they can answer.",
+    btn_report_found: "● Report a found item",
+    btn_lost_something: "● I lost something",
+    stat_reunited: "Reunited with Owners",
+    stat_found: "Found in Safe Custody",
+    stat_lost: "Active Lost Reports",
+
+    search_placeholder: "Search by item, place, or detail...",
+    all_categories: "All Categories",
+    view_grid: "Grid",
+    view_map: "Radar Map",
+    all_items: "All Items",
+    badge_found: "Found",
+    badge_lost: "Lost",
+    no_items_found: "No items match your search",
+    no_items_desc: "Try fewer search words or reset category filters.",
+    btn_reset_filters: "Reset Filters",
+
+    CAT_ELECTRONICS: "Electronics",
+    CAT_DOCUMENTS_AND_IDS: "Documents & IDs",
+    CAT_WALLETS_AND_BAGS: "Wallets & bags",
+    CAT_KEYS: "Keys",
+    CAT_JEWELRY_AND_WATCHES: "Jewelry & watches",
+    CAT_CLOTHING: "Clothing",
+    CAT_PETS: "Pets",
+    CAT_OTHER: "Other",
+
+    your_listing: "YOUR LISTING",
+    btn_edit: "✏️ Edit",
+    btn_close: "✕ Close",
+    reward_offered: "Reward Offered:",
+    found_at: "Found at",
+    lost_near: "Lost near",
+    field_datetime: "Date and time",
+    field_holding: "Current holding location",
+    posted_by: "Posted by",
+    btn_prev: "❮ Previous",
+    btn_next: "Next ❯",
+
+    safe_protocol_title: "🔒 Safe Handover Protocol:",
+    safe_protocol_desc: "Meet in a well-lit public place such as a police station, campus office, or mall. Never send money in advance.",
+    claim_secret_title: "Describe something only the true owner would know:",
+    claim_placeholder: "Describe specific details, stickers, engravings, or wallpaper...",
+    btn_send_claim: "Send Ownership Claim →",
+
+    community_leads_title: "Community Leads & Notes",
+    no_leads_yet: "No leads reported yet. If you know who owns this, leave a note below.",
+    add_lead_label: "Add a lead or comment:",
+    comment_placeholder: "Spotted this nearby or have information? Write it here...",
+    know_owner_check: "I believe I know the owner",
+    btn_post_comment: "Post Comment",
+    btn_report: "Report",
+    btn_delete: "Delete",
+    btn_remove_photo: "Remove Photo",
+
+    finder_panel_title: "🟢 You reported finding this item",
+    finder_panel_desc: "As the finder, you cannot submit an ownership claim to yourself. You can review and approve incoming claims in your Dashboard.",
+    btn_open_dash: "Open My Dashboard →",
+    btn_edit_listing: "✏️ Edit Listing",
+    lost_panel_title: "🔴 Your Lost Item Notice",
+    lost_panel_desc: "Need to update location, details, reward, or mark as returned?",
+    btn_edit_notice: "✏️ Edit Notice →",
+
+    login_to_claim: "🔒 Log in to submit an ownership claim",
+    login_to_claim_desc: "You must be logged in to answer the secret challenge question and claim this item.",
+    btn_login_to_claim: "Log In to Claim →",
+    login_to_comment: "🔒 Log in to post a lead or comment",
+    login_to_comment_desc: "Help reunite this item with its owner by logging in first.",
+    btn_login_to_comment: "Log In to Comment →",
+
+    step_prefix: "STEP",
+    step_of: "OF 5:",
+    step1_title: "What are you reporting?",
+    step2_title: "Photos & Description",
+    step3_title: "Where and when?",
+    step4_title: "Holding Location & Contact",
+    step5_title: "Secret Question & Publish",
+    btn_i_found: "🟢 I Found It",
+    btn_i_lost: "🔴 I Lost It",
+    field_title: "Title",
+    field_title_placeholder: "e.g. Black laptop backpack",
+    field_category: "Category",
+    field_desc: "Detailed Description",
+    field_desc_placeholder: "Describe colors, condition, special marks...",
+    field_where_found: "Where did you find it?",
+    field_where_lost: "Where did you lose it?",
+    field_where_placeholder: "Building, station, or park area",
+    field_holding_q: "Where is the item currently held?",
+    field_holding_placeholder: "Campus security office, with me, metro desk",
+    field_contact: "Contact Information",
+    field_contact_placeholder: "Telegram @username, phone, in-app",
+    field_reward: "Reward for return (optional)",
+    field_reward_placeholder: "e.g. $50 or 100 000 UZS",
+    field_secret_q: "Secret Question only the real owner knows (Anti-Fraud)",
+    field_secret_q_placeholder: "e.g. What sticker is on the laptop? What color is the keychain?",
+    btn_back: "← Back",
+    btn_next_step: "Next Step →",
+    btn_publish: "Publish Report 🚀",
+
+    dash_title: "Community Member Dashboard",
+    tab_incoming: "Incoming Claims",
+    tab_my_items: "My Listings",
+    tab_my_claims: "Claims I Sent",
+    btn_edit_profile: "Edit Profile",
+    no_incoming_claims: "No incoming claims yet",
+    no_incoming_claims_desc: "When someone submits proof to claim your found items, you will review their answer here.",
+    incoming_claims_header: "Incoming Ownership Claims",
+    incoming_claims_desc: "Review answers to your secret challenge question. Accept only if the claimant accurately describes undisclosed markers.",
+    btn_accept_claim: "✓ Accept Claim",
+    btn_reject_claim: "✕ Reject",
+    claim_accepted_msg: "🎉 Claim Accepted by Finder!",
+
+    auth_signin_tab: "Sign In",
+    auth_signup_tab: "Sign Up",
+    auth_welcome: "Welcome",
+    auth_welcome_sub: "Sign in to continue to your account",
+    auth_signup: "Sign Up",
+    auth_signup_sub: "Create an account to get started",
+    auth_btn_signin: "Sign In →",
+    auth_btn_signup: "Create Account →",
+    auth_btn_demo: "⚡ 1-Click Demo Log In (Azizbek)",
+    auth_full_name: "Full Name",
+    auth_email: "Email Address",
+    auth_pass: "Password",
+    auth_tg: "Telegram Username (optional)",
+    auth_phone: "Phone Number (optional)",
+
+    edit_listing_title: "Edit Listing",
+    btn_save_changes: "Save Changes",
+    btn_delete_listing: "🗑 Delete Listing",
+    edit_profile_title: "Edit Profile",
+    btn_save_profile: "Save Profile",
+
+    toast_logged_out: "Logged out successfully.",
+    toast_logged_in: "Logged in successfully.",
+    toast_published: "Published successfully!",
+    toast_claim_sent: "Claim sent to the finder!",
+    toast_listing_updated: "Listing updated!",
+    toast_listing_deleted: "Listing deleted successfully.",
+    toast_comment_deleted: "Comment deleted.",
+    toast_comment_flagged: "Comment reported to moderation.",
+    toast_profile_updated: "Profile updated!",
+    toast_login_required: "Please log in to continue.",
+    badge_returned: "Returned to Owner",
+    btn_mark_returned: "✓ Mark as Returned to Owner",
+    btn_reopen_listing: "↩ Reopen Listing (Active)",
+    filter_status_all: "All Statuses",
+    filter_status_active: "Active Only",
+    filter_status_returned: "Returned Only",
+    sort_label: "Sort:",
+    sort_newest: "Newest First",
+    sort_oldest: "Oldest First",
+    filter_reward_only: "💰 Reward Only",
+    btn_contact_tg: "Telegram",
+    btn_contact_phone: "Call",
+    btn_contact_email: "Email",
+    incoming_claims_modal_title: "Incoming Ownership Claims on this Item",
+    toast_status_updated: "Listing status updated!",
+    toast_quota_warn: "Storage quota warning: local storage nearly full.",
+    confirm_delete_listing: "Are you sure you want to delete this listing?",
+    confirm_delete_comment: "Delete this comment?"
+  },
+  uz: {
+    nav_explore: "E'lonlar",
+    nav_dashboard: "Mening kabinetim",
+    nav_report: "E'lon berish",
+    nav_login: "Kirish",
+    nav_logout: "Chiqish",
+    light_color: "CHIROQ RANGI:",
+    lamp_status: "CHIROQ YOQILGAN",
+    pull_cord: "SHNURNI TORTING",
+    return_site: "✕ SAYTGA QAYTISH",
+
+    hero_tagline: "JAMOAVIY TOPILMALAR VA YO'QOTISHLAR TARMOG'I",
+    hero_title: "Biror narsa topdingizmi? Yo'qotdingizmi?",
+    hero_desc: "Topib olgan buyumingizni e'lon qiling yoki yo'qotgan narsangizni qidiring. Topgan shaxs buyumni xavfsiz saqlaydi, egasi esa faqat o'zi biladigan sirli savol orqali isbotlaydi.",
+    btn_report_found: "● Topilgan buyumni e'lon qilish",
+    btn_lost_something: "● Men biror narsa yo'qotdim",
+    stat_reunited: "Egasiga qaytarildi",
+    stat_found: "Topilgan (saqlovda)",
+    stat_lost: "Faol qidirilmoqda",
+
+    search_placeholder: "Buyum, joy yoki tafsilot bo'yicha qidirish...",
+    all_categories: "Barcha toifalar",
+    view_grid: "Kataklar",
+    view_map: "Radar xarita",
+    all_items: "Barcha buyumlar",
+    badge_found: "Topilgan",
+    badge_lost: "Yo'qolgan",
+    no_items_found: "Hech narsa topilmadi",
+    no_items_desc: "Qidiruv so'zini o'zgartiring yoki filtrlarni tozalang.",
+    btn_reset_filters: "Filtrni tozalash",
+
+    CAT_ELECTRONICS: "Elektronika & Gadjetlar",
+    CAT_DOCUMENTS_AND_IDS: "Hujjatlar & Pasportlar",
+    CAT_WALLETS_AND_BAGS: "Hamyonlar & Sumkalar",
+    CAT_KEYS: "Kalitlar",
+    CAT_JEWELRY_AND_WATCHES: "Taqinchoqlar & Soatlar",
+    CAT_CLOTHING: "Kiyim-kechak",
+    CAT_PETS: "Uy hayvonlari",
+    CAT_OTHER: "Boshqa buyumlar",
+
+    your_listing: "SIZNING E'LONINGIZ",
+    btn_edit: "✏️ Tahrirlash",
+    btn_close: "✕ Yopish",
+    reward_offered: "Suyunchi / Mukofot:",
+    found_at: "Topilgan joyi",
+    lost_near: "Yo'qolgan joyi",
+    field_datetime: "Sana va vaqt",
+    field_holding: "Ayni damda saqlanayotgan joyi",
+    posted_by: "E'lon egasi",
+    btn_prev: "❮ Oldingi",
+    btn_next: "Keyingi ❯",
+
+    safe_protocol_title: "🔒 Xavfsiz topshirish tartibi:",
+    safe_protocol_desc: "Odam gavjum, yorug' jamoat joyida uchrashing (metro, bekat, qorovulxona). Hech qachon oldindan pul o'tkazmang.",
+    claim_secret_title: "Faqat haqiqiy egasi bilishi mumkin bo'lgan belgilarni tasvirlang:",
+    claim_placeholder: "Aniq belgilar, stikerlar, chizilgan joylari yoki ekran rasmini yozing...",
+    btn_send_claim: "Egalik da'vosini yuborish →",
+
+    community_leads_title: "Hamjamiyat ma'lumotlari va izohlar",
+    no_leads_yet: "Hozircha hech qanday izoh yo'q. Agar egasini bilsangiz, pastda yozib qoldiring.",
+    add_lead_label: "Ma'lumot yoki izoh qo'shish:",
+    comment_placeholder: "Bu haqda biror ma'lumot bilasizmi? Bu yerga yozing...",
+    know_owner_check: "Menimcha, buyum egasini taniyman",
+    btn_post_comment: "Izoh qoldirish",
+    btn_report: "Shikoyat",
+    btn_delete: "O'chirish",
+    btn_remove_photo: "Rasmni o'chirish",
+
+    finder_panel_title: "🟢 Siz ushbu buyumni topib olgansiz",
+    finder_panel_desc: "Topib olgan shaxs sifatida o'zingizga da'vo qila olmaysiz. Kelib tushgan so'rovlarni Kabinetingizda tasdiqlashingiz mumkin.",
+    btn_open_dash: "Kabinetga o'tish →",
+    btn_edit_listing: "✏️ E'lonni tahrirlash",
+    lost_panel_title: "🔴 Sizning yo'qolgan buyum e'loningiz",
+    lost_panel_desc: "Joylashuv, tafsilotlar yoki mukofotni o'zgartirish kerakmi?",
+    btn_edit_notice: "✏️ E'lonni tahrirlash →",
+
+    login_to_claim: "🔒 Egalik da'vosini yuborish uchun tizimga kiring",
+    login_to_claim_desc: "Buyumni qaytarib olish uchun sirli savolga javob berishingiz va tizimga kirgan bo'lishingiz kerak.",
+    btn_login_to_claim: "Kirish va Da'vo qilish →",
+    login_to_comment: "🔒 Izoh yoki ma'lumot qoldirish uchun tizimga kiring",
+    login_to_comment_desc: "Buyumni egasiga qaytarishga yordam berish uchun avval hisobingizga kiring.",
+    btn_login_to_comment: "Kirish va Izoh yozish →",
+
+    step_prefix: "BOSQICH",
+    step_of: "/ 5:",
+    step1_title: "Nima haqida e'lon bermoqchisiz?",
+    step2_title: "Rasmlar va tavsif",
+    step3_title: "Qayerda va qachon?",
+    step4_title: "Saqlash joyi va aloqa",
+    step5_title: "Sirli savol va chop etish",
+    btn_i_found: "🟢 Men topib oldim",
+    btn_i_lost: "🔴 Men yo'qotdim",
+    field_title: "Sarlavha",
+    field_title_placeholder: "masalan, Qora noutbuk ryukzagi",
+    field_category: "Toifa",
+    field_desc: "Batafsil tavsif",
+    field_desc_placeholder: "Ranglari, holati, ajralib turuvchi belgilarini tasvirlang...",
+    field_where_found: "Qayerdan topib oldingiz?",
+    field_where_lost: "Qayerda yo'qotdingiz?",
+    field_where_placeholder: "Bino, bekat yoki park hududi",
+    field_holding_q: "Buyum ayni damda qayerda saqlanmoqda?",
+    field_holding_placeholder: "Qorovulxona, o'zimda, metro bekati",
+    field_contact: "Aloqa ma'lumotlari",
+    field_contact_placeholder: "Telegram @username, telefon raqam",
+    field_reward: "Suyunchi / Mukofot (ixtiyoriy)",
+    field_reward_placeholder: "masalan, 100 000 so'm yoki $20",
+    field_secret_q: "Faqat haqiqiy egasi biladigan sirli savol (firibgarlikdan himoya)",
+    field_secret_q_placeholder: "masalan: Noutbukda qanday stiker bor? Ryukzak ichida nima bor?",
+    btn_back: "← Orqaga",
+    btn_next_step: "Keyingi bosqich →",
+    btn_publish: "E'lonni chop etish 🚀",
+
+    dash_title: "Foydalanuvchi kabineti",
+    tab_incoming: "Kelib tushgan da'volar",
+    tab_my_items: "Mening e'lonlarim",
+    tab_my_claims: "Yuborgan so'rovlarim",
+    btn_edit_profile: "Profilni tahrirlash",
+    no_incoming_claims: "Hozircha da'volar yo'q",
+    no_incoming_claims_desc: "Kimdir buyumingizga da'vo qilib javob yozsa, bu yerda ko'rinasiz.",
+    incoming_claims_header: "Kelib tushgan egalik da'volari",
+    incoming_claims_desc: "Sirli savolingizga berilgan javoblarni tekshiring. Faqat haqiqiy egasi to'g'ri topsa tasdiqlang.",
+    btn_accept_claim: "✓ Da'voni tasdiqlash",
+    btn_reject_claim: "✕ Rad etish",
+    claim_accepted_msg: "🎉 Da'vo topuvchi tomonidan tasdiqlandi!",
+
+    auth_signin_tab: "Sign In",
+    auth_signup_tab: "Sign Up",
+    auth_welcome: "Xush kelibsiz",
+    auth_welcome_sub: "Akkauntingizga kirish uchun ma'lumotlarni kiriting",
+    auth_signup: "Ro'yxatdan o'tish",
+    auth_signup_sub: "Boshlash uchun yangi akkaunt yarating",
+    auth_btn_signin: "Kirish →",
+    auth_btn_signup: "Akkaunt yaratish →",
+    auth_btn_demo: "⚡ 1-Tugma bilan Demo Kirish (Azizbek)",
+    auth_full_name: "To'liq ism-familiya",
+    auth_email: "Elektron pochta manzili",
+    auth_pass: "Parol",
+    auth_tg: "Telegram username (ixtiyoriy)",
+    auth_phone: "Telefon raqam (ixtiyoriy)",
+
+    edit_listing_title: "E'lonni tahrirlash",
+    btn_save_changes: "O'zgarishlarni saqlash",
+    btn_delete_listing: "🗑 E'lonni o'chirish",
+    edit_profile_title: "Profilni tahrirlash",
+    btn_save_profile: "Profilni saqlash",
+
+    toast_logged_out: "Tizimdan muvaffaqiyatli chiqildi.",
+    toast_logged_in: "Tizimga muvaffaqiyatli kirildi.",
+    toast_published: "E'lon muvaffaqiyatli chop etildi!",
+    toast_claim_sent: "Da'vo topuvchiga yuborildi!",
+    toast_listing_updated: "E'lon yangilandi!",
+    toast_listing_deleted: "E'lon muvaffaqiyatli o'chirildi.",
+    toast_comment_deleted: "Izoh o'chirildi.",
+    toast_comment_flagged: "Izoh moderatsiyaga yuborildi.",
+    toast_profile_updated: "Profil yangilandi!",
+    toast_login_required: "Iltimos, avval tizimga kiring.",
+    badge_returned: "Egasiga qaytarildi",
+    btn_mark_returned: "✓ Egasiga qaytarildi deb belgilash",
+    btn_reopen_listing: "↩ E'lonni qayta faollashtirish",
+    filter_status_all: "Barcha holatlar",
+    filter_status_active: "Faqat faol",
+    filter_status_returned: "Faqat qaytarilganlar",
+    sort_label: "Saralash:",
+    sort_newest: "Eng yangi",
+    sort_oldest: "Eng eski",
+    filter_reward_only: "💰 Faqat mukofotli",
+    btn_contact_tg: "Telegram",
+    btn_contact_phone: "Qo'ng'iroq",
+    btn_contact_email: "Email",
+    incoming_claims_modal_title: "Ushbu buyum bo'yicha kelgan da'volar",
+    toast_status_updated: "E'lon holati yangilandi!",
+    toast_quota_warn: "Ogohlantirish: Brauzer xotirasi to'lib bormoqda.",
+    confirm_delete_listing: "Rostdan ham ushbu e'lonni o'chirmoqchimisiz?",
+    confirm_delete_comment: "Ushbu izohni o'chirmoqchimisiz?"
+  },
+  ru: {
+    nav_explore: "Все объявления",
+    nav_dashboard: "Мой кабинет",
+    nav_report: "Подать объявление",
+    nav_login: "Войти",
+    nav_logout: "Выйти",
+    light_color: "ЦВЕТ СВЕТА:",
+    lamp_status: "ЛАМПА ВКЛЮЧЕНА",
+    pull_cord: "ТЯНИТЕ ШНУР",
+    return_site: "✕ ВЕРНУТЬСЯ НА САЙТ",
+
+    hero_tagline: "СООБЩЕСТВО ПОИСКА И ВОЗВРАТА ВЕЩЕЙ",
+    hero_title: "Нашли что-то? Потеряли вещь?",
+    hero_desc: "Опубликуйте найденное или найдите потерянное. Нашедший надежно сохранит вещь, а владелец подтвердит право владения секретным ответом.",
+    btn_report_found: "● Я нашел вещь",
+    btn_lost_something: "● Я потерял вещь",
+    stat_reunited: "Возвращено владельцам",
+    stat_found: "Найдено (на хранении)",
+    stat_lost: "Активный поиск",
+
+    search_placeholder: "Поиск по вещи, месту или деталям...",
+    all_categories: "Все категории",
+    view_grid: "Сетка",
+    view_map: "Карта",
+    all_items: "Все вещи",
+    badge_found: "Найдено",
+    badge_lost: "Потеряно",
+    no_items_found: "Ничего не найдено",
+    no_items_desc: "Попробуйте изменить запрос или сбросить фильтры.",
+    btn_reset_filters: "Сбросить фильтры",
+
+    CAT_ELECTRONICS: "Электроника и гаджеты",
+    CAT_DOCUMENTS_AND_IDS: "Документы и паспорта",
+    CAT_WALLETS_AND_BAGS: "Кошельки и сумки",
+    CAT_KEYS: "Ключи",
+    CAT_JEWELRY_AND_WATCHES: "Украшения и часы",
+    CAT_CLOTHING: "Одежда",
+    CAT_PETS: "Домашние животные",
+    CAT_OTHER: "Другие вещи",
+
+    your_listing: "ВАШЕ ОБЪЯВЛЕНИЕ",
+    btn_edit: "✏️ Редактировать",
+    btn_close: "✕ Закрыть",
+    reward_offered: "Вознаграждение:",
+    found_at: "Найдено в",
+    lost_near: "Потеряно около",
+    field_datetime: "Дата и время",
+    field_holding: "Текущее место хранения",
+    posted_by: "Опубликовал(а)",
+    btn_prev: "❮ Назад",
+    btn_next: "Вперед ❯",
+
+    safe_protocol_title: "🔒 Протокол безопасной передачи:",
+    safe_protocol_desc: "Встречайтесь в людном общественном месте (метро, охрана, ТЦ). Никогда не переводите деньги заранее.",
+    claim_secret_title: "Опишите детали, которые может знать только владелец:",
+    claim_placeholder: "Опишите точные приметы, наклейки, царапины, заставку на экране...",
+    btn_send_claim: "Отправить заявку на возврат →",
+
+    community_leads_title: "Информация и комментарии",
+    no_leads_yet: "Пока нет комментариев. Если вы знаете владельца, напишите ниже.",
+    add_lead_label: "Добавить информацию или комментарий:",
+    comment_placeholder: "Видели эту вещь или знаете владельца? Напишите здесь...",
+    know_owner_check: "Кажется, я знаю владельца",
+    btn_post_comment: "Отправить",
+    btn_report: "Пожаловаться",
+    btn_delete: "Удалить",
+    btn_remove_photo: "Удалить фото",
+
+    finder_panel_title: "🟢 Вы сообщили о находке этой вещи",
+    finder_panel_desc: "Как нашедший, вы не можете подать заявку самому себе. Вы можете проверить входящие заявки в своем Кабинете.",
+    btn_open_dash: "Перейти в кабинет →",
+    btn_edit_listing: "✏️ Редактировать",
+    lost_panel_title: "🔴 Ваше объявление о пропаже",
+    lost_panel_desc: "Хотите обновить детали, вознаграждение или закрыть поиск?",
+    btn_edit_notice: "✏️ Редактировать объявление →",
+
+    login_to_claim: "🔒 Войдите, чтобы отправить заявку на возврат",
+    login_to_claim_desc: "Чтобы ответить на секретный вопрос и вернуть вещь, необходимо войти в аккаунт.",
+    btn_login_to_claim: "Войти и вернуть →",
+    login_to_comment: "🔒 Войдите, чтобы оставить комментарий",
+    login_to_comment_desc: "Помогите вернуть вещь владельцу, предварительно войдя в свой аккаунт.",
+    btn_login_to_comment: "Войти и написать →",
+
+    step_prefix: "ШАГ",
+    step_of: "ИЗ 5:",
+    step1_title: "Что вы хотите опубликовать?",
+    step2_title: "Фотографии и описание",
+    step3_title: "Где и когда?",
+    step4_title: "Место хранения и контакты",
+    step5_title: "Секретный вопрос и публикация",
+    btn_i_found: "🟢 Я нашел(ла)",
+    btn_i_lost: "🔴 Я потерял(а)",
+    field_title: "Название",
+    field_title_placeholder: "например, Черный рюкзак для ноутбука",
+    field_category: "Категория",
+    field_desc: "Подробное описание",
+    field_desc_placeholder: "Опишите цвет, состояние, особые приметы...",
+    field_where_found: "Где вы это нашли?",
+    field_where_lost: "Где вы это потеряли?",
+    field_where_placeholder: "Здание, станция метро или парк",
+    field_holding_q: "Где сейчас находится вещь?",
+    field_holding_placeholder: "У охраны кампуса, у меня, на стойке метро",
+    field_contact: "Контактная информация",
+    field_contact_placeholder: "Telegram @username, телефон",
+    field_reward: "Вознаграждение (необязательно)",
+    field_reward_placeholder: "например, $50 или 100 000 сум",
+    field_secret_q: "Секретный вопрос, который знает только владелец",
+    field_secret_q_placeholder: "например: Какая наклейка на ноутбуке? Что лежит во внутреннем кармане?",
+    btn_back: "← Назад",
+    btn_next_step: "Следующий шаг →",
+    btn_publish: "Опубликовать 🚀",
+
+    dash_title: "Кабинет пользователя",
+    tab_incoming: "Входящие заявки",
+    tab_my_items: "Мои объявления",
+    tab_my_claims: "Отправленные заявки",
+    btn_edit_profile: "Редактировать профиль",
+    no_incoming_claims: "Пока нет входящих заявок",
+    no_incoming_claims_desc: "Когда кто-то ответит на ваш секретный вопрос, заявка появится здесь.",
+    incoming_claims_header: "Входящие заявки на возврат",
+    incoming_claims_desc: "Проверьте ответы на ваш секретный вопрос. Принимайте только при точном описании примет.",
+    btn_accept_claim: "✓ Принять заявку",
+    btn_reject_claim: "✕ Отклонить",
+    claim_accepted_msg: "🎉 Заявка принята нашедшим!",
+
+    auth_signin_tab: "Sign In",
+    auth_signup_tab: "Sign Up",
+    auth_welcome: "Вход в аккаунт",
+    auth_welcome_sub: "Войдите, чтобы продолжить работу с аккаунтом",
+    auth_signup: "Регистрация",
+    auth_signup_sub: "Создайте аккаунт, чтобы начать",
+    auth_btn_signin: "Войти →",
+    auth_btn_signup: "Создать аккаунт →",
+    auth_btn_demo: "⚡ Быстрый демо-вход (Azizbek)",
+    auth_full_name: "Полное имя",
+    auth_email: "Адрес электронной почты",
+    auth_pass: "Пароль",
+    auth_tg: "Telegram username (необязательно)",
+    auth_phone: "Номер телефона (необязательно)",
+
+    edit_listing_title: "Редактировать объявление",
+    btn_save_changes: "Сохранить изменения",
+    btn_delete_listing: "🗑 Удалить объявление",
+    edit_profile_title: "Редактировать профиль",
+    btn_save_profile: "Сохранить профиль",
+
+    toast_logged_out: "Вы успешно вышли из аккаунта.",
+    toast_logged_in: "Успешный вход в аккаунт.",
+    toast_published: "Объявление успешно опубликовано!",
+    toast_claim_sent: "Заявка отправлена нашедшему!",
+    toast_listing_updated: "Объявление обновлено!",
+    toast_listing_deleted: "Объявление успешно удалено.",
+    toast_comment_deleted: "Комментарий удален.",
+    toast_comment_flagged: "Комментарий отправлен на модерацию.",
+    toast_profile_updated: "Профиль обновлен!",
+    toast_login_required: "Пожалуйста, войдите в аккаунт.",
+    badge_returned: "Возвращено владельцу",
+    btn_mark_returned: "✓ Отметить как возвращенное",
+    btn_reopen_listing: "↩ Сделать снова активным",
+    filter_status_all: "Все статусы",
+    filter_status_active: "Только активные",
+    filter_status_returned: "Только возвращенные",
+    sort_label: "Сортировка:",
+    sort_newest: "Сначала новые",
+    sort_oldest: "Сначала старые",
+    filter_reward_only: "💰 С вознаграждением",
+    btn_contact_tg: "Telegram",
+    btn_contact_phone: "Позвонить",
+    btn_contact_email: "Email",
+    incoming_claims_modal_title: "Входящие заявки на этот предмет",
+    toast_status_updated: "Статус объявления обновлен!",
+    toast_quota_warn: "Внимание: локальное хранилище почти заполнено.",
+    confirm_delete_listing: "Вы действительно хотите удалить это объявление?",
+    confirm_delete_comment: "Удалить этот комментарий?"
+  }
+};
+
+let currentLang = localStorage.getItem("foundhub_lang") || "en";
+
+function t(k) {
+  if (I18N[currentLang] && I18N[currentLang][k]) return I18N[currentLang][k];
+  if (I18N["en"] && I18N["en"][k]) return I18N["en"][k];
+  return k;
+}
+
+function setLanguage(l) {
+  if (!["en", "uz", "ru"].includes(l)) l = "en";
+  currentLang = l;
+  localStorage.setItem("foundhub_lang", l);
+  updateLangButtons();
+  render();
+}
+
+function updateLangButtons() {
+  document.querySelectorAll("[data-lang]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.lang === currentLang);
+  });
+  const pl = $("#paletteRibbonLabel");
+  if (pl) pl.textContent = t("light_color");
+}
+
+function catLabel(k) {
+  return t("CAT_" + k) || (CAT[k] ? CAT[k][0] : k);
+}
+
+// Utilities
+const esc = s => String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = d => {
+  try {
+    const localeMap = { en: "en-US", uz: "uz-UZ", ru: "ru-RU" };
+    return new Date(d).toLocaleString(localeMap[currentLang] || "en-US", { dateStyle: "medium", timeStyle: "short" });
+  } catch (e) { return d; }
+};
+
+const mask = s => String(s || "").replace(/\b([A-Za-z]{0,2})(\d{4,})\b/g, (m, a, b) => a + " ****" + b.slice(-2));
+
+const comp = f => new Promise(r => {
+  if (!f || !f.type || !f.type.startsWith("image/")) return r("");
+  const i = new Image();
+  i.onload = () => {
+    const maxDim = 720;
+    const k = Math.min(1, maxDim / Math.max(i.width, i.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(i.width * k);
+    c.height = Math.round(i.height * k);
+    const ctx = c.getContext("2d");
+    ctx.drawImage(i, 0, 0, c.width, c.height);
+    try {
+      r(c.toDataURL("image/jpeg", 0.72));
+    } catch (e) {
+      r("");
+    }
+  };
+  i.onerror = () => r("");
+  i.src = URL.createObjectURL(f);
+});
+
+// App routing and state
+const $ = s => document.querySelector(s);
+const app = $("#app"), dlg = $("#dlg"), db = $("#dbody");
+let view = "home", currentFilter = { q: "", type: "ALL", cat: "", status: "ALL", rewardOnly: false, sort: "NEWEST" }, activeViewMode = "grid";
+let W = { step: 1, d: { type: "FOUND", cat: "ELECTRONICS" } };
+let leafletMapInstance = null;
+
+// Global ESC keyboard listener to close open modals instantly
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape" || e.keyCode === 27) {
+    if (dlg && (dlg.open || dlg.hasAttribute("open"))) {
+      dlg.close();
+    }
+  }
+});
+
+
+function toast(t) {
+  const e = document.createElement("div");
+  e.className = "toast";
+  e.textContent = t;
+  document.body.append(e);
+  setTimeout(() => e.remove(), 2600);
+}
+
+function updateDashBadge() {
+  const currentUserName = S.user ? S.user.name : "";
+  const myItemIds = S.items.filter(i => S.user && (i.owner === S.user.name || i.ownerId === S.user.id)).map(i => i.id);
+  const pending = S.claims.filter(c => myItemIds.includes(c.item) && c.status === "PENDING").length;
+  const badge = $("#dashBadge");
+  if (badge) {
+    badge.innerHTML = pending > 0 ? `<span style="background:var(--lost);color:#0a0a0a;padding:1px 6px;border-radius:10px;font-size:11px;margin-left:4px;">${pending}</span>` : "";
+  }
+}
+
+function updateNavAuth() {
+  const navExplore = $("#navExplore");
+  if (navExplore) navExplore.textContent = t("nav_explore");
+  const navDash = $("#navDash");
+  if (navDash) {
+    navDash.innerHTML = `${t("nav_dashboard")} <span id="dashBadge"></span>`;
+    updateDashBadge();
+  }
+  const navReport = $("#navReport");
+  if (navReport) navReport.textContent = t("nav_report");
+
+  updateLangButtons();
+
+  const navArea = $("#navAuthArea");
+  if (!navArea) return;
+
+  if (S.user) {
+    navArea.innerHTML = `
+      <button class="btn s" id="btnNavLogout">${t("nav_logout")}</button>
+    `;
+    $("#btnNavLogout").onclick = logout;
+  } else {
+    navArea.innerHTML = `
+      <button class="btn s p" id="btnNavLogin">${t("nav_login")}</button>
+    `;
+    $("#btnNavLogin").onclick = () => openAuthModal("login");
+  }
+}
+
+function logout() {
+  S.user = null;
+  save();
+  toast("Logged out successfully.");
+  render();
+}
+
+let authSuccessCallback = null;
+
+function openAuthModal(initialMode = "login", onSuccess = null) {
+  authSuccessCallback = typeof onSuccess === "function" ? onSuccess : null;
+  dlg.setAttribute("data-mode", "auth");
+  let activeTab = initialMode === "register" ? "register" : "signin";
+  let lampOn = true;
+  let animFrameId = null;
+
+  
+  db.innerHTML = `
+    <div class="lamp-modal-wrap" id="lampModalWrap" data-on="true">
+      <div class="ambient-glow"></div>
+      <canvas id="dustCanvas"></canvas>
+
+      <!-- Quick Controls Bar -->
+      <div class="quick-controls">
+        <div class="lamp-status-tag">
+          <span class="status-indicator"></span>
+          <span id="lampStatusText">${t("lamp_status")}</span>
+        </div>
+
+        <div class="color-palette" id="colorPalette" title="Choose Lamp Color">
+          <span class="palette-label">${t("light_color")}</span>
+          <button type="button" class="color-dot-btn ${activeColor==='amber'?'active':''}" data-color="amber" style="--dot-color: #ffd93d;" aria-label="Amber Light" title="Amber (Warm)"></button>
+          <button type="button" class="color-dot-btn ${activeColor==='cyan'?'active':''}" data-color="cyan" style="--dot-color: #00f0ff;" aria-label="Cyan Light" title="Cyan (Cyber)"></button>
+          <button type="button" class="color-dot-btn ${activeColor==='rose'?'active':''}" data-color="rose" style="--dot-color: #ff3385;" aria-label="Rose Light" title="Rose (Sunset)"></button>
+          <button type="button" class="color-dot-btn ${activeColor==='mint'?'active':''}" data-color="mint" style="--dot-color: #00e676;" aria-label="Mint Light" title="Mint (Emerald)"></button>
+          <button type="button" class="color-dot-btn ${activeColor==='moonlight'?'active':''}" data-color="moonlight" style="--dot-color: #d8e5ff;" aria-label="Moonlight" title="Moonlight (Cool White)"></button>
+        </div>
+
+        <button type="button" class="btn-close-modal" id="btnClAuth" title="Close Modal">${t("return_site")}</button>
+      </div>
+
+      <!-- Lamp Stage & Cone -->
+      <div class="lamp-stage" id="lampStage">
+        <div class="light-cone"></div>
+
+        <!-- Grand SVG Industrial Desk Lamp -->
+        <svg class="lamp-svg" viewBox="0 0 280 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="120" y="0" width="40" height="8" rx="2" fill="#090a0f" stroke="#000" stroke-width="2.5"/>
+          <line x1="140" y1="8" x2="140" y2="38" stroke="#222634" stroke-width="4.5"/>
+          <line x1="140" y1="8" x2="140" y2="38" stroke="#000" stroke-width="1.5" stroke-dasharray="2 2"/>
+          <path d="M122 38 L158 38 L182 74 L98 74 Z" fill="#141824" stroke="#000" stroke-width="2.5"/>
+          <line x1="100" y1="73" x2="180" y2="73" stroke="var(--lamp-accent)" stroke-width="2.5"/>
+          <rect x="131" y="74" width="18" height="6" fill="#32374a" stroke="#000" stroke-width="1"/>
+          <circle cx="140" cy="86" r="11" class="lamp-bulb" stroke="#000" stroke-width="2"/>
+        </svg>
+
+        <!-- Dynamic Beaded Brass Pull Chain SVG -->
+        <svg class="cord-svg-layer" id="cordSvg">
+          <line id="cordShadow" x1="0" y1="0" x2="0" y2="0" stroke="rgba(0,0,0,0.6)" stroke-width="3" stroke-linecap="round"/>
+          <line id="cordCore" x1="0" y1="0" x2="0" y2="0" stroke="#7a5800" stroke-width="3" stroke-linecap="round"/>
+          <line id="cordBeads" x1="0" y1="0" x2="0" y2="0" stroke="#ffd93d" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="0 5.5"/>
+          <line id="cordGlint" x1="0" y1="0" x2="0" y2="0" stroke="#fff8c4" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0 5.5"/>
+        </svg>
+
+        <!-- Interactive Draggable Pull Handle -->
+        <div class="lamp-cord-wrapper" id="lampCord" title="Drag or click to toggle lamp">
+          <div class="cord-handle">💡</div>
+          <div class="cord-hint">${t("pull_cord")}</div>
+        </div>
+      </div>
+
+      <!-- Centered Auth Card Stage -->
+      <div class="auth-stage">
+        <div class="auth-card" id="authCard">
+          <div class="auth-tabs" id="authTabs" data-active="${activeTab}">
+            <button type="button" class="tab-btn ${activeTab==='signin'?'active':''}" id="tabSignIn">Sign In</button>
+            <button type="button" class="tab-btn ${activeTab==='register'?'active':''}" id="tabRegister">Sign Up</button>
+          </div>
+
+          <h2 class="card-title" id="cardTitle">${activeTab==='signin'?t("auth_welcome"):t("auth_signup")}</h2>
+          <p class="card-subtitle" id="cardSubtitle">${activeTab==='signin'?t("auth_welcome_sub"):t("auth_signup_sub")}</p>
+
+          <form id="authForm">
+            <div id="regFields" style="${activeTab==='register'?'':'display:none;'}">
+              <div class="auth-form-group">
+                <label for="authName">${t("auth_full_name")}</label>
+                <input id="authName" placeholder="e.g. Azizbek Rakhimov">
+              </div>
+            </div>
+
+            <div class="auth-form-group">
+              <label for="authEmail">${t("auth_email")}</label>
+              <input id="authEmail" type="email" required placeholder="user@example.com" value="${activeTab==='signin'?'azizbek@foundhub.app':''}">
+            </div>
+
+            <div class="auth-form-group">
+              <label for="authPass">${t("auth_pass")}</label>
+              <input id="authPass" type="password" required placeholder="••••••••" value="${activeTab==='signin'?'12345678':''}">
+            </div>
+
+            <div id="regMoreFields" style="${activeTab==='register'?'':'display:none;'}">
+              <div class="auth-form-group">
+                <label for="authTg">${t("auth_tg")}</label>
+                <input id="authTg" placeholder="@username">
+              </div>
+              <div class="auth-form-group">
+                <label for="authPhone">${t("auth_phone")}</label>
+                <input id="authPhone" placeholder="+998 90 ...">
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="btnSubmit">
+              <span class="btn-glow-layer"></span>
+              <span id="btnText">${activeTab==='signin'?t("auth_btn_signin"):t("auth_btn_signup")}</span>
+            </button>
+
+            <button type="button" class="demo-btn" id="btnDemoLogin">
+              ${t("auth_btn_demo")}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+
+  applyThemeColor(activeColor);
+
+// Global Theme Color Delegator
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".color-dot-btn");
+  if (btn && btn.dataset.color) {
+    applyThemeColor(btn.dataset.color);
+  }
+});
+
+  const wrap = $("#lampModalWrap");
+  const cord = $("#lampCord");
+  const authCard = $("#authCard");
+  const authStage = document.querySelector(".auth-stage");
+  const statusText = $("#lampStatusText");
+  const tabSignIn = $("#tabSignIn");
+  const tabRegister = $("#tabRegister");
+  const authTabs = $("#authTabs");
+  const cardTitle = $("#cardTitle");
+  const cardSubtitle = $("#cardSubtitle");
+  const btnText = $("#btnText");
+  const regFields = $("#regFields");
+  const regMoreFields = $("#regMoreFields");
+
+  let currentDodgeX = 0;
+  let currentDodgeY = 0;
+
+  function updateCardAvoidance() {
+    if (!authCard || !authStage) return;
+
+    // When pull cord is not being dragged by user, card MUST stay strictly in its original place!
+    if (!isDragging) {
+      if (currentDodgeX !== 0 || currentDodgeY !== 0) {
+        currentDodgeX = 0;
+        currentDodgeY = 0;
+        authCard.style.transform = "translate3d(0, 0, 0)";
+      }
+      return;
+    }
+
+    const cordRect = cord.getBoundingClientRect();
+    const cx = cordRect.left + cordRect.width / 2;
+    const cy = cordRect.top + cordRect.height / 2;
+
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+
+    const stageRect = authStage.getBoundingClientRect();
+    const cardW = authCard.offsetWidth;
+    const cardH = authCard.offsetHeight;
+    const baseLeft = (stageRect.left + stageRect.width / 2) - cardW / 2;
+    const baseTop = stageRect.top;
+
+    const pad = 8; // Only dodge when cord is coming very close and is just about to get on top of it!
+
+    // Full screen roving bounds for the sign-in page across entire site (with mobile agility)
+    const isMobile = winW < 640;
+    const minX = isMobile ? 8 : 15;
+    const maxX = Math.max(minX, winW - cardW - (isMobile ? 8 : 15));
+    const minY = isMobile ? 55 : 65; // just below quick controls bar
+    const maxY = Math.max(minY, winH - cardH - (isMobile ? 8 : 15));
+
+    const curCardX = baseLeft + currentDodgeX;
+    const curCardY = baseTop + currentDodgeY;
+
+    // Check if cord is coming very close to the card's CURRENT position and is just about to get on top of it
+    const isAboutToOverlap = (
+      cx >= curCardX - pad &&
+      cx <= curCardX + cardW + pad &&
+      cy >= curCardY - pad &&
+      cy <= curCardY + cardH + pad
+    );
+
+    // If cord is not right up to the card, keep card calm and still right where it is
+    if (!isAboutToOverlap) {
+      return;
+    }
+
+    // Cord is right near the card and just about to get on top of it:
+    // Dodge dynamically and organically to ANY location across the entire screen (not just corners!),
+    // ensuring the cord handle NEVER ends up on top of the card!
+    const curCenterX = curCardX + cardW / 2;
+    const curCenterY = curCardY + cardH / 2;
+
+    let dx = curCenterX - cx;
+    let dy = curCenterY - cy;
+    let dist = Math.hypot(dx, dy);
+    if (dist < 1) {
+      dx = (Math.random() - 0.5) || 1;
+      dy = (Math.random() - 0.5) || 1;
+      dist = Math.hypot(dx, dy);
+    }
+    const nx = dx / dist;
+    const ny = dy / dist;
+    const baseAngle = Math.atan2(dy, dx);
+
+    const safePad = 25; // Guarantee cord is safely outside the card boundaries
+    function isSafe(x, y) {
+      return (
+        cx < x - safePad ||
+        cx > x + cardW + safePad ||
+        cy < y - safePad ||
+        cy > y + cardH + safePad
+      );
+    }
+
+    let best = null;
+
+    // 1. Primary Organic Evasion:
+    // Repel along the direct vector away from the cord handle or natural deflection angles.
+    // This allows the card to dodge to ANY intermediate continuous (X, Y) coordinate in the screen!
+    const escapeSteps = [
+      Math.max(cardW * 0.55, isMobile ? 180 : 260),
+      Math.max(cardW * 0.75, isMobile ? 240 : 340),
+      Math.max(cardW * 0.95, isMobile ? 300 : 420)
+    ];
+    const verticalMultiplier = isMobile ? 1.25 : 0.75;
+    const angleOffsets = [0, 0.45, -0.45, 0.9, -0.9, 1.4, -1.4, Math.PI];
+
+    for (const step of escapeSteps) {
+      for (const off of angleOffsets) {
+        const ang = baseAngle + off;
+        const tx = Math.max(minX, Math.min(maxX, curCardX + Math.cos(ang) * step));
+        const ty = Math.max(minY, Math.min(maxY, curCardY + Math.sin(ang) * (step * verticalMultiplier)));
+
+        if (isSafe(tx, ty)) {
+          const moved = Math.hypot(tx - curCardX, ty - curCardY);
+          if (moved > 50) {
+            best = { x: tx, y: ty };
+            break;
+          }
+        }
+      }
+      if (best) break;
+    }
+
+    // 2. Open Screen Exploration (if pinned against a screen boundary or cornered):
+    // Distribute candidate target spots across the ENTIRE interior of the screen (center, 25%, 50%, 75%, etc.),
+    // picking an open safe zone so it does NOT always snap to outer corners!
+    if (!best) {
+      const gridFracs = [0.15, 0.35, 0.5, 0.65, 0.85];
+      const screenCandidates = [];
+      for (const fx of gridFracs) {
+        for (const fy of gridFracs) {
+          const sx = minX + fx * (maxX - minX);
+          const sy = minY + fy * (maxY - minY);
+          if (isSafe(sx, sy)) {
+            screenCandidates.push({ x: sx, y: sy });
+          }
+        }
+      }
+
+      let bestScore = -Infinity;
+      const desiredClearance = 320;
+
+      for (const c of screenCandidates) {
+        const cDist = Math.hypot(c.x + cardW / 2 - cx, c.y + cardH / 2 - cy);
+        const dirScore = ((c.x + cardW / 2 - cx) * nx + (c.y + cardH / 2 - cy) * ny);
+        const clearanceScore = cDist >= desiredClearance ? 100 : cDist - desiredClearance;
+        const score = dirScore * 0.5 + clearanceScore;
+
+        if (score > bestScore) {
+          bestScore = score;
+          best = c;
+        }
+      }
+    }
+
+    if (best) {
+      currentDodgeX = Math.round(best.x - baseLeft);
+      currentDodgeY = Math.round(best.y - baseTop);
+      authCard.style.transform = `translate3d(${currentDodgeX}px, ${currentDodgeY}px, 0)`;
+    }
+  }
+
+  // ==========================================================================
+  // PHYSICAL INTERACTIVE PULL CORD ENGINE (DRAGGABLE IN ANY DIRECTION & CLICKABLE)
+  // ==========================================================================
+  const stage = $("#lampStage");
+  const shadowLine = $("#cordShadow");
+  const coreLine = $("#cordCore");
+  const beadsLine = $("#cordBeads");
+  const glintLine = $("#cordGlint");
+
+  const REST_LENGTH = 56;
+  let cordAnimId = null;
+  let vx = 0, vy = 0;
+  let handleX = 0, handleY = 0;
+  let isDragging = false;
+  let dragStartX = 0, dragStartY = 0;
+  let startHandleX = 0, startHandleY = 0;
+  let isPrimed = false;
+
+  function getAnchor() {
+    const w = stage ? (stage.offsetWidth || 500) : 500;
+    return {
+      x: Math.round(w / 2 + 22),
+      y: 68 // Anchored firmly inside banker's lamp shade (bottom rim is at y = 74)
+    };
+  }
+
+  function toggleLampState() {
+    lampOn = !lampOn;
+    wrap.setAttribute("data-on", lampOn ? "true" : "false");
+    statusText.textContent = lampOn ? t("lamp_status") : "DARK MODE";
+    playMechanicalClick(lampOn ? "high" : "low");
+  }
+
+  function updateCord(x, y) {
+    const a = getAnchor();
+    if (shadowLine) {
+      shadowLine.setAttribute("x1", a.x + 1.5);
+      shadowLine.setAttribute("y1", a.y + 1.5);
+      shadowLine.setAttribute("x2", x + 1.5);
+      shadowLine.setAttribute("y2", y + 1.5);
+    }
+    if (coreLine) {
+      coreLine.setAttribute("x1", a.x);
+      coreLine.setAttribute("y1", a.y);
+      coreLine.setAttribute("x2", x);
+      coreLine.setAttribute("y2", y);
+    }
+    if (beadsLine) {
+      beadsLine.setAttribute("x1", a.x);
+      beadsLine.setAttribute("y1", a.y);
+      beadsLine.setAttribute("x2", x);
+      beadsLine.setAttribute("y2", y);
+    }
+    if (glintLine) {
+      glintLine.setAttribute("x1", a.x);
+      glintLine.setAttribute("y1", a.y);
+      glintLine.setAttribute("x2", x);
+      glintLine.setAttribute("y2", y);
+    }
+
+    const dx = x - a.x;
+    const dy = Math.max(8, y - a.y);
+    const angleDeg = (Math.atan2(dx, dy) * 180) / Math.PI;
+
+    // Position handle at (x, y) with rotation matching cord tension angle
+    cord.style.transform = `translate3d(${x - 8}px, ${y}px, 0) rotate(${angleDeg * 0.75}deg)`;
+
+    // Auth Card Evades Pull Cord (never allows cord to get on top of it)
+    updateCardAvoidance();
+  }
+
+  function startSpringPhysics() {
+    if (cordAnimId) cancelAnimationFrame(cordAnimId);
+    const k = 0.16;
+    const damping = 0.74;
+
+    function step() {
+      const a = getAnchor();
+      const restX = a.x;
+      const restY = a.y + REST_LENGTH;
+
+      const fx = (restX - handleX) * k;
+      const fy = (restY - handleY) * k;
+      vx = (vx + fx) * damping;
+      vy = (vy + fy) * damping;
+      handleX += vx;
+      handleY += vy;
+
+      updateCord(handleX, handleY);
+
+      if (Math.abs(vx) > 0.08 || Math.abs(vy) > 0.08 || Math.hypot(restX - handleX, restY - handleY) > 0.4) {
+        cordAnimId = requestAnimationFrame(step);
+      } else {
+        handleX = restX;
+        handleY = restY;
+        vx = 0;
+        vy = 0;
+        updateCord(handleX, handleY);
+        cordAnimId = null;
+      }
+    }
+    cordAnimId = requestAnimationFrame(step);
+  }
+
+  function runClickPullAnim() {
+    if (cordAnimId) cancelAnimationFrame(cordAnimId);
+    toggleLampState();
+
+    const a = getAnchor();
+    const startY = handleY;
+    const targetY = a.y + REST_LENGTH + 26;
+    const startTime = performance.now();
+    const duration = 110;
+
+    function pullStep(now) {
+      const elapsed = now - startTime;
+      if (elapsed < duration) {
+        const p = Math.sin((elapsed / duration) * (Math.PI / 2));
+        handleY = startY + (targetY - startY) * p;
+        handleX = a.x;
+        updateCord(handleX, handleY);
+        cordAnimId = requestAnimationFrame(pullStep);
+      } else {
+        handleY = targetY;
+        handleX = a.x;
+        updateCord(handleX, handleY);
+        vx = 0;
+        vy = -3.5;
+        startSpringPhysics();
+      }
+    }
+    cordAnimId = requestAnimationFrame(pullStep);
+  }
+
+  function onPointerMove(e) {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+
+    const a = getAnchor();
+    handleX = startHandleX + dx;
+    handleY = Math.max(a.y + 12, startHandleY + dy);
+
+    const dist = Math.hypot(handleX - a.x, handleY - a.y);
+    // When pulled down past threshold, prime the switch to toggle ONLY upon release!
+    // NEVER switch on/off while continuously holding and dragging the cord!
+    if (dist >= REST_LENGTH + 20) {
+      isPrimed = true;
+    }
+
+    updateCord(handleX, handleY);
+  }
+
+  function onPointerUp(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    cord.classList.remove("dragging");
+
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerup", onPointerUp);
+    window.removeEventListener("pointercancel", onPointerUp);
+
+    // Return sign in page smoothly to its original place as soon as cord is released
+    if (currentDodgeX !== 0 || currentDodgeY !== 0) {
+      currentDodgeX = 0;
+      currentDodgeY = 0;
+      if (authCard) authCard.style.transform = "translate3d(0, 0, 0)";
+    }
+
+    const isQuickClick = Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY) < 8;
+    if (isQuickClick) {
+      runClickPullAnim();
+      return;
+    }
+
+    // Toggle switch ONLY upon releasing the cord!
+    if (isPrimed) {
+      toggleLampState();
+      isPrimed = false;
+    }
+
+    startSpringPhysics();
+  }
+
+  cord.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    if (cordAnimId) {
+      cancelAnimationFrame(cordAnimId);
+      cordAnimId = null;
+    }
+    isDragging = true;
+    isPrimed = false;
+    cord.classList.add("dragging");
+
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    startHandleX = handleX;
+    startHandleY = handleY;
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+  });
+
+  // Initial Cord Setup
+  const initAnchor = getAnchor();
+  handleX = initAnchor.x;
+  handleY = initAnchor.y + REST_LENGTH;
+  updateCord(handleX, handleY);
+
+  const onWindowResize = () => {
+    if (!isDragging) {
+      const a = getAnchor();
+      handleX = a.x;
+      handleY = a.y + REST_LENGTH;
+      updateCord(handleX, handleY);
+    }
+  };
+  window.addEventListener("resize", onWindowResize);
+
+  requestAnimationFrame(() => {
+    if (!isDragging) {
+      const a = getAnchor();
+      handleX = a.x;
+      handleY = a.y + REST_LENGTH;
+      updateCord(handleX, handleY);
+    }
+  });
+
+  $("#btnClAuth").addEventListener("click", () => {
+    if (cordAnimId) cancelAnimationFrame(cordAnimId);
+    window.removeEventListener("resize", onWindowResize);
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerup", onPointerUp);
+    window.removeEventListener("pointercancel", onPointerUp);
+  });
+
+  // Color Palette Click (Updates both Lamp and Main Site Theme)
+  wrap.querySelectorAll(".color-dot-btn").forEach(btn => {
+    btn.onclick = () => {
+      applyThemeColor(btn.dataset.color);
+    };
+  });
+
+  // Switch Tab
+  function switchTab(tab) {
+    if (activeTab === tab) return;
+    activeTab = tab;
+    authTabs.setAttribute("data-active", tab);
+    tabSignIn.classList.toggle("active", tab === "signin");
+    tabRegister.classList.toggle("active", tab === "register");
+    const activeBtn = tab === "signin" ? tabSignIn : tabRegister;
+    const inactiveBtn = tab === "signin" ? tabRegister : tabSignIn;
+    const p = PALETTES[activeColor] || PALETTES.amber;
+    activeBtn.style.background = p.accent;
+    inactiveBtn.style.background = "#1e2232";
+
+    if (tab === "signin") {
+      cardTitle.textContent = t("auth_welcome");
+      cardSubtitle.textContent = t("auth_welcome_sub");
+      btnText.textContent = t("auth_btn_signin");
+      regFields.style.display = "none";
+      regMoreFields.style.display = "none";
+      $("#authEmail").value = "azizbek@foundhub.app";
+      $("#authPass").value = "12345678";
+    } else {
+      cardTitle.textContent = t("auth_signup");
+      cardSubtitle.textContent = t("auth_signup_sub");
+      btnText.textContent = t("auth_btn_signup");
+      regFields.style.display = "block";
+      regMoreFields.style.display = "block";
+      $("#authEmail").value = "";
+      $("#authPass").value = "";
+    }
+  }
+
+  tabSignIn.onclick = () => switchTab("signin");
+  tabRegister.onclick = () => switchTab("register");
+
+  // Dust Canvas Animation
+  const canvas = $("#dustCanvas");
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    function updateCanvasSize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    updateCanvasSize();
+    window.addEventListener("resize", updateCanvasSize);
+
+    let particles = [];
+    class DustParticle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * (canvas.height * 0.75);
+        this.size = Math.random() * 2.2 + 0.8;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = Math.random() * 0.35 + 0.15;
+        this.alpha = Math.random() * 0.65 + 0.2;
+        this.oscillation = Math.random() * Math.PI * 2;
+      }
+      update() {
+        this.oscillation += 0.02;
+        this.x += this.vx + Math.sin(this.oscillation) * 0.28;
+        this.y += this.vy;
+        if (this.y > canvas.height || this.x < 0 || this.x > canvas.width) {
+          this.reset();
+          this.y = 50;
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = PALETTES[activeColor].accent;
+        ctx.shadowColor = PALETTES[activeColor].accent;
+        ctx.shadowBlur = 5;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 45; i++) particles.push(new DustParticle());
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (lampOn) {
+        particles.forEach(p => { p.update(); p.draw(); });
+      }
+      animFrameId = requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  }
+
+  // Cleanup on close
+  function closeModal() {
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    dlg.removeAttribute("data-mode");
+    dlg.close();
+  }
+
+  $("#btnClAuth").onclick = closeModal;
+  dlg.onclose = () => {
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    dlg.removeAttribute("data-mode");
+  };
+
+  // Demo Login
+  $("#btnDemoLogin").onclick = () => {
+    S.user = {
+      id: MY_ID,
+      name: "Azizbek",
+      email: "azizbek@foundhub.app",
+      telegram: "@azizbek_lostfound",
+      phone: "+998 90 555 12 34",
+      node: "VERIFIED NODE"
+    };
+    save();
+    closeModal();
+    if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 70 });
+    toast("Logged in as Azizbek!");
+    if (authSuccessCallback) {
+      const cb = authSuccessCallback;
+      authSuccessCallback = null;
+      cb();
+    } else {
+      render();
+    }
+  };
+
+  // Auth Form Submit
+  $("#authForm").onsubmit = e => {
+    e.preventDefault();
+    const email = $("#authEmail").value.trim();
+    const name = activeTab === "register" ? ($("#authName").value.trim() || "Community Member") : (email.split('@')[0] || "Community Member");
+    const tg = activeTab === "register" ? ($("#authTg")?.value.trim() || "") : "@" + name.toLowerCase();
+    const phone = activeTab === "register" ? ($("#authPhone")?.value.trim() || "") : "";
+
+    S.user = {
+      id: "usr-" + Date.now(),
+      name: name,
+      email: email,
+      telegram: tg,
+      phone: phone,
+      node: "COMMUNITY MEMBER"
+    };
+    save();
+    closeModal();
+    if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 75 });
+    toast("Welcome, " + name + "! Logged in successfully.");
+    if (authSuccessCallback) {
+      const cb = authSuccessCallback;
+      authSuccessCallback = null;
+      cb();
+    } else {
+      render();
+    }
+  };
+
+  dlg.showModal();
+  applyThemeColor(activeColor);
+}
+
+function go(v) {
+  if (v === "report" && !S.user) {
+    toast("Please log in to report an item.");
+    openAuthModal("login", () => go("report"));
+    return;
+  }
+  if (v === "dash" && !S.user) {
+    toast("Please log in to access your dashboard.");
+    openAuthModal("login", () => go("dash"));
+    return;
+  }
+  view = v;
+  if (v === "report") W = { step: 1, d: { type: "FOUND", cat: "ELECTRONICS" } };
+  render();
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => go(b.dataset.go));
+document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => setLanguage(b.dataset.lang));
+
+function render() {
+  updateDashBadge();
+  updateNavAuth();
+  if (view === "home") home();
+  else if (view === "report") report();
+  else if (view === "dash") dash();
+}
+
+// ==========================================================================
+// HOME VIEW: CLEAN, INTUITIVE & SIMPLE
+// ==========================================================================
+
+function getFilteredItems() {
+  const q = (currentFilter.q || "").toLowerCase().trim();
+  const list = S.items.filter(i => {
+    if (i.status === "ARCHIVED") return false;
+    if (currentFilter.type !== "ALL" && i.type !== currentFilter.type) return false;
+    if (currentFilter.cat && i.cat !== currentFilter.cat) return false;
+    if (currentFilter.status === "ACTIVE" && i.status !== "ACTIVE") return false;
+    if (currentFilter.status === "RETURNED" && i.status !== "RETURNED_TO_OWNER") return false;
+    if (currentFilter.rewardOnly && (!i.reward || !i.reward.trim())) return false;
+    if (q) {
+      const haystack = (i.title + " " + i.desc + " " + i.where + " " + (i.holding || "") + " " + (i.contact || "")).toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (currentFilter.sort === "OLDEST") {
+    list.sort((a, b) => new Date(a.date) - new Date(b.date));
+  } else {
+    list.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+  return list;
+}
+
+function home() {
+  const totalFound = S.items.filter(i => i.type === "FOUND" && i.status !== "ARCHIVED").length;
+  const totalLost = S.items.filter(i => i.type === "LOST" && i.status !== "ARCHIVED").length;
+  const totalReunited = S.items.filter(i => i.status === "RETURNED_TO_OWNER").length;
+
+  const filtered = getFilteredItems();
+
+  app.innerHTML = `
+    <!-- Hero Banner -->
+    <section class="hero">
+      <div class="hero-tagline">
+        <span class="pulse-dot"></span> ${t("hero_tagline")}
+      </div>
+      <h1>${t("hero_title")}</h1>
+      <p>${t("hero_desc")}</p>
+      <div class="row">
+        <button class="btn f" id="rf">${t("btn_report_found")}</button>
+        <button class="btn l" id="rl">${t("btn_lost_something")}</button>
+      </div>
+    </section>
+
+    <!-- Clean 3-Metric Summary -->
+    <div class="telemetry-grid">
+      <div class="metric-box">
+        <div class="label"><span style="color:#10b981">●</span> ${t("stat_reunited")}</div>
+        <div class="val" style="color:#10b981">${totalReunited}</div>
+      </div>
+      <div class="metric-box">
+        <div class="label"><span style="color:var(--found)">●</span> ${t("stat_found")}</div>
+        <div class="val">${totalFound}</div>
+      </div>
+      <div class="metric-box">
+        <div class="label"><span style="color:var(--lost)">●</span> ${t("stat_lost")}</div>
+        <div class="val">${totalLost}</div>
+      </div>
+    </div>
+
+    <!-- Intuitive Search & Filter Bar -->
+    <div class="filter-bar">
+      <div class="search-row" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <input id="q" type="search" placeholder="${t("search_placeholder")}" value="${esc(currentFilter.q)}" aria-label="Search" style="flex:2; min-width:180px;">
+        
+        <select id="fc" aria-label="Category" style="flex:1; min-width:130px;">
+          <option value="">${t("all_categories")}</option>
+          ${Object.entries(CAT).map(([k, v]) => `<option value="${k}" ${currentFilter.cat===k?'selected':''}>${catLabel(k)}</option>`).join("")}
+        </select>
+
+        <select id="fStatus" aria-label="Status Filter" style="flex:1; min-width:130px;">
+          <option value="ALL" ${currentFilter.status==='ALL'?'selected':''}>${t("filter_status_all")}</option>
+          <option value="ACTIVE" ${currentFilter.status==='ACTIVE'?'selected':''}>${t("filter_status_active")}</option>
+          <option value="RETURNED" ${currentFilter.status==='RETURNED'?'selected':''}>${t("filter_status_returned")}</option>
+        </select>
+
+        <select id="fSort" aria-label="Sort Order" style="flex:1; min-width:130px;">
+          <option value="NEWEST" ${currentFilter.sort==='NEWEST'?'selected':''}>${t("sort_newest")}</option>
+          <option value="OLDEST" ${currentFilter.sort==='OLDEST'?'selected':''}>${t("sort_oldest")}</option>
+        </select>
+      </div>
+
+      <div class="type-pills" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <button type="button" class="pill ${currentFilter.type==='ALL'?'active':''}" data-tp="ALL">
+          ${t("all_items")} (${S.items.filter(i=>i.status!=='ARCHIVED').length})
+        </button>
+        <button type="button" class="pill ${currentFilter.type==='FOUND'?'active f':''}" data-tp="FOUND">
+          ${t("badge_found")} (${totalFound})
+        </button>
+        <button type="button" class="pill ${currentFilter.type==='LOST'?'active l':''}" data-tp="LOST">
+          ${t("badge_lost")} (${totalLost})
+        </button>
+        <button type="button" class="pill ${currentFilter.rewardOnly?'active':''}" id="pillRewardOnly" style="margin-left:auto;">
+          ${t("filter_reward_only")}
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content: Radar Map or Grid -->
+    <div id="viewContainer"></div>
+  `;
+
+  $("#rf").onclick = () => {
+    if (!S.user) {
+      toast("Please log in to report a found item.");
+      openAuthModal("login", () => { W.d.type = "FOUND"; go("report"); });
+      return;
+    }
+    W.d.type = "FOUND";
+    go("report");
+  };
+  $("#rl").onclick = () => {
+    if (!S.user) {
+      toast("Please log in to report a lost item.");
+      openAuthModal("login", () => { W.d.type = "LOST"; go("report"); });
+      return;
+    }
+    W.d.type = "LOST";
+    go("report");
+  };
+
+  $("#q").oninput = e => {
+    currentFilter.q = e.target.value;
+    renderViewArea(getFilteredItems());
+  };
+  $("#fc").onchange = e => {
+    currentFilter.cat = e.target.value;
+    home();
+  };
+
+  const fStatusEl = $("#fStatus");
+  if (fStatusEl) fStatusEl.onchange = e => {
+    currentFilter.status = e.target.value;
+    home();
+  };
+
+  const fSortEl = $("#fSort");
+  if (fSortEl) fSortEl.onchange = e => {
+    currentFilter.sort = e.target.value;
+    renderViewArea(getFilteredItems());
+  };
+
+  const pillReward = $("#pillRewardOnly");
+  if (pillReward) pillReward.onclick = () => {
+    currentFilter.rewardOnly = !currentFilter.rewardOnly;
+    home();
+  };
+
+  document.querySelectorAll("[data-tp]").forEach(p => {
+    p.onclick = () => {
+      currentFilter.type = p.dataset.tp;
+      home();
+    };
+  });
+
+
+
+  renderViewArea(filtered);
+}
+
+function renderViewArea(items) {
+  const container = $("#viewContainer");
+  if (!container) return;
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div class="panel" style="text-align:center; padding:44px 20px;">
+        <h3 style="margin-bottom:6px;">${t("no_items_found")}</h3>
+        <p class="meta">${t("no_items_desc")}</p>
+        <p style="margin-top:14px;">
+          <button class="btn s" id="btnResetFilters">${t("btn_reset_filters")}</button>
+        </p>
+      </div>
+    `;
+    const btnR = $("#btnResetFilters");
+    if (btnR) btnR.onclick = () => { currentFilter = { q: "", type: "ALL", cat: "", status: "ALL", rewardOnly: false, sort: "NEWEST" }; home(); };
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="grid">
+      ${items.map(i => `
+        <div class="card" data-id="${i.id}">
+          <div class="glyph">
+            ${i.img ? `<img src="${i.img}" alt="" loading="lazy">` : CAT[i.cat][1]}
+          </div>
+          
+          <div class="card-top">
+            <span class="badge ${i.type}">${i.type === "FOUND" ? t("badge_found") : t("badge_lost")}</span>
+            ${i.status === "RETURNED_TO_OWNER" ? `<span class="badge" style="background:#10b981; color:#fff; border-color:#000;">✓ ${t("badge_returned")}</span>` : ''}
+          </div>
+
+          <h3 style="font-size:17px; margin:2px 0;">${esc(i.title)}</h3>
+          
+          <span class="meta">${esc(i.where)} · ${fmt(i.date)}</span>
+          
+          ${i.type === "FOUND" ? `<span class="meta" style="font-weight:600;">Held at: ${esc(i.holding)}</span>` : ''}
+          ${i.reward ? `<span class="bounty-pill">💰 Reward: ${esc(i.reward)}</span>` : ''}
+
+          <div class="card-actions">
+            <button class="btn s p" style="width:100%" data-open="${i.id}">Inspect & Claim →</button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  container.querySelectorAll("[data-open]").forEach(b => {
+    b.onclick = e => {
+      e.stopPropagation();
+      openItemModal(+b.dataset.open);
+    };
+  });
+  container.querySelectorAll(".card").forEach(c => {
+    c.onclick = () => openItemModal(+c.dataset.id);
+  });
+}
+
+
+
+// ==========================================================================
+// ITEM DETAIL MODAL (WITH PREV < AND NEXT > AT THE VERY BOTTOM)
+// ==========================================================================
+
+
+function renderQuickContactButtons(contactStr) {
+  if (!contactStr) return "";
+  const buttons = [];
+  
+  // Telegram match: @username or t.me/username
+  const tgMatch = contactStr.match(/(?:@|t\.me\/)([a-zA-Z0-9_]{4,})/i);
+  if (tgMatch) {
+    const handle = tgMatch[1];
+    buttons.push(`
+      <a href="https://t.me/${esc(handle)}" target="_blank" rel="noopener" class="btn s" style="background:#229ED9; color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
+        ✈️ ${t("btn_contact_tg")} (@${esc(handle)})
+      </a>
+    `);
+  }
+
+  // Phone number match
+  const phoneMatch = contactStr.match(/(?:\+?\d[\d\s\-\(\)]{6,}\d)/);
+  if (phoneMatch) {
+    const rawPhone = phoneMatch[0].trim();
+    const cleanPhone = rawPhone.replace(/[^\d+]/g, "");
+    if (cleanPhone.length >= 7) {
+      buttons.push(`
+        <a href="tel:${esc(cleanPhone)}" class="btn s" style="background:#10b981; color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
+          📞 ${t("btn_contact_phone")} (${esc(rawPhone)})
+        </a>
+      `);
+    }
+  }
+
+  // Email match
+  const emailMatch = contactStr.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+  if (emailMatch) {
+    const email = emailMatch[1];
+    buttons.push(`
+      <a href="mailto:${esc(email)}" class="btn s" style="text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
+        ✉️ ${t("btn_contact_email")} (${esc(email)})
+      </a>
+    `);
+  }
+
+  if (buttons.length === 0) return "";
+  return `<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">${buttons.join("")}</div>`;
+}
+
+function openItemModal(id) {
+  const i = S.items.find(x => x.id === id);
+  if (!i) return;
+
+  const activeItems = S.items.filter(x => x.status !== "ARCHIVED");
+  const currentIndex = activeItems.findIndex(x => x.id === id);
+  const prevIndex = currentIndex > 0 ? currentIndex - 1 : activeItems.length - 1;
+  const nextIndex = currentIndex < activeItems.length - 1 ? currentIndex + 1 : 0;
+
+  const cs = S.comments.filter(c => c.item === id && !c.flag);
+  const isFound = i.type === "FOUND";
+  const isMyItem = S.user && (i.owner === S.user.name || i.ownerId === S.user.id || (S.user.id === MY_ID && (i.owner === "Azizbek" || i.ownerId === MY_ID)));
+
+  db.innerHTML = `
+    <div class="dlg-header">
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="badge ${i.type}">${isFound ? t("badge_found") : t("badge_lost")}</span>
+          ${i.status === "RETURNED_TO_OWNER" ? `<span class="badge" style="background:#10b981; color:#fff; border-color:#000;">✓ ${t("badge_returned")}</span>` : `<span class="meta" style="font-size:11px; font-weight:700;">${i.status.replace(/_/g, " ")}</span>`}
+          ${isMyItem ? `
+            <button type="button" class="btn s" id="btnToggleReturnedDirect" style="font-size:11px; padding:2px 8px; font-weight:800; ${i.status==='RETURNED_TO_OWNER'?'background:#fef08a; color:#000;':'background:#10b981; color:#fff;'}">
+              ${i.status==='RETURNED_TO_OWNER' ? t("btn_reopen_listing") : t("btn_mark_returned")}
+            </button>
+          ` : ''}
+          ${isMyItem ? `<span class="pill" style="font-size:10px; font-weight:800; background:var(--found);">${t("your_listing")}</span>` : ''}
+        </div>
+        <h2>${esc(i.title)}</h2>
+      </div>
+      <div class="row">
+        ${isMyItem ? `<button class="btn s" id="btnEditTopListing">${t("btn_edit")}</button>` : ''}
+        <button class="btn s" id="btnDlgClose">${t("btn_close")}</button>
+      </div>
+    </div>
+
+    ${i.img ? `
+      <div style="margin-bottom:14px; border:2.5px solid var(--ink); border-radius:6px; overflow:hidden; max-height:280px; box-shadow:4px 4px 0 var(--sh);">
+        <img src="${i.img}" alt="${esc(i.title)}" style="width:100%; height:100%; object-fit:cover; display:block;">
+      </div>
+    ` : ''}
+
+    <p style="font-size:16px; margin:0 0 14px; font-weight:500;">${esc(i.desc)}</p>
+
+    ${i.reward ? `
+      <div class="safe-box">
+        💰 <strong>${t("reward_offered")} ${esc(i.reward)}</strong>
+      </div>
+    ` : ''}
+
+    <dl class="panel">
+      <dt>${isFound ? t("found_at") : t("lost_near")}</dt>
+      <dd>${esc(i.where)}</dd>
+      
+      <dt>${t("field_datetime")}</dt>
+      <dd>${fmt(i.date)}</dd>
+      
+      <dt>${t("field_holding")}</dt>
+      <dd>${esc(i.holding)}</dd>
+      
+      <dt>${t("posted_by")}</dt>
+      <dd>
+        ${esc(i.owner)} · ${esc(i.contact)}
+        ${renderQuickContactButtons(i.contact)}
+      </dd>
+    </dl>
+
+
+
+    <!-- If User is Finder of this Found Item: CANNOT CLAIM IT! -->
+    ${isFound && isMyItem ? `
+      <div class="panel" style="background:var(--code-bg); border:2.5px dashed var(--ink); margin:16px 0;">
+        <div style="font-weight:800; font-size:15px; margin-bottom:4px; color:var(--ink);">${t("finder_panel_title")}</div>
+        <p class="meta" style="margin:0 0 12px; font-size:13px;">${t("finder_panel_desc")}</p>
+        <div class="row">
+          <button type="button" class="btn s p" id="btnGoToDashFromItem">${t("btn_open_dash")}</button>
+          <button type="button" class="btn s" id="btnEditFoundItem">${t("btn_edit_listing")}</button>
+        </div>
+
+        ${(() => {
+          const itemClaims = S.claims.filter(c => c.item === id);
+          if (itemClaims.length === 0) return '';
+          return `
+            <div style="margin-top:14px; border-top:1.5px dashed var(--ink); padding-top:10px;">
+              <div style="font-weight:800; font-size:13px; margin-bottom:8px;">
+                📋 ${t("incoming_claims_modal_title")} (${itemClaims.length}):
+              </div>
+              ${itemClaims.map(c => `
+                <div style="background:var(--surf); border:2px solid var(--ink); border-radius:6px; padding:10px 12px; margin-bottom:8px; box-shadow:2px 2px 0 var(--sh);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                    <span style="font-weight:700;">👤 ${esc(c.by)}</span>
+                    <span class="badge ${c.status==='ACCEPTED'?'FOUND':''}" style="${c.status==='ACCEPTED'?'background:#10b981; color:#fff;':''}">${c.status}</span>
+                  </div>
+                  <div style="font-size:13px; color:var(--ink); margin-top:4px;">
+                    <strong>Answer:</strong> "${esc(c.proof)}"
+                  </div>
+                  ${c.status === "PENDING" ? `
+                    <div class="row" style="margin-top:8px; gap:8px;">
+                      <button type="button" class="btn s" data-modal-accept="${c.id}" style="background:#10b981; color:#fff; font-size:12px;">${t("btn_accept_claim")}</button>
+                      <button type="button" class="btn s" data-modal-reject="${c.id}" style="font-size:12px;">${t("btn_reject_claim")}</button>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join("")}
+            </div>
+          `;
+        })()}
+      </div>
+    ` : ''}
+
+    <!-- If User Lost This Item: They Can Edit Their Lost Report! -->
+    ${!isFound && isMyItem ? `
+      <div class="panel" style="background:#fff8db; border:2.5px solid var(--ink); margin:16px 0; box-shadow:3px 3px 0 var(--sh);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-weight:800; font-size:15px; color:#0a0a0a;">${t("lost_panel_title")}</div>
+            <div class="meta" style="color:#555; font-size:13px;">${t("lost_panel_desc")}</div>
+          </div>
+          <button type="button" class="btn p s" id="btnEditLostNotice">${t("btn_edit_notice")}</button>
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Anti-Fraud Ownership Challenge Section (Only for other claimants) -->
+    ${isFound && !isMyItem && i.status === "ACTIVE" ? `
+      <div class="safe-box">
+        <strong>${t("safe_protocol_title")}</strong>
+        <br>${t("safe_protocol_desc")}
+      </div>
+
+      ${S.user ? `
+        <form id="claimForm" style="margin:16px 0;">
+          <label for="claimProof"><strong>${esc(i.q || t("claim_secret_title"))}</strong></label>
+          <textarea id="claimProof" rows="3" required placeholder="${t("claim_placeholder")}"></textarea>
+          <p style="margin:10px 0 0;">
+            <button class="btn p">${t("btn_send_claim")}</button>
+          </p>
+        </form>
+      ` : `
+        <div style="margin:16px 0; padding:14px 16px; border:2.5px solid var(--ink); border-radius:6px; background:var(--surf); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:3px 3px 0 var(--sh);">
+          <div>
+            <div style="font-weight:800; font-size:14px;">${t("login_to_claim")}</div>
+            <div class="meta" style="font-size:12px;">${t("login_to_claim_desc")}</div>
+          </div>
+          <button type="button" class="btn s p" id="btnLoginToClaim">${t("btn_login_to_claim")}</button>
+        </div>
+      `}
+    ` : ''}
+
+    <!-- Community Leads -->
+    <div style="margin-top:20px; border-top:2.5px solid var(--ink); padding-top:14px;">
+      <h3 style="font-size:17px; margin-bottom:8px;">${t("community_leads_title")}</h3>
+      
+      <div style="margin-bottom:12px;">
+        ${cs.map(c => `
+          <div class="panel" style="margin:8px 0; padding:10px 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>${esc(c.by)}</strong>
+              ${c.type === "OWNER_LEAD" ? '<span class="badge FOUND" style="font-size:10px;">Owner Lead</span>' : ''}
+            </div>
+            <div style="margin-top:4px; font-size:14px;">${esc(c.text)}</div>
+            <div style="margin-top:6px; display:flex; gap:6px; align-items:center;">
+              <button class="btn s" data-flag="${c.id}" style="font-size:11px; padding:2px 8px;">${t("btn_report")}</button>
+              <button class="btn s" data-delcomm="${c.id}" style="font-size:11px; padding:2px 8px; color:var(--lost);">${t("btn_delete")}</button>
+            </div>
+          </div>
+        `).join("") || `<p class="meta">${t("no_leads_yet")}</p>`}
+      </div>
+
+      ${S.user ? `
+        <form id="commentForm">
+          <label for="commentText"><strong>${t("add_lead_label")}</strong></label>
+          <textarea id="commentText" rows="2" required placeholder="${t("comment_placeholder")}"></textarea>
+          <div class="row" style="margin-top:8px; justify-content:space-between;">
+            <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:700; user-select:none; margin:0;">
+              <input type="checkbox" id="isLead" style="width:18px; height:18px; margin:0; cursor:pointer; accent-color:var(--ink); flex-shrink:0;"> ${t("know_owner_check")}
+            </label>
+            <button class="btn s">${t("btn_post_comment")}</button>
+          </div>
+        </form>
+      ` : `
+        <div style="margin-top:12px; padding:12px 16px; border:2.5px solid var(--ink); border-radius:6px; background:var(--surf); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:3px 3px 0 var(--sh);">
+          <div>
+            <div style="font-weight:800; font-size:13px;">${t("login_to_comment")}</div>
+            <div class="meta" style="font-size:12px;">${t("login_to_comment_desc")}</div>
+          </div>
+          <button type="button" class="btn s p" id="btnLoginToComment">${t("btn_login_to_comment")}</button>
+        </div>
+      `}
+    </div>
+
+    <!-- Bottom Navigation Bar (Prev < and Next >) -->
+    <div style="margin-top:24px; padding-top:14px; border-top:2.5px solid var(--ink); display:flex; justify-content:space-between; align-items:center;">
+      <button class="btn s" id="btnPrevItem" style="display:flex; align-items:center; gap:6px;">
+        <span>❮</span>
+        <span>${t("btn_prev")}</span>
+      </button>
+
+      <span class="meta" style="font-weight:700; font-size:12px;">${currentIndex + 1} / ${activeItems.length}</span>
+
+      <button class="btn s" id="btnNextItem" style="display:flex; align-items:center; gap:6px;">
+        <span>${t("btn_next")}</span>
+        <span>❯</span>
+      </button>
+    </div>
+  `;
+
+  dlg.showModal();
+  $("#btnDlgClose").onclick = () => dlg.close();
+
+  // Edit / Dashboard buttons
+  const btnTopEdit = $("#btnEditTopListing");
+  if (btnTopEdit) btnTopEdit.onclick = () => openEditItemModal(id);
+
+  const btnDash = $("#btnGoToDashFromItem");
+  if (btnDash) btnDash.onclick = () => { dlg.close(); go("dash"); };
+
+  const btnEditF = $("#btnEditFoundItem");
+  if (btnEditF) btnEditF.onclick = () => openEditItemModal(id);
+
+  const btnEditL = $("#btnEditLostNotice");
+  if (btnEditL) btnEditL.onclick = () => openEditItemModal(id);
+
+  const btnLoginClaim = $("#btnLoginToClaim");
+  if (btnLoginClaim) btnLoginClaim.onclick = () => openAuthModal("login", () => openItemModal(id));
+
+  const btnLoginComm = $("#btnLoginToComment");
+  if (btnLoginComm) btnLoginComm.onclick = () => openAuthModal("login", () => openItemModal(id));
+
+  // Direct Return Toggle
+  const btnToggleRet = $("#btnToggleReturnedDirect");
+  if (btnToggleRet) {
+    btnToggleRet.onclick = () => {
+      if (i.status === "RETURNED_TO_OWNER") {
+        i.status = "ACTIVE";
+      } else {
+        i.status = "RETURNED_TO_OWNER";
+        if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 70 });
+      }
+      save();
+      toast(t("toast_status_updated"));
+      openItemModal(id);
+      home();
+    };
+  }
+
+  // Accept/Reject claims directly in Item Detail Modal
+  db.querySelectorAll("[data-modal-accept]").forEach(b => {
+    b.onclick = () => {
+      const claimId = +b.dataset.modalAccept;
+      const c = S.claims.find(x => x.id === claimId);
+      if (c) {
+        c.status = "ACCEPTED";
+        i.status = "RETURNED_TO_OWNER";
+        save();
+        if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 70 });
+        toast(t("toast_status_updated"));
+        openItemModal(id);
+        home();
+      }
+    };
+  });
+
+  db.querySelectorAll("[data-modal-reject]").forEach(b => {
+    b.onclick = () => {
+      const claimId = +b.dataset.modalReject;
+      const c = S.claims.find(x => x.id === claimId);
+      if (c) {
+        c.status = "REJECTED";
+        save();
+        toast("Claim rejected.");
+        openItemModal(id);
+      }
+    };
+  });
+
+  // Bottom Prev/Next navigation click handlers
+  $("#btnPrevItem").onclick = () => openItemModal(activeItems[prevIndex].id);
+  $("#btnNextItem").onclick = () => openItemModal(activeItems[nextIndex].id);
+
+
+
+  // Flag Comment
+  db.querySelectorAll("[data-flag]").forEach(b => {
+    b.onclick = () => {
+      if (!S.user) {
+        toast("Please log in to report a comment.");
+        openAuthModal("login", () => openItemModal(id));
+        return;
+      }
+      const c = S.comments.find(x => x.id === +b.dataset.flag);
+      if (c) { c.flag = 1; save(); toast("Comment hidden for review."); openItemModal(id); }
+    };
+  });
+
+  // Delete Comment
+  db.querySelectorAll("[data-delcomm]").forEach(b => {
+    b.onclick = () => {
+      const commId = +b.dataset.delcomm;
+      if (!S.user) {
+        toast("Please log in to delete comments.");
+        openAuthModal("login", () => openItemModal(id));
+        return;
+      }
+      S.comments = S.comments.filter(x => x.id !== commId);
+      save();
+      toast("Comment deleted.");
+      openItemModal(id);
+    };
+  });
+
+  // Claim Form
+  const claimForm = $("#claimForm");
+  if (claimForm) {
+    claimForm.onsubmit = e => {
+      e.preventDefault();
+      if (!S.user) {
+        toast("Please log in to submit a claim.");
+        openAuthModal("login", () => openItemModal(id));
+        return;
+      }
+      if (isMyItem) {
+        toast("You cannot claim an item you reported!");
+        return;
+      }
+      const proof = $("#claimProof").value.trim();
+      if (!proof) return;
+      const claimantName = S.user.name;
+      const claimantId = S.user.id;
+
+      S.claims.push({
+        id: S.n++,
+        item: id,
+        claimantId: claimantId,
+        by: claimantName,
+        proof: proof,
+        status: "PENDING",
+        date: new Date().toISOString()
+      });
+      S.myClaims.push({
+        id: S.n++,
+        item: id,
+        by: claimantName,
+        proof: proof,
+        status: "PENDING",
+        date: new Date().toISOString()
+      });
+      i.status = "CLAIM_PENDING";
+      save();
+      dlg.close();
+      if (typeof confetti === 'function') confetti({ particleCount: 70, spread: 60 });
+      toast("Claim sent to the finder!");
+      render();
+    };
+  }
+
+  // Comment Form
+  const commForm = $("#commentForm");
+  if (commForm) {
+    commForm.onsubmit = e => {
+      e.preventDefault();
+      if (!S.user) {
+        toast("Please log in to post a comment.");
+        openAuthModal("login", () => openItemModal(id));
+        return;
+      }
+      S.comments.push({
+        id: S.n++,
+        item: id,
+        by: S.user.name,
+        type: $("#isLead").checked ? "OWNER_LEAD" : "GENERAL",
+        text: $("#commentText").value
+      });
+      save();
+      openItemModal(id);
+    };
+  }
+}
+
+// ==========================================================================
+// 5-STEP REPORT WIZARD
+// ==========================================================================
+
+function report() {
+  if (!S.user) {
+    app.innerHTML = `
+      <div style="max-width:540px; margin:40px auto; text-align:center; padding:32px 20px; border:2.5px solid var(--ink); border-radius:8px; background:var(--surf); box-shadow:5px 5px 0 var(--sh);">
+        <div style="font-size:42px; margin-bottom:12px;">🔒</div>
+        <h2>Sign In Required</h2>
+        <p class="meta" style="margin:12px 0 24px; font-size:15px;">Please log in to report a found or lost item. This keeps listings verified and ensures finders and owners can communicate safely.</p>
+        <button class="btn p" id="btnReportAuthLogin" style="padding:12px 24px; font-size:15px;">Log In to Continue →</button>
+      </div>
+    `;
+    $("#btnReportAuthLogin").onclick = () => openAuthModal("login", () => report());
+    return;
+  }
+
+  const d = W.d, s = W.step;
+  const stepTitles = [
+    t("step1_title"),
+    t("step2_title"),
+    t("step3_title"),
+    t("step4_title"),
+    t("step5_title")
+  ];
+
+  const stepsHeader = `
+    <div class="step-title">${t("step_prefix")} ${s} ${t("step_of")} ${stepTitles[s-1]}</div>
+    <div class="wizard-steps">
+      ${[1, 2, 3, 4, 5].map(n => `<div class="step-bar ${n <= s ? 'done' : ''}"></div>`).join("")}
+    </div>
+  `;
+
+  let body = "";
+
+  if (s === 1) {
+    body = `
+      <h2>${t("step1_title")}</h2>
+      <div style="display:flex; gap:10px; margin:16px 0;">
+        <button type="button" class="btn ${d.type==='FOUND'?'on':''} f" data-t="FOUND" style="flex:1">
+          ${t("btn_i_found")}
+        </button>
+        <button type="button" class="btn ${d.type==='LOST'?'on':''} l" data-t="LOST" style="flex:1">
+          ${t("btn_i_lost")}
+        </button>
+      </div>
+
+      <label for="t">${t("field_title")}</label>
+      <input id="t" required placeholder="${t("field_title_placeholder")}" value="${esc(d.title || "")}">
+
+      <label for="c">${t("field_category")}</label>
+      <select id="c">
+        ${Object.entries(CAT).map(([k, v]) => `<option value="${k}" ${d.cat===k?'selected':''}>${catLabel(k)}</option>`).join("")}
+      </select>
+    `;
+  }
+
+  if (s === 2) {
+    const samplePhotos = SAMPLE_PHOTOS[d.cat] || SAMPLE_PHOTOS.OTHER;
+    body = `
+      <h2>Photos & Description</h2>
+      <label for="ds">Description</label>
+      <textarea id="ds" rows="3" required placeholder="Describe colors, condition, special marks...">${esc(d.desc || "")}</textarea>
+
+      <div class="pii-mask-tool">
+        <h4>🛡 Privacy Protection Tool</h4>
+        <p>Never show full ID, card, or document numbers. Type your number here to generate a safe masked version:</p>
+        <div class="pii-input-group">
+          <input type="text" id="piiInput" placeholder="e.g. AB1234567 or 4000123456789010" style="font-family:'JetBrains Mono',monospace;">
+          <button type="button" class="btn s" id="btnUseMask">Apply Masked</button>
+        </div>
+        <div id="piiPreview" style="font-family:'JetBrains Mono',monospace; font-size:12px; margin-top:6px; font-weight:700; color:#10b981;"></div>
+      </div>
+
+      <label>Photo (optional)</label>
+      <input id="im" type="file" accept="image/*">
+      
+      <div style="margin-top:10px;">
+        <span class="meta" style="font-weight:700;">Or use a sample photo:</span>
+        <div class="chips-row">
+          ${samplePhotos.map((p, idx) => `
+            <button type="button" class="chip" data-sample-img="${p}">Sample Photo #${idx+1}</button>
+          `).join("")}
+        </div>
+      </div>
+
+      ${d.img ? `
+        <div style="margin-top:12px; display:inline-block; border:2.5px solid var(--ink); border-radius:6px; overflow:hidden; max-width:200px; box-shadow:3px 3px 0 var(--sh); background:var(--surf);">
+          <img src="${d.img}" alt="Preview" style="width:100%; display:block; max-height:160px; object-fit:cover;">
+          <button type="button" id="btnRemovePhoto" class="btn s" style="width:100%; border:none; border-top:2px solid var(--ink); border-radius:0; background:#ff4d4d; color:#fff; font-weight:800; font-size:12px; padding:7px 10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;" title="Remove Photo">
+            <span>🗑</span> ${t("btn_remove_photo")}
+          </button>
+        </div>
+      ` : ''}
+    `;
+  }
+
+  if (s === 3) {
+    body = `
+      <h2>Where and when?</h2>
+      <label for="w">${d.type === "FOUND" ? "Where did you find it?" : "Where did you lose it?"}</label>
+      <input id="w" required placeholder="Building, station, or park area" value="${esc(d.where || "")}">
+
+      <span class="meta" style="font-weight:700;">Quick presets:</span>
+      <div class="chips-row">
+        ${LANDMARKS.map(l => `
+          <button type="button" class="chip" data-landmark="${l.name}" data-lat="${l.lat}" data-lng="${l.lng}">${l.name}</button>
+        `).join("")}
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+        <div>
+          <label for="lat">Latitude (GPS)</label>
+          <input id="lat" type="number" step="any" placeholder="37.7749" value="${d.lat || 37.7749}">
+        </div>
+        <div>
+          <label for="lng">Longitude (GPS)</label>
+          <input id="lng" type="number" step="any" placeholder="-122.4194" value="${d.lng || -122.4194}">
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <button type="button" class="btn s" id="btnGeolocate">📍 Detect My Location</button>
+      </div>
+
+      <label for="dt" style="margin-top:14px;">Date and time</label>
+      <input id="dt" type="datetime-local" required value="${d.date || new Date().toISOString().slice(0, 16)}">
+    `;
+  }
+
+  if (s === 4) {
+    const defaultContact = S.user ? (S.user.telegram || S.user.phone || S.user.email) : "";
+    body = `
+      <h2>${d.type === "FOUND" ? "Who has it now?" : "How can finders reach you?"}</h2>
+      ${d.type === "FOUND" ? `
+        <label for="h">Where is the item right now?</label>
+        <input id="h" required placeholder="Campus security office, with me, metro desk" value="${esc(d.holding || "With finder in safe custody")}">
+      ` : ''}
+
+      <label for="ct">Preferred contact</label>
+      <input id="ct" required placeholder="Telegram @username, phone, in-app" value="${esc(d.contact || defaultContact)}">
+
+      ${d.type === "LOST" ? `
+        <label for="rw">Reward (optional)</label>
+        <input id="rw" placeholder="e.g. $50 or 100 000 UZS" value="${esc(d.reward || "")}">
+      ` : ''}
+    `;
+  }
+
+  if (s === 5) {
+    body = `
+      <h2>Protect the owner</h2>
+      ${d.type === "FOUND" ? `
+        <label for="q">Secret question (optional)</label>
+        <input id="q" placeholder="e.g. What sticker is on the laptop? What color is the keychain?" value="${esc(d.q || "")}">
+        <p class="meta">Claimants answer this and only you see the answer.</p>
+      ` : '<p class="meta">Ready to publish your lost item notice.</p>'}
+
+      <div class="panel" style="margin-top:14px;">
+        <dt>Summary</dt>
+        <dd>${esc(d.title || "")} · ${esc(d.where || "")}</dd>
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <div style="max-width:580px; margin:0 auto; padding:20px 0;">
+      ${stepsHeader}
+      <form id="wizardForm">
+        ${body}
+        <p class="row" style="margin-top:22px; justify-content:space-between;">
+          ${s > 1 ? '<button type="button" class="btn" id="btnWizBack">' + t("btn_back") + '</button>' : '<span></span>'}
+          <button class="btn p" id="btnWizNext">${s < 5 ? t("btn_next_step") : t("btn_publish")}</button>
+        </p>
+      </form>
+    </div>
+  `;
+
+  app.querySelectorAll("[data-t]").forEach(b => {
+    b.onclick = () => { d.type = b.dataset.t; report(); };
+  });
+
+  const btnB = $("#btnWizBack");
+  if (btnB) btnB.onclick = () => {
+    const dsEl = $("#ds");
+    if (dsEl) d.desc = dsEl.value;
+    W.step--;
+    report();
+  };
+
+  if (s === 2) {
+    const ds = $("#ds");
+    if (ds) {
+      ds.oninput = () => {
+        d.desc = ds.value;
+      };
+    }
+
+    const saveDesc = () => {
+      const el = $("#ds");
+      if (el) d.desc = el.value;
+    };
+
+    const piiInput = $("#piiInput");
+    const piiPreview = $("#piiPreview");
+    if (piiInput && piiPreview) {
+      piiInput.oninput = () => {
+        const masked = mask(piiInput.value);
+        piiPreview.textContent = masked ? "Masked Preview: " + masked : "";
+      };
+      $("#btnUseMask").onclick = () => {
+        const masked = mask(piiInput.value);
+        if (masked) {
+          const dsEl = $("#ds");
+          if (dsEl) {
+            dsEl.value += (dsEl.value ? " " : "") + "(Masked ID: " + masked + ")";
+            d.desc = dsEl.value;
+          }
+          toast("Masked ID inserted into description!");
+        }
+      };
+    }
+
+    app.querySelectorAll("[data-sample-img]").forEach(b => {
+      b.onclick = () => {
+        saveDesc();
+        d.img = b.dataset.sampleImg;
+        report();
+      };
+    });
+
+    const im = $("#im");
+    if (im) {
+      im.onchange = () => {
+        const f = im.files && im.files[0];
+        if (f) {
+          saveDesc();
+          comp(f).then(u => {
+            d.img = u;
+            report();
+          });
+        }
+      };
+    }
+
+    const btnRemove = $("#btnRemovePhoto");
+    if (btnRemove) {
+      btnRemove.onclick = () => {
+        saveDesc();
+        d.img = "";
+        const fileEl = $("#im");
+        if (fileEl) fileEl.value = "";
+        report();
+      };
+    }
+  }
+
+  if (s === 3) {
+    app.querySelectorAll("[data-landmark]").forEach(b => {
+      b.onclick = () => {
+        $("#w").value = b.dataset.landmark;
+        $("#lat").value = b.dataset.lat;
+        $("#lng").value = b.dataset.lng;
+        d.where = b.dataset.landmark;
+        d.lat = parseFloat(b.dataset.lat);
+        d.lng = parseFloat(b.dataset.lng);
+      };
+    });
+    $("#btnGeolocate").onclick = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            $("#lat").value = pos.coords.latitude.toFixed(4);
+            $("#lng").value = pos.coords.longitude.toFixed(4);
+            d.lat = pos.coords.latitude;
+            d.lng = pos.coords.longitude;
+            toast("Location detected!");
+          },
+          err => toast("Location access unavailable.")
+        );
+      }
+    };
+  }
+
+  $("#wizardForm").onsubmit = e => {
+    e.preventDefault();
+    const val = id => { const el = $("#" + id); return el ? el.value : undefined; };
+
+    if (s === 1) {
+      Object.assign(d, { title: val("t"), cat: val("c") });
+    }
+    if (s === 2) {
+      Object.assign(d, { desc: val("ds") });
+      const f = $("#im")?.files[0];
+      if (f) {
+        comp(f).then(u => {
+          d.img = u;
+          W.step++;
+          report();
+        });
+        return;
+      }
+    }
+    if (s === 3) {
+      Object.assign(d, {
+        where: val("w"),
+        lat: parseFloat(val("lat")) || 37.7749,
+        lng: parseFloat(val("lng")) || -122.4194,
+        date: val("dt")
+      });
+    }
+    if (s === 4) {
+      Object.assign(d, {
+        holding: val("h") || "With finder in safe custody",
+        contact: val("ct"),
+        reward: val("rw") || ""
+      });
+    }
+    if (s === 5) {
+      if (!S.user) {
+        toast("Please log in to publish your report.");
+        openAuthModal("login", () => report());
+        return;
+      }
+      d.q = val("q") || "";
+      if (d.cat === "DOCUMENTS_AND_IDS") d.desc = mask(d.desc);
+      
+      const newId = S.n++;
+      const ownerName = S.user.name;
+      const ownerId = S.user.id;
+      
+      const newItem = {
+        id: newId,
+        owner: ownerName,
+        ownerId: ownerId,
+        beaconCode: "SIG-" + newId,
+        status: "ACTIVE",
+        ...d
+      };
+      S.items.unshift(newItem);
+      save();
+
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+      }
+
+      toast("Published successfully!");
+      go("home");
+      setTimeout(() => openItemModal(newId), 300);
+      return;
+    }
+
+    W.step++;
+    report();
+  };
+}
+
+// ==========================================================================
+// MY DASHBOARD (WITH AUTHENTICATION GUARD)
+// ==========================================================================
+
+let dashTab = "incoming";
+
+function dash() {
+  if (!S.user) {
+    app.innerHTML = `
+      <div class="panel" style="text-align:center; padding:50px 20px; max-width:540px; margin:40px auto; border:3px solid var(--ink); box-shadow:6px 6px 0 var(--sh);">
+        <h2 style="font-size:24px; margin-bottom:8px;">Sign In to FoundHub</h2>
+        <p class="meta" style="margin-bottom:20px; font-size:15px;">Please log in or create an account to view your dashboard, manage your listings, and respond to ownership claims.</p>
+        <button class="btn p" id="btnDashLogin" style="padding:10px 24px; font-size:15px;">Log In / Create Account →</button>
+      </div>
+    `;
+    $("#btnDashLogin").onclick = () => openAuthModal("login");
+    return;
+  }
+
+  const myListings = S.items.filter(i => i.owner === S.user.name || i.ownerId === S.user.id);
+  const myItemIds = myListings.map(i => i.id);
+  const incomingClaims = S.claims.filter(c => myItemIds.includes(c.item));
+  const myClaims = S.myClaims || [];
+
+  app.innerHTML = `
+    <div class="dash-profile-card">
+      <div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <h2 style="font-size:20px;">${esc(S.user.name)}</h2>
+          <span class="user-node-badge">${esc(S.user.node || 'COMMUNITY MEMBER')}</span>
+        </div>
+        <div class="meta" style="margin-top:4px;">
+          📧 ${esc(S.user.email)} · ✈️ ${esc(S.user.telegram || 'Not set')} · 📞 ${esc(S.user.phone || 'Not set')}
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn s" id="btnEditProfile">${t("btn_edit_profile")}</button>
+        <button class="btn s" id="btnProfileLogout">${t("nav_logout")}</button>
+      </div>
+    </div>
+
+    <!-- 4 Tabs -->
+    <div class="dash-tabs">
+      <button class="pill ${dashTab==='incoming'?'active':''}" data-dtab="incoming">
+        ${t("tab_incoming")} (${incomingClaims.length})
+      </button>
+      <button class="pill ${dashTab==='listings'?'active':''}" data-dtab="listings">
+        ${t("tab_my_items")} (${myListings.length})
+      </button>
+      <button class="pill ${dashTab==='myclaims'?'active':''}" data-dtab="myclaims">
+        ${t("tab_my_claims")} (${myClaims.length})
+      </button>
+      
+    </div>
+
+    <div id="dashContent"></div>
+  `;
+
+  app.querySelectorAll("[data-dtab]").forEach(b => {
+    b.onclick = () => {
+      dashTab = b.dataset.dtab;
+      dash();
+    };
+  });
+
+  $("#btnEditProfile").onclick = () => openEditProfileModal();
+  $("#btnProfileLogout").onclick = logout;
+
+  renderDashTabContent();
+}
+
+function renderDashTabContent() {
+  const container = $("#dashContent");
+  if (!container || !S.user) return;
+
+  if (dashTab === "incoming") {
+    const myListings = S.items.filter(i => i.owner === S.user.name || i.ownerId === S.user.id);
+    const myItemIds = myListings.map(i => i.id);
+    const incoming = S.claims.filter(c => myItemIds.includes(c.item));
+
+    if (incoming.length === 0) {
+      container.innerHTML = `
+        <div class="panel" style="text-align:center; padding:40px;">
+          <h3>${t("no_incoming_claims")}</h3>
+          <p class="meta">${t("no_incoming_claims_desc")}</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="margin-bottom:14px;">
+        <h3>${t("incoming_claims_header")}</h3>
+        <p class="meta">${t("incoming_claims_desc")}</p>
+      </div>
+      ${incoming.map(c => {
+        const item = S.items.find(x => x.id === c.item);
+        return `
+          <div class="panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <div>
+                <strong>Claim on: ${esc(item ? item.title : 'Item #' + c.item)}</strong>
+                <div class="meta">Claimant: <strong>${esc(c.by)}</strong> · Date: ${fmt(c.date)}</div>
+              </div>
+              <span class="badge ${c.status==='ACCEPTED'?'FOUND':''} ${c.status==='REJECTED'?'LOST':''}">${c.status}</span>
+            </div>
+
+            <div style="margin:10px 0; background:var(--code-bg); padding:10px 14px; border-radius:6px; border:1.5px solid var(--ink);">
+              <div style="font-size:12px; font-weight:700; color:var(--mute);">
+                YOUR QUESTION: "${esc(item ? item.q : 'Secret Question')}"
+              </div>
+              <div style="margin-top:4px; font-size:14px; font-weight:600;">
+                CLAIMANT ANSWER: "${esc(c.proof)}"
+              </div>
+            </div>
+
+            ${c.status === "PENDING" ? `
+              <div class="row" style="margin-top:8px;">
+                <button class="btn f s" data-accept="${c.id}">${t("btn_accept_claim")}</button>
+                <button class="btn s" data-reject="${c.id}">${t("btn_reject_claim")}</button>
+              </div>
+            ` : `
+              <div style="font-size:12px; color:var(--mute); font-weight:700; margin-top:6px;">
+                Status: ${c.status}.
+              </div>
+            `}
+          </div>
+        `;
+      }).join("")}
+    `;
+
+    container.querySelectorAll("[data-accept]").forEach(b => {
+      b.onclick = () => {
+        const c = S.claims.find(x => x.id === +b.dataset.accept);
+        if (c) {
+          c.status = "ACCEPTED";
+          const it = S.items.find(x => x.id === c.item);
+          if (it) it.status = "RETURNED_TO_OWNER";
+          save();
+          if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 70 });
+          toast("Claim ACCEPTED! Arrange safe handover.");
+          dash();
+        }
+      };
+    });
+
+    container.querySelectorAll("[data-reject]").forEach(b => {
+      b.onclick = () => {
+        const c = S.claims.find(x => x.id === +b.dataset.reject);
+        if (c) {
+          c.status = "REJECTED";
+          save();
+          toast("Claim rejected.");
+          dash();
+        }
+      };
+    });
+  }
+
+  else if (dashTab === "listings") {
+    const myListings = S.items.filter(i => i.owner === S.user.name || i.ownerId === S.user.id);
+    if (myListings.length === 0) {
+      container.innerHTML = `
+        <div class="panel" style="text-align:center; padding:40px;">
+          <h3>You haven't posted any items yet.</h3>
+          <p class="meta">Report a found item or post a lost belonging.</p>
+          <button class="btn p s" style="margin-top:10px;" data-go="report">Report an Item</button>
+        </div>
+      `;
+      container.querySelector("[data-go]").onclick = () => go("report");
+      return;
+    }
+
+    container.innerHTML = myListings.map(i => {
+      const claimsCount = S.claims.filter(c => c.item === i.id).length;
+      return `
+        <div class="panel">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+            <div>
+              <span class="badge ${i.type}">${i.type}</span>
+              <h3 style="display:inline; margin-left:6px; font-size:18px;">${esc(i.title)}</h3>
+              <div class="meta" style="margin-top:4px;">
+                📍 ${esc(i.where)} · ⏰ ${fmt(i.date)} · ${claimsCount} claim(s)
+              </div>
+            </div>
+            <span class="meta" style="font-weight:700;">${i.status.replace(/_/g, " ")}</span>
+          </div>
+
+          <p style="margin:10px 0; font-size:14px;">${esc(i.desc)}</p>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="btn s" data-inspect="${i.id}">View Details</button>
+            <button class="btn s" data-edit="${i.id}">Edit</button>
+            ${i.status !== "RETURNED_TO_OWNER" ? `<button class="btn s f" data-ret="${i.id}">Mark Returned</button>` : ''}
+            ${i.status !== "ARCHIVED" ? `<button class="btn s" data-arc="${i.id}">Archive</button>` : ''}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    container.querySelectorAll("[data-inspect]").forEach(b => b.onclick = () => openItemModal(+b.dataset.inspect));
+    container.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openEditItemModal(+b.dataset.edit));
+    container.querySelectorAll("[data-ret]").forEach(b => {
+      b.onclick = () => {
+        const item = S.items.find(x => x.id === +b.dataset.ret);
+        if (item) { item.status = "RETURNED_TO_OWNER"; save(); toast("Item marked returned!"); dash(); }
+      };
+    });
+    container.querySelectorAll("[data-arc]").forEach(b => {
+      b.onclick = () => {
+        const item = S.items.find(x => x.id === +b.dataset.arc);
+        if (item) { item.status = "ARCHIVED"; save(); toast("Item archived."); dash(); }
+      };
+    });
+  }
+
+  else if (dashTab === "myclaims") {
+    const myClaims = S.myClaims || [];
+    if (myClaims.length === 0) {
+      container.innerHTML = `
+        <div class="panel" style="text-align:center; padding:40px;">
+          <h3>No Sent Claims</h3>
+          <p class="meta">When you claim an item found by someone else, track it here.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = myClaims.map(c => {
+      const it = S.items.find(x => x.id === c.item);
+      return `
+        <div class="panel">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Claim on: ${esc(it ? it.title : 'Item #' + c.item)}</strong>
+            <span class="badge ${c.status==='ACCEPTED'?'FOUND':''} ${c.status==='REJECTED'?'LOST':''}">${c.status}</span>
+          </div>
+          <div class="meta" style="margin-top:4px;">
+            Submitted on ${fmt(c.date)}
+          </div>
+          <div style="margin:8px 0; background:var(--code-bg); padding:8px 12px; border-radius:6px; font-size:13px;">
+            <strong>Your Proof:</strong> "${esc(c.proof)}"
+          </div>
+          ${c.status === "ACCEPTED" ? `
+            <div class="safe-box">
+              🎉 <strong>${t("claim_accepted_msg")}</strong>
+              <br>Contact finder: <strong>${esc(it ? it.contact : 'In-app')}</strong>
+              <br>Custody Location: <strong>${esc(it ? it.holding : 'Designated Office')}</strong>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join("");
+  }
+
+  
+}
+
+// Edit Profile Modal
+function openEditProfileModal() {
+  if (!S.user) return;
+  db.innerHTML = `
+    <div class="dlg-header">
+      <h2>${t("edit_profile_title")}</h2>
+      <button class="btn s" id="btnClProf">${t("btn_close")}</button>
+    </div>
+    <form id="profForm">
+      <label for="pName">Display Name</label>
+      <input id="pName" required value="${esc(S.user.name)}">
+      
+      <label for="pEmail">Email</label>
+      <input id="pEmail" type="email" required value="${esc(S.user.email)}">
+      
+      <label for="pTg">Telegram Handle</label>
+      <input id="pTg" placeholder="@username" value="${esc(S.user.telegram || '')}">
+      
+      <label for="pPh">Phone Number</label>
+      <input id="pPh" placeholder="+998..." value="${esc(S.user.phone || '')}">
+
+      <p class="row" style="margin-top:18px;">
+        <button class="btn p">${t("btn_save_profile")}</button>
+      </p>
+    </form>
+  `;
+  dlg.showModal();
+  $("#btnClProf").onclick = () => dlg.close();
+  $("#profForm").onsubmit = e => {
+    e.preventDefault();
+    S.user.name = $("#pName").value;
+    S.user.email = $("#pEmail").value;
+    S.user.telegram = $("#pTg").value;
+    S.user.phone = $("#pPh").value;
+    save();
+    dlg.close();
+    toast("Profile updated!");
+    dash();
+  };
+}
+
+// Edit Item Modal
+function openEditItemModal(id) {
+  if (!S.user) {
+    toast("Please log in to edit listings.");
+    openAuthModal("login");
+    return;
+  }
+  const item = S.items.find(x => x.id === id);
+  if (!item) return;
+  const isOwner = item.owner === S.user.name || item.ownerId === S.user.id || (S.user.id === MY_ID && (item.owner === "Azizbek" || item.ownerId === MY_ID));
+  if (!isOwner) {
+    toast("You can only edit your own listings.");
+    return;
+  }
+
+  db.innerHTML = `
+    <div class="dlg-header">
+      <h2>${t("edit_listing_title")}</h2>
+      <button class="btn s" id="btnClEdit">${t("btn_close")}</button>
+    </div>
+    <form id="editItemForm">
+      <label for="eTitle">Title</label>
+      <input id="eTitle" required value="${esc(item.title)}">
+
+      <label for="eCat">Category</label>
+      <select id="eCat">
+        ${Object.entries(CAT).map(([k, v]) => `<option value="${k}" ${item.cat===k?'selected':''}>${catLabel(k)}</option>`).join("")}
+      </select>
+
+      <label for="eStatus">Status</label>
+      <select id="eStatus">
+        <option value="ACTIVE" ${item.status==='ACTIVE'?'selected':''}>Active</option>
+        <option value="CLAIM_PENDING" ${item.status==='CLAIM_PENDING'?'selected':''}>Claim Pending</option>
+        <option value="RETURNED_TO_OWNER" ${item.status==='RETURNED_TO_OWNER'?'selected':''}>Returned</option>
+        <option value="ARCHIVED" ${item.status==='ARCHIVED'?'selected':''}>Archived</option>
+      </select>
+
+      <label for="eDesc">Description</label>
+      <textarea id="eDesc" rows="3" required>${esc(item.desc)}</textarea>
+
+      <label for="eWhere">Location</label>
+      <input id="eWhere" required value="${esc(item.where)}">
+
+      <label for="eHolding">Current Holding Location</label>
+      <input id="eHolding" required value="${esc(item.holding)}">
+
+      <label for="eContact">Contact</label>
+      <input id="eContact" required value="${esc(item.contact)}">
+
+      <label for="eReward">Reward</label>
+      <input id="eReward" value="${esc(item.reward || "")}">
+
+      <label for="eQ">Secret Question</label>
+      <input id="eQ" value="${esc(item.q || "")}">
+
+      <div class="row" style="margin-top:20px; justify-content:space-between; align-items:center;">
+        <button type="submit" class="btn p">${t("btn_save_changes")}</button>
+        <button type="button" class="btn s" id="btnDeleteListing" style="color:var(--lost); border-color:var(--lost);">${t("btn_delete_listing")}</button>
+      </div>
+    </form>
+  `;
+  dlg.showModal();
+  $("#btnClEdit").onclick = () => dlg.close();
+  $("#btnDeleteListing").onclick = () => {
+    S.items = S.items.filter(x => x.id !== id);
+    S.comments = S.comments.filter(x => x.item !== id);
+    S.claims = S.claims.filter(x => x.item !== id);
+    S.myClaims = S.myClaims.filter(x => x.item !== id);
+    save();
+    dlg.close();
+    toast("Listing deleted successfully.");
+    render();
+  };
+  $("#editItemForm").onsubmit = e => {
+    e.preventDefault();
+    item.title = $("#eTitle").value;
+    item.cat = $("#eCat").value;
+    item.status = $("#eStatus").value;
+    item.desc = $("#eDesc").value;
+    item.where = $("#eWhere").value;
+    item.holding = $("#eHolding").value;
+    item.contact = $("#eContact").value;
+    item.reward = $("#eReward").value;
+    item.q = $("#eQ").value;
+    save();
+    dlg.close();
+    toast("Listing updated!");
+    if (view === "dash") {
+      dash();
+    } else {
+      setTimeout(() => openItemModal(item.id), 200);
+    }
+  };
+}
+
+// Initial render
+render();
+
+// Initialize top bar theme buttons
+document.querySelectorAll(".top-palette .color-dot-btn").forEach(btn => {
+  btn.onclick = () => applyThemeColor(btn.dataset.color);
+});
+applyThemeColor(activeColor);
+
+</script>
+</body>
+</html>
