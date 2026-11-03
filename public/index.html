@@ -2356,18 +2356,19 @@ const I18N = {
   }
 };
 
-let currentLang = localStorage.getItem("foundhub_lang") || "en";
+let currentLang = "en";
+try { currentLang = localStorage.getItem("foundhub_lang") || "en"; } catch(e) {}
 
 function t(k) {
   if (I18N[currentLang] && I18N[currentLang][k]) return I18N[currentLang][k];
   if (I18N["en"] && I18N["en"][k]) return I18N["en"][k];
-  return k;
+  return k || "";
 }
 
 function setLanguage(l) {
   if (!["en", "uz", "ru"].includes(l)) l = "en";
   currentLang = l;
-  localStorage.setItem("foundhub_lang", l);
+  try { localStorage.setItem("foundhub_lang", l); } catch(e) {}
   updateLangButtons();
   render();
 }
@@ -2385,12 +2386,15 @@ function catLabel(k) {
 }
 
 // Utilities
-const esc = s => String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const esc = s => String(s == null ? "" : s).replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmt = d => {
+  if (!d) return "";
   try {
+    const dt = new Date(d);
+    if (isNaN(dt.getTime())) return String(d);
     const localeMap = { en: "en-US", uz: "uz-UZ", ru: "ru-RU" };
-    return new Date(d).toLocaleString(localeMap[currentLang] || "en-US", { dateStyle: "medium", timeStyle: "short" });
-  } catch (e) { return d; }
+    return dt.toLocaleString(localeMap[currentLang] || "en-US", { dateStyle: "medium", timeStyle: "short" });
+  } catch (e) { return String(d || ""); }
 };
 
 const mask = s => String(s || "").replace(/\b([A-Za-z]{0,2})(\d{4,})\b/g, (m, a, b) => a + " ****" + b.slice(-2));
@@ -2399,6 +2403,7 @@ const comp = f => new Promise(r => {
   if (!f || !f.type || !f.type.startsWith("image/")) return r("");
   const i = new Image();
   i.onload = () => {
+    try { URL.revokeObjectURL(i.src); } catch(e) {}
     const maxDim = 720;
     const k = Math.min(1, maxDim / Math.max(i.width, i.height));
     const c = document.createElement("canvas");
@@ -2412,7 +2417,10 @@ const comp = f => new Promise(r => {
       r("");
     }
   };
-  i.onerror = () => r("");
+  i.onerror = () => {
+    try { URL.revokeObjectURL(i.src); } catch(e) {}
+    r("");
+  };
   i.src = URL.createObjectURL(f);
 });
 
@@ -2442,9 +2450,13 @@ function toast(t) {
 }
 
 function updateDashBadge() {
-  const currentUserName = S.user ? S.user.name : "";
-  const myItemIds = S.items.filter(i => S.user && (i.owner === S.user.name || i.ownerId === S.user.id)).map(i => i.id);
-  const pending = S.claims.filter(c => myItemIds.includes(c.item) && c.status === "PENDING").length;
+  if (!S || !S.user) {
+    const badge = $("#dashBadge");
+    if (badge) badge.innerHTML = "";
+    return;
+  }
+  const myItemIds = new Set(S.items.filter(i => (i.owner === S.user.name || i.ownerId === S.user.id || (S.user.id === MY_ID && (i.owner === OWNER_NAME || i.ownerId === MY_ID)))).map(i => String(i.id)));
+  const pending = S.claims.filter(c => myItemIds.has(String(c.item)) && c.status === "PENDING").length;
   const badge = $("#dashBadge");
   if (badge) {
     badge.innerHTML = pending > 0 ? `<span style="background:var(--lost);color:#0a0a0a;padding:1px 6px;border-radius:10px;font-size:11px;margin-left:4px;">${pending}</span>` : "";
@@ -3231,7 +3243,7 @@ function go(v) {
   window.scrollTo(0, 0);
 }
 
-document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => go(b.dataset.go));
+document.querySelectorAll("[data-go]").forEach(b => b.onclick = (e) => { if (e) e.preventDefault(); go(b.dataset.go); });
 document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => setLanguage(b.dataset.lang));
 
 function render() {
@@ -3256,7 +3268,7 @@ function getFilteredItems() {
     if (currentFilter.status === "RETURNED" && i.status !== "RETURNED_TO_OWNER") return false;
     if (currentFilter.rewardOnly && (!i.reward || !i.reward.trim())) return false;
     if (q) {
-      const haystack = (i.title + " " + i.desc + " " + i.where + " " + (i.holding || "") + " " + (i.contact || "")).toLowerCase();
+      const haystack = (String(i.title || "") + " " + String(i.desc || "") + " " + String(i.where || "") + " " + String(i.holding || "") + " " + String(i.contact || "")).toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
@@ -3457,11 +3469,11 @@ function renderViewArea(items) {
   container.querySelectorAll("[data-open]").forEach(b => {
     b.onclick = e => {
       e.stopPropagation();
-      openItemModal(+b.dataset.open);
+      openItemModal(b.dataset.open);
     };
   });
   container.querySelectorAll(".card").forEach(c => {
-    c.onclick = () => openItemModal(+c.dataset.id);
+    c.onclick = () => openItemModal(c.dataset.id);
   });
 }
 
@@ -3517,17 +3529,17 @@ function renderQuickContactButtons(contactStr) {
 }
 
 function openItemModal(id) {
-  const i = S.items.find(x => x.id === id);
+  const i = S.items.find(x => String(x.id) === String(id));
   if (!i) return;
 
   const activeItems = S.items.filter(x => x.status !== "ARCHIVED");
-  const currentIndex = activeItems.findIndex(x => x.id === id);
-  const prevIndex = currentIndex > 0 ? currentIndex - 1 : activeItems.length - 1;
-  const nextIndex = currentIndex < activeItems.length - 1 ? currentIndex + 1 : 0;
+  const currentIndex = activeItems.findIndex(x => String(x.id) === String(id));
+  const prevIndex = activeItems.length > 0 ? (currentIndex > 0 ? currentIndex - 1 : activeItems.length - 1) : -1;
+  const nextIndex = activeItems.length > 0 ? (currentIndex < activeItems.length - 1 && currentIndex >= 0 ? currentIndex + 1 : 0) : -1;
 
-  const cs = S.comments.filter(c => c.item === id && !c.flag);
+  const cs = S.comments.filter(c => String(c.item) === String(id) && !c.flag);
   const isFound = i.type === "FOUND";
-  const isMyItem = S.user && (i.owner === S.user.name || i.ownerId === S.user.id || (S.user.id === MY_ID && (i.owner === "Azizbek" || i.ownerId === MY_ID)));
+  const isMyItem = S.user && (S.user.isAdmin || S.user.role === "ADMIN" || i.owner === S.user.name || i.ownerId === S.user.id || (S.user.id === MY_ID && (i.owner === OWNER_NAME || i.ownerId === MY_ID)));
 
   db.innerHTML = `
     <div class="dlg-header">
@@ -3760,39 +3772,70 @@ function openItemModal(id) {
     };
   }
 
-  // Accept/Reject claims directly in Item Detail Modal
+  // Accept/Reject claims directly in Item Detail Modal (with myClaims sync)
   db.querySelectorAll("[data-modal-accept]").forEach(b => {
     b.onclick = () => {
-      const claimId = +b.dataset.modalAccept;
-      const c = S.claims.find(x => x.id === claimId);
+      const claimId = b.dataset.modalAccept;
+      const c = S.claims.find(x => String(x.id) === String(claimId));
       if (c) {
         c.status = "ACCEPTED";
+        const myC = S.myClaims && S.myClaims.find(x => String(x.item) === String(c.item));
+        if (myC) myC.status = "ACCEPTED";
         i.status = "RETURNED_TO_OWNER";
         save();
         if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 70 });
         toast(t("toast_status_updated"));
         openItemModal(id);
-        home();
+        if (view === "home") home();
+        if (sbClient) {
+          try {
+            sbClient.from("claims").update({ status: "ACCEPTED" }).eq("id", String(c.id)).then();
+            sbClient.from("items").update({ status: "RETURNED_TO_OWNER" }).eq("id", String(i.id)).then();
+          } catch(e) {}
+        }
       }
     };
   });
 
   db.querySelectorAll("[data-modal-reject]").forEach(b => {
     b.onclick = () => {
-      const claimId = +b.dataset.modalReject;
-      const c = S.claims.find(x => x.id === claimId);
+      const claimId = b.dataset.modalReject;
+      const c = S.claims.find(x => String(x.id) === String(claimId));
       if (c) {
         c.status = "REJECTED";
+        const myC = S.myClaims && S.myClaims.find(x => String(x.item) === String(c.item));
+        if (myC) myC.status = "REJECTED";
         save();
         toast("Claim rejected.");
         openItemModal(id);
+        if (sbClient) {
+          try {
+            sbClient.from("claims").update({ status: "REJECTED" }).eq("id", String(c.id)).then();
+          } catch(e) {}
+        }
       }
     };
   });
 
   // Bottom Prev/Next navigation click handlers
-  $("#btnPrevItem").onclick = () => openItemModal(activeItems[prevIndex].id);
-  $("#btnNextItem").onclick = () => openItemModal(activeItems[nextIndex].id);
+  const btnPrev = $("#btnPrevItem");
+  if (btnPrev) {
+    if (activeItems.length > 1 && prevIndex >= 0 && activeItems[prevIndex]) {
+      btnPrev.onclick = () => openItemModal(activeItems[prevIndex].id);
+    } else {
+      btnPrev.style.opacity = "0.4";
+      btnPrev.style.pointerEvents = "none";
+    }
+  }
+  const btnNext = $("#btnNextItem");
+  if (btnNext) {
+    if (activeItems.length > 1 && nextIndex >= 0 && activeItems[nextIndex]) {
+      btnNext.onclick = () => openItemModal(activeItems[nextIndex].id);
+    } else {
+      btnNext.style.opacity = "0.4";
+      btnNext.style.pointerEvents = "none";
+    }
+  }
 
 
 
@@ -3804,7 +3847,7 @@ function openItemModal(id) {
         openAuthModal("login", () => openItemModal(id));
         return;
       }
-      const c = S.comments.find(x => x.id === +b.dataset.flag);
+      const c = S.comments.find(x => String(x.id) === String(b.dataset.flag));
       if (c) { c.flag = 1; save(); toast("Comment hidden for review."); openItemModal(id); }
     };
   });
@@ -3812,16 +3855,19 @@ function openItemModal(id) {
   // Delete Comment
   db.querySelectorAll("[data-delcomm]").forEach(b => {
     b.onclick = () => {
-      const commId = +b.dataset.delcomm;
+      const commId = b.dataset.delcomm;
       if (!S.user) {
         toast("Please log in to delete comments.");
         openAuthModal("login", () => openItemModal(id));
         return;
       }
-      S.comments = S.comments.filter(x => x.id !== commId);
+      S.comments = S.comments.filter(x => String(x.id) !== String(commId));
       save();
       toast("Comment deleted.");
       openItemModal(id);
+      if (sbClient) {
+        try { sbClient.from("comments").delete().eq("id", String(commId)).then(); } catch(e) {}
+      }
     };
   });
 
@@ -3843,30 +3889,41 @@ function openItemModal(id) {
       if (!proof) return;
       const claimantName = S.user.name;
       const claimantId = S.user.id;
+      const claimId = S.n++;
 
-      S.claims.push({
-        id: S.n++,
+      const claimRecord = {
+        id: claimId,
         item: id,
         claimantId: claimantId,
         by: claimantName,
         proof: proof,
         status: "PENDING",
         date: new Date().toISOString()
-      });
-      S.myClaims.push({
-        id: S.n++,
-        item: id,
-        by: claimantName,
-        proof: proof,
-        status: "PENDING",
-        date: new Date().toISOString()
-      });
+      };
+
+      S.claims.push(claimRecord);
+      if (!S.myClaims) S.myClaims = [];
+      S.myClaims.push(claimRecord);
       i.status = "CLAIM_PENDING";
       save();
       dlg.close();
       if (typeof confetti === 'function') confetti({ particleCount: 70, spread: 60 });
       toast("Claim sent to the finder!");
       render();
+
+      if (sbClient) {
+        try {
+          sbClient.from("claims").insert({
+            id: String(claimId),
+            item_id: String(id),
+            claimant_id: claimantId,
+            claimant_data: { fullName: claimantName, email: S.user.email, phone: S.user.phone },
+            proof_message: proof,
+            status: "PENDING"
+          }).then();
+          sbClient.from("items").update({ status: "CLAIM_PENDING" }).eq("id", String(id)).then();
+        } catch(e) {}
+      }
     };
   }
 
@@ -3880,15 +3937,33 @@ function openItemModal(id) {
         openAuthModal("login", () => openItemModal(id));
         return;
       }
+      const commentId = S.n++;
+      const commentType = $("#isLead")?.checked ? "OWNER_LEAD" : "GENERAL";
+      const commentText = $("#commentText").value.trim();
+      if (!commentText) return;
+
       S.comments.push({
-        id: S.n++,
+        id: commentId,
         item: id,
         by: S.user.name,
-        type: $("#isLead").checked ? "OWNER_LEAD" : "GENERAL",
-        text: $("#commentText").value
+        type: commentType,
+        text: commentText
       });
       save();
       openItemModal(id);
+
+      if (sbClient) {
+        try {
+          sbClient.from("comments").insert({
+            id: String(commentId),
+            item_id: String(id),
+            user_id: S.user.id,
+            user_data: { fullName: S.user.name },
+            content: commentText,
+            comment_type: commentType
+          }).then();
+        } catch(e) {}
+      }
     };
   }
 }
@@ -4243,6 +4318,32 @@ function report() {
       toast("Published successfully!");
       go("home");
       setTimeout(() => openItemModal(newId), 300);
+
+      if (sbClient) {
+        try {
+          sbClient.from("items").insert({
+            id: String(newId),
+            user_id: ownerId || "usr-" + Date.now(),
+            user_data: { fullName: ownerName, email: S.user.email, phone: S.user.phone },
+            type: d.type || "FOUND",
+            title: d.title || "Untitled Item",
+            category: d.cat || "OTHER",
+            description: d.desc || "",
+            image_urls: d.img ? [d.img] : [],
+            event_date: d.date ? new Date(d.date).toISOString() : new Date().toISOString(),
+            incident_location: d.where || "Location unstated",
+            latitude: d.lat || null,
+            longitude: d.lng || null,
+            current_holding_location: d.holding || "With finder",
+            finder_contact_preference: d.contact || "",
+            secret_verification_question: d.q || "",
+            status: "ACTIVE",
+            reward_amount: d.reward ? (parseFloat(d.reward) || null) : null
+          }).then(() => console.log("Published item synced to Supabase!"));
+        } catch (err) {
+          console.warn("Supabase item insert:", err);
+        }
+      }
       return;
     }
 
@@ -4384,27 +4485,42 @@ function renderDashTabContent() {
 
     container.querySelectorAll("[data-accept]").forEach(b => {
       b.onclick = () => {
-        const c = S.claims.find(x => x.id === +b.dataset.accept);
+        const c = S.claims.find(x => String(x.id) === String(b.dataset.accept));
         if (c) {
           c.status = "ACCEPTED";
-          const it = S.items.find(x => x.id === c.item);
+          const myC = S.myClaims && S.myClaims.find(x => String(x.item) === String(c.item));
+          if (myC) myC.status = "ACCEPTED";
+          const it = S.items.find(x => String(x.id) === String(c.item));
           if (it) it.status = "RETURNED_TO_OWNER";
           save();
           if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 70 });
           toast("Claim ACCEPTED! Arrange safe handover.");
           dash();
+          if (sbClient) {
+            try {
+              sbClient.from("claims").update({ status: "ACCEPTED" }).eq("id", String(c.id)).then();
+              if (it) sbClient.from("items").update({ status: "RETURNED_TO_OWNER" }).eq("id", String(it.id)).then();
+            } catch(e) {}
+          }
         }
       };
     });
 
     container.querySelectorAll("[data-reject]").forEach(b => {
       b.onclick = () => {
-        const c = S.claims.find(x => x.id === +b.dataset.reject);
+        const c = S.claims.find(x => String(x.id) === String(b.dataset.reject));
         if (c) {
           c.status = "REJECTED";
+          const myC = S.myClaims && S.myClaims.find(x => String(x.item) === String(c.item));
+          if (myC) myC.status = "REJECTED";
           save();
           toast("Claim rejected.");
           dash();
+          if (sbClient) {
+            try {
+              sbClient.from("claims").update({ status: "REJECTED" }).eq("id", String(c.id)).then();
+            } catch(e) {}
+          }
         }
       };
     });
@@ -4451,18 +4567,34 @@ function renderDashTabContent() {
       `;
     }).join("");
 
-    container.querySelectorAll("[data-inspect]").forEach(b => b.onclick = () => openItemModal(+b.dataset.inspect));
-    container.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openEditItemModal(+b.dataset.edit));
+    container.querySelectorAll("[data-inspect]").forEach(b => b.onclick = () => openItemModal(b.dataset.inspect));
+    container.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openEditItemModal(b.dataset.edit));
     container.querySelectorAll("[data-ret]").forEach(b => {
       b.onclick = () => {
-        const item = S.items.find(x => x.id === +b.dataset.ret);
-        if (item) { item.status = "RETURNED_TO_OWNER"; save(); toast("Item marked returned!"); dash(); }
+        const item = S.items.find(x => String(x.id) === String(b.dataset.ret));
+        if (item) {
+          item.status = "RETURNED_TO_OWNER";
+          save();
+          toast("Item marked returned!");
+          dash();
+          if (sbClient) {
+            try { sbClient.from("items").update({ status: "RETURNED_TO_OWNER" }).eq("id", String(item.id)).then(); } catch(e) {}
+          }
+        }
       };
     });
     container.querySelectorAll("[data-arc]").forEach(b => {
       b.onclick = () => {
-        const item = S.items.find(x => x.id === +b.dataset.arc);
-        if (item) { item.status = "ARCHIVED"; save(); toast("Item archived."); dash(); }
+        const item = S.items.find(x => String(x.id) === String(b.dataset.arc));
+        if (item) {
+          item.status = "ARCHIVED";
+          save();
+          toast("Item archived.");
+          dash();
+          if (sbClient) {
+            try { sbClient.from("items").update({ status: "ARCHIVED" }).eq("id", String(item.id)).then(); } catch(e) {}
+          }
+        }
       };
     });
   }
@@ -4592,9 +4724,9 @@ function openEditItemModal(id) {
     openAuthModal("login");
     return;
   }
-  const item = S.items.find(x => x.id === id);
+  const item = S.items.find(x => String(x.id) === String(id));
   if (!item) return;
-  const isOwner = item.owner === S.user.name || item.ownerId === S.user.id || (S.user.id === MY_ID && (item.owner === "Azizbek" || item.ownerId === MY_ID));
+  const isOwner = S.user.isAdmin || S.user.role === "ADMIN" || item.owner === S.user.name || item.ownerId === S.user.id || (S.user.id === MY_ID && (item.owner === OWNER_NAME || item.ownerId === MY_ID));
   if (!isOwner) {
     toast("You can only edit your own listings.");
     return;
@@ -4649,26 +4781,32 @@ function openEditItemModal(id) {
   dlg.showModal();
   $("#btnClEdit").onclick = () => dlg.close();
   $("#btnDeleteListing").onclick = () => {
-    S.items = S.items.filter(x => x.id !== id);
-    S.comments = S.comments.filter(x => x.item !== id);
-    S.claims = S.claims.filter(x => x.item !== id);
-    S.myClaims = S.myClaims.filter(x => x.item !== id);
+    S.items = S.items.filter(x => String(x.id) !== String(id));
+    S.comments = S.comments.filter(x => String(x.item) !== String(id));
+    S.claims = S.claims.filter(x => String(x.item) !== String(id));
+    if (S.myClaims) S.myClaims = S.myClaims.filter(x => String(x.item) !== String(id));
     save();
     dlg.close();
     toast("Listing deleted successfully.");
     render();
+
+    if (sbClient) {
+      try {
+        sbClient.from("items").delete().eq("id", String(id)).then();
+      } catch(e) {}
+    }
   };
   $("#editItemForm").onsubmit = e => {
     e.preventDefault();
-    item.title = $("#eTitle").value;
+    item.title = $("#eTitle").value.trim();
     item.cat = $("#eCat").value;
     item.status = $("#eStatus").value;
-    item.desc = $("#eDesc").value;
-    item.where = $("#eWhere").value;
-    item.holding = $("#eHolding").value;
-    item.contact = $("#eContact").value;
-    item.reward = $("#eReward").value;
-    item.q = $("#eQ").value;
+    item.desc = $("#eDesc").value.trim();
+    item.where = $("#eWhere").value.trim();
+    item.holding = $("#eHolding").value.trim();
+    item.contact = $("#eContact").value.trim();
+    item.reward = $("#eReward").value.trim();
+    item.q = $("#eQ").value.trim();
     save();
     dlg.close();
     toast("Listing updated!");
@@ -4676,6 +4814,23 @@ function openEditItemModal(id) {
       dash();
     } else {
       setTimeout(() => openItemModal(item.id), 200);
+    }
+
+    if (sbClient) {
+      try {
+        sbClient.from("items").update({
+          title: item.title,
+          category: item.cat,
+          status: item.status,
+          description: item.desc,
+          incident_location: item.where,
+          current_holding_location: item.holding,
+          finder_contact_preference: item.contact,
+          reward_amount: item.reward ? (parseFloat(item.reward) || null) : null,
+          secret_verification_question: item.q,
+          updated_at: new Date().toISOString()
+        }).eq("id", String(item.id)).then();
+      } catch(e) {}
     }
   };
 }
