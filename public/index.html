@@ -949,10 +949,9 @@ dialog[data-mode="auth"] .dlg {
 
 
 /* ==========================================================================
-   CUSTOM INTERACTIVE CURSOR FOR AUTH / SIGN-IN MODAL
+   SITE-WIDE CUSTOM INTERACTIVE TRAILING CURSOR
    ========================================================================== */
-dialog[data-mode="auth"],
-dialog[data-mode="auth"] * {
+html, body, button, a, input, select, textarea, [role="button"], label, dialog, dialog * {
   cursor: none !important;
 }
 
@@ -1654,6 +1653,10 @@ dialog[data-mode="auth"] * {
 </head>
 <body>
 
+<!-- Site-Wide Custom Interactive Trailing Cursor -->
+<div class="custom-cursor-dot" id="cursorDot"></div>
+<div class="custom-cursor-ring" id="cursorRing"></div>
+
 <!-- Telemetry Top Ribbon (With Live Site Theme Color Selector) -->
 <div class="telemetry-ribbon">
   <div class="wrap">
@@ -1795,9 +1798,6 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
   
   db.innerHTML = `
     <div class="lamp-modal-wrap" id="lampModalWrap" data-on="true">
-      <!-- Custom Interactive Cursor -->
-      <div class="custom-cursor-dot" id="cursorDot"></div>
-      <div class="custom-cursor-ring" id="cursorRing"></div>
       <div class="ambient-glow"></div>
       <canvas id="dustCanvas"></canvas>
 
@@ -2414,73 +2414,8 @@ document.addEventListener("click", e => {
     animateParticles();
   }
 
-  // Custom Interactive Cursor trailing and physics
-  let mouseX = -100, mouseY = -100;
-  let ringX = -100, ringY = -100;
-  let cursorAnimId = null;
-  let isCursorActive = false;
-
-  const cursorDot = $("#cursorDot");
-  const cursorRing = $("#cursorRing");
-
-  const onPointerMoveCursor = e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    if (!isCursorActive) {
-      isCursorActive = true;
-      ringX = mouseX;
-      ringY = mouseY;
-    }
-    if (cursorDot) {
-      cursorDot.style.transform = `translate3d(${mouseX - 3.5}px, ${mouseY - 3.5}px, 0)`;
-    }
-  };
-
-  const onPointerDownCursor = () => {
-    if (cursorRing) cursorRing.classList.add("clicking");
-  };
-
-  const onPointerUpCursor = () => {
-    if (cursorRing) cursorRing.classList.remove("clicking");
-  };
-
-  const onMouseOverCursor = e => {
-    if (!cursorRing) return;
-    const target = e.target;
-    if (target && target.closest("button, input, select, textarea, a, .tab-btn, .color-dot-btn, .cord-handle, .lamp-cord-wrapper, .btn-close-modal, .submit-btn")) {
-      cursorRing.classList.add("hovering");
-    } else {
-      cursorRing.classList.remove("hovering");
-    }
-  };
-
-  function updateCursorRing() {
-    if (isCursorActive && cursorRing) {
-      // High-performance spring easing towards mouse coordinates
-      const ease = 0.18;
-      ringX += (mouseX - ringX) * ease;
-      ringY += (mouseY - ringY) * ease;
-      const size = cursorRing.offsetWidth || 34;
-      const halfSize = size / 2;
-      cursorRing.style.transform = `translate3d(${ringX - halfSize}px, ${ringY - halfSize}px, 0)`;
-    }
-    cursorAnimId = requestAnimationFrame(updateCursorRing);
-  }
-
-  window.addEventListener("pointermove", onPointerMoveCursor);
-  window.addEventListener("pointerdown", onPointerDownCursor);
-  window.addEventListener("pointerup", onPointerUpCursor);
-  dlg.addEventListener("mouseover", onMouseOverCursor);
-
-  cursorAnimId = requestAnimationFrame(updateCursorRing);
-
   // Cleanup on close
   function closeModal() {
-    if (cursorAnimId) cancelAnimationFrame(cursorAnimId);
-    window.removeEventListener("pointermove", onPointerMoveCursor);
-    window.removeEventListener("pointerdown", onPointerDownCursor);
-    window.removeEventListener("pointerup", onPointerUpCursor);
-    dlg.removeEventListener("mouseover", onMouseOverCursor);
     if (animFrameId) cancelAnimationFrame(animFrameId);
     dlg.removeAttribute("data-mode");
     dlg.close();
@@ -3186,6 +3121,79 @@ function go(e){if("report"===e&&!S.user){toast("Please log in to report an item.
       </div>
     </form>
   `,dlg.showModal(),$("#btnClEdit").onclick=()=>dlg.close(),$("#btnDeleteListing").onclick=()=>{if(S.items=S.items.filter(a=>String(a.id)!==String(e)),S.comments=S.comments.filter(a=>String(a.item)!==String(e)),S.claims=S.claims.filter(a=>String(a.item)!==String(e)),S.myClaims&&(S.myClaims=S.myClaims.filter(a=>String(a.item)!==String(e))),save(),dlg.close(),toast("Listing deleted successfully."),render(),sbClient)try{sbClient.from("items").delete().eq("id",String(e)).then()}catch(e){}},$("#editItemForm").onsubmit=e=>{if(e.preventDefault(),a.title=$("#eTitle").value.trim(),a.cat=$("#eCat").value,a.status=$("#eStatus").value,a.desc=$("#eDesc").value.trim(),a.where=$("#eWhere").value.trim(),a.holding=$("#eHolding").value.trim(),a.contact=$("#eContact").value.trim(),a.reward=$("#eReward").value.trim(),a.q=$("#eQ").value.trim(),save(),dlg.close(),toast("Listing updated!"),"dash"===view?dash():setTimeout(()=>openItemModal(a.id),200),sbClient)try{sbClient.from("items").update({title:a.title,category:a.cat,status:a.status,description:a.desc,incident_location:a.where,current_holding_location:a.holding,finder_contact_preference:a.contact,reward_amount:a.reward&&parseFloat(a.reward)||null,secret_verification_question:a.q,updated_at:new Date().toISOString()}).eq("id",String(a.id)).then()}catch(e){}}}}function registerWebMcpTools(){let e=[{name:"search_items",description:"Search community lost and found listings by keywords and category",inputSchema:{type:"object",properties:{query:{type:"string",description:"Search query string or item title"},category:{type:"string",description:"Optional category filter",enum:["ELECTRONICS","DOCUMENTS_AND_IDS","WALLETS_AND_BAGS","KEYS","JEWELRY_AND_WATCHES","CLOTHING","PETS","OTHER"]},status:{type:"string",description:"Filter by status: ALL, ACTIVE, or RETURNED",enum:["ALL","ACTIVE","RETURNED"]}},required:["query"],additionalProperties:!1},execute:async e=>(e.query&&(currentFilter.q=e.query),e.category&&(currentFilter.cat=e.category),e.status&&(currentFilter.status=e.status),render(),JSON.stringify({status:"success",count:getFilteredItems().length}))},{name:"report_found_item",description:"Submit a newly found item report into the community registry",inputSchema:{type:"object",properties:{title:{type:"string",description:"Title of the found item"},category:{type:"string",description:"Category of the item",enum:["ELECTRONICS","DOCUMENTS_AND_IDS","WALLETS_AND_BAGS","KEYS","JEWELRY_AND_WATCHES","CLOTHING","PETS","OTHER"]},where:{type:"string",description:"Location where found"},holding:{type:"string",description:"Current secure holding location"},contact:{type:"string",description:"Finder contact details"},secret_question:{type:"string",description:"Secret verification question for owner"}},required:["title","category","where"],additionalProperties:!1},execute:async e=>{let a={id:"found-"+Date.now(),type:"FOUND",title:e.title,cat:e.category||"OTHER",where:e.where,holding:e.holding||"Safe custody",contact:e.contact||"In-app",q:e.secret_question||"",date:new Date().toISOString(),status:"ACTIVE",owner:S.user&&S.user.name||"Community Finder",ownerId:S.user&&S.user.id||"usr-finder"};return S.items.unshift(a),save(),render(),JSON.stringify({status:"created",id:a.id})}},{name:"claim_item",description:"Submit an ownership verification proof answer to claim a found item",inputSchema:{type:"object",properties:{item_id:{type:"string",description:"ID of the found item to claim"},proof_answer:{type:"string",description:"Secret proof answer describing undisclosed markers"}},required:["item_id","proof_answer"],additionalProperties:!1},execute:async e=>{let a=S.items.find(a=>String(a.id)===String(e.item_id));if(!a)return JSON.stringify({status:"error",message:"Item not found"});let i={id:"clm-"+Date.now(),item:a.id,itemTitle:a.title,claimant:S.user&&S.user.name||"Claimant",claimantId:S.user&&S.user.id||"usr-claimant",answer:e.proof_answer,status:"PENDING",date:new Date().toISOString()};return S.claims.push(i),save(),JSON.stringify({status:"submitted",claim_id:i.id})}}];window.__WebMCP_tools=e,window.__WebMCP_schemas_valid=!0;let a=document.modelContext||navigator.modelContext||window.modelContext;a&&"function"==typeof a.registerTool&&e.forEach(e=>{try{a.registerTool(e)}catch(e){}})}render(),document.querySelectorAll(".top-palette .color-dot-btn").forEach(e=>{e.onclick=()=>applyThemeColor(e.dataset.color)}),applyThemeColor(activeColor),registerWebMcpTools();
+// ==========================================================================
+// SITE-WIDE INTERACTIVE TRAILING CURSOR
+// ==========================================================================
+let mouseX = -100, mouseY = -100;
+let ringX = -100, ringY = -100;
+let isCursorActive = false;
+
+const cursorDot = document.getElementById("cursorDot");
+const cursorRing = document.getElementById("cursorRing");
+
+// Keep cursor in top-layer when <dialog id="dlg"> opens
+const mainDlg = document.getElementById("dlg");
+if (mainDlg) {
+  const dlgObserver = new MutationObserver(() => {
+    if (mainDlg.open) {
+      if (cursorDot && cursorDot.parentElement !== mainDlg) mainDlg.appendChild(cursorDot);
+      if (cursorRing && cursorRing.parentElement !== mainDlg) mainDlg.appendChild(cursorRing);
+    } else {
+      if (cursorDot && cursorDot.parentElement !== document.body) document.body.appendChild(cursorDot);
+      if (cursorRing && cursorRing.parentElement !== document.body) document.body.appendChild(cursorRing);
+    }
+  });
+  dlgObserver.observe(mainDlg, { attributes: true, attributeFilter: ["open"] });
+  mainDlg.addEventListener("close", () => {
+    if (cursorDot && cursorDot.parentElement !== document.body) document.body.appendChild(cursorDot);
+    if (cursorRing && cursorRing.parentElement !== document.body) document.body.appendChild(cursorRing);
+  });
+}
+
+window.addEventListener("pointermove", e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  if (!isCursorActive) {
+    isCursorActive = true;
+    ringX = mouseX;
+    ringY = mouseY;
+  }
+  if (cursorDot) {
+    cursorDot.style.transform = "translate3d(" + (mouseX - 3.5) + "px, " + (mouseY - 3.5) + "px, 0)";
+  }
+}, { passive: true });
+
+window.addEventListener("pointerdown", () => {
+  if (cursorRing) cursorRing.classList.add("clicking");
+}, { passive: true });
+
+window.addEventListener("pointerup", () => {
+  if (cursorRing) cursorRing.classList.remove("clicking");
+}, { passive: true });
+
+document.addEventListener("mouseover", e => {
+  if (!cursorRing) return;
+  const target = e.target;
+  if (target && target.closest("button, input, select, textarea, a, .tab-btn, .color-dot-btn, .btn, .card, .pill, .chip, [data-go], [data-dtab], [data-tp], [role='button'], label, .cord-handle, .lamp-cord-wrapper, .btn-close-modal, .submit-btn")) {
+    cursorRing.classList.add("hovering");
+  } else {
+    cursorRing.classList.remove("hovering");
+  }
+}, { passive: true });
+
+function updateCursorRing() {
+  if (isCursorActive && cursorRing) {
+    const ease = 0.18;
+    ringX += (mouseX - ringX) * ease;
+    ringY += (mouseY - ringY) * ease;
+    const size = cursorRing.offsetWidth || 34;
+    const halfSize = size / 2;
+    cursorRing.style.transform = "translate3d(" + (ringX - halfSize) + "px, " + (ringY - halfSize) + "px, 0)";
+  }
+  requestAnimationFrame(updateCursorRing);
+}
+requestAnimationFrame(updateCursorRing);
+
 </script>
 </body>
 </html>
