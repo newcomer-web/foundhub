@@ -66,11 +66,20 @@ const nextConfig = {
         ],
       },
       {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate, s-maxage=0',
+          },
+        ],
+      },
+      {
         source: '/index.html',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate',
+            value: 'public, max-age=0, must-revalidate, s-maxage=0',
           },
         ],
       },
