@@ -31,11 +31,10 @@
 <link rel="dns-prefetch" href="https://gxvjkfpqnubriabieugl.supabase.co">
 
 <!-- Non-Render-Blocking Web Fonts -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
-<noscript>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
-</noscript>
+<!-- Web Font Preloads: Preloads exact .woff2 fonts to eliminate font-swap layout shift (CLS = 0) -->
+<link rel="preload" href="https://fonts.gstatic.com/s/archivoblack/v23/HTxqL289NzCGg4MzN6KJ7eW6CYyF_g.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLydOxI.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
 
 <!-- Dynamic On-Demand Script Loader: Zero Unused Initial JS -->
 
@@ -268,7 +267,7 @@ nav {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: transform .1s, box-shadow .1s, background .15s;
+  transition: transform .12s cubic-bezier(0.16, 1, 0.3, 1), opacity .12s ease;
   text-decoration: none;
 }
 .btn:hover {
@@ -646,6 +645,20 @@ dialog::backdrop {
   margin-bottom: 14px;
   border-bottom: 2.5px solid var(--ink);
   padding-bottom: 12px;
+}
+
+
+#viewContainer {
+  min-height: 480px;
+}
+.empty-panel {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 44px 20px;
 }
 
 .panel {
@@ -1283,7 +1296,7 @@ dialog[data-mode="auth"] .dlg {
   cursor: pointer;
   overflow: hidden;
   box-shadow: 4px 4px 0 #000;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1303,15 +1316,17 @@ dialog[data-mode="auth"] .dlg {
 .btn-glow-layer {
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.6s ease;
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
 }
 
 .submit-btn:hover .btn-glow-layer {
-  left: 100%;
+  transform: translateX(100%);
 }
 
 /* Quick Demo Button */
@@ -1444,6 +1459,56 @@ dialog[data-mode="auth"] .dlg {
 }
 
 </style>
+<!-- Schema.org & WebMCP Agentic Browsing Standards -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://foundhub-alpha.vercel.app/#website",
+      "url": "https://foundhub-alpha.vercel.app/",
+      "name": "FoundHub",
+      "description": "Community-driven Lost and Found Platform",
+      "inLanguage": ["en", "uz", "ru"],
+      "publisher": {
+        "@type": "Organization",
+        "name": "FoundHub Network",
+        "founder": {
+          "@type": "Person",
+          "name": "Muhammadaziz Abdullayev"
+        }
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://foundhub-alpha.vercel.app/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://foundhub-alpha.vercel.app/#webapp",
+      "name": "FoundHub Item Recovery Tool",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "url": "https://foundhub-alpha.vercel.app/",
+      "featureList": [
+        "Report Lost Items with Secret Questions",
+        "Report Found Belongings with Custody Location",
+        "Claim Item Ownership with Proof Verification",
+        "Filter Items by Category, Status and Reward"
+      ]
+    }
+  ]
+}
+</script>
+
+<meta name="webmcp:version" content="1.0">
+<meta name="webmcp:capabilities" content="search, report_item, claim_item, contact_finder">
+<meta name="webmcp:tools" content='[{"name":"search_items","description":"Search community lost and found items by keywords and category","parameters":{"query":"string","category":"string"}},{"name":"report_found_item","description":"Submit a newly found item into the registry","parameters":{"title":"string","category":"string","location":"string","holding_location":"string"}},{"name":"claim_item","description":"Submit an ownership proof answer to claim a found item","parameters":{"item_id":"string","answer":"string"}}]'>
 </head>
 <body>
 
@@ -1592,7 +1657,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
           <h2 class="card-title" id="cardTitle">${"signin"===i?t("auth_welcome"):t("auth_signup")}</h2>
           <p class="card-subtitle" id="cardSubtitle">${"signin"===i?t("auth_welcome_sub"):t("auth_signup_sub")}</p>
 
-          <form id="authForm">
+          <form id="authForm" name="auth_form" aria-label="User Authentication Form" data-agent-form="auth">
             <div id="regFields" style="${"register"===i?"":"display:none;"}">
               <div class="auth-form-group">
                 <label for="authName">${t("auth_full_name")}</label>
@@ -1631,7 +1696,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
         </div>
       </div>
     </div>
-  `,applyThemeColor(activeColor),document.addEventListener("click",e=>{let a=e.target.closest(".color-dot-btn");a&&a.dataset.color&&applyThemeColor(a.dataset.color)});let l=$("#lampModalWrap"),s=$("#lampCord"),r=$("#authCard"),d=document.querySelector(".auth-stage"),c=$("#lampStatusText"),u=$("#tabSignIn"),p=$("#tabRegister"),m=$("#authTabs"),g=$("#cardTitle"),h=$("#cardSubtitle"),_=$("#btnText"),b=$("#regFields"),f=$("#regMoreFields"),y=0,v=0,w=$("#lampStage"),x=$("#cordShadow"),E=$("#cordCore"),C=$("#cordBeads"),A=$("#cordGlint"),T=null,k=0,M=0,L=0,I=0,N=!1,D=0,R=0,q=0,O=0,P=!1;function z(){return{x:Math.round((w&&w.offsetWidth||500)/2+22),y:68}}function F(){n=!n,l.setAttribute("data-on",n?"true":"false"),c.textContent=n?t("lamp_status"):"DARK MODE",playMechanicalClick(n?"high":"low")}function U(e,a){let i=z();x&&(x.setAttribute("x1",i.x+1.5),x.setAttribute("y1",i.y+1.5),x.setAttribute("x2",e+1.5),x.setAttribute("y2",a+1.5)),E&&(E.setAttribute("x1",i.x),E.setAttribute("y1",i.y),E.setAttribute("x2",e),E.setAttribute("y2",a)),C&&(C.setAttribute("x1",i.x),C.setAttribute("y1",i.y),C.setAttribute("x2",e),C.setAttribute("y2",a)),A&&(A.setAttribute("x1",i.x),A.setAttribute("y1",i.y),A.setAttribute("x2",e),A.setAttribute("y2",a));let n=e-i.x,o=Math.max(8,a-i.y);s.style.transform=`translate3d(${e-8}px, ${a}px, 0) rotate(${180*Math.atan2(n,o)/Math.PI*.75}deg)`,function(){if(!r||!d)return;if(!N){(0!==y||0!==v)&&(y=0,v=0,r.style.transform="translate3d(0, 0, 0)");return}let e=s.getBoundingClientRect(),a=e.left+e.width/2,i=e.top+e.height/2,n=window.innerWidth,o=window.innerHeight,l=d.getBoundingClientRect(),c=r.offsetWidth,u=r.offsetHeight,p=l.left+l.width/2-c/2,m=l.top,g=n<640,h=g?8:15,_=Math.max(h,n-c-(g?8:15)),b=g?55:65,f=Math.max(b,o-u-(g?8:15)),w=p+y,x=m+v;if(!(a>=w-8&&a<=w+c+8&&i>=x-8&&i<=x+u+8))return;let E=w+c/2-a,C=x+u/2-i,A=Math.hypot(E,C);A<1&&(A=Math.hypot(E=Math.random()-.5||1,C=Math.random()-.5||1));let T=E/A,k=C/A,M=Math.atan2(C,E);function L(e,n){return a<e-25||a>e+c+25||i<n-25||i>n+u+25}let I=null,D=g?1.25:.75,R=[0,.45,-.45,.9,-.9,1.4,-1.4,Math.PI];for(let e of[Math.max(.55*c,g?180:260),Math.max(.75*c,g?240:340),Math.max(.95*c,g?300:420)]){for(let a of R){let i=M+a,n=Math.max(h,Math.min(_,w+Math.cos(i)*e)),o=Math.max(b,Math.min(f,x+e*D*Math.sin(i)));if(L(n,o)&&Math.hypot(n-w,o-x)>50){I={x:n,y:o};break}}if(I)break}if(!I){let e=[.15,.35,.5,.65,.85],n=[];for(let a of e)for(let i of e){let e=h+a*(_-h),o=b+i*(f-b);L(e,o)&&n.push({x:e,y:o})}let o=-1/0;for(let e of n){let n=Math.hypot(e.x+c/2-a,e.y+u/2-i),l=.5*((e.x+c/2-a)*T+(e.y+u/2-i)*k)+(n>=320?100:n-320);l>o&&(o=l,I=e)}}I&&(y=Math.round(I.x-p),v=Math.round(I.y-m),r.style.transform=`translate3d(${y}px, ${v}px, 0)`)}()}function H(){T&&cancelAnimationFrame(T),T=requestAnimationFrame(function e(){let a=z(),i=a.x,n=a.y+56,o=(n-I)*.16;k=(k+(i-L)*.16)*.74,M=(M+o)*.74,L+=k,I+=M,U(L,I),Math.abs(k)>.08||Math.abs(M)>.08||Math.hypot(i-L,n-I)>.4?T=requestAnimationFrame(e):(k=0,M=0,U(L=i,I=n),T=null)})}function j(e){if(!N)return;let a=e.clientX-D,i=e.clientY-R,n=z();L=q+a,I=Math.max(n.y+12,O+i),Math.hypot(L-n.x,I-n.y)>=76&&(P=!0),U(L,I)}function B(e){if(N){if(N=!1,s.classList.remove("dragging"),window.removeEventListener("pointermove",j),window.removeEventListener("pointerup",B),window.removeEventListener("pointercancel",B),(0!==y||0!==v)&&(y=0,v=0,r&&(r.style.transform="translate3d(0, 0, 0)")),8>Math.hypot(e.clientX-D,e.clientY-R)){!function(){T&&cancelAnimationFrame(T),F();let e=z(),a=I,i=e.y+56+26,n=performance.now();T=requestAnimationFrame(function o(l){let s=l-n;s<110?(I=a+(i-a)*Math.sin(s/110*(Math.PI/2)),U(L=e.x,I),T=requestAnimationFrame(o)):(I=i,U(L=e.x,I),k=0,M=-3.5,H())})}();return}P&&(F(),P=!1),H()}}s.addEventListener("pointerdown",e=>{e.preventDefault(),T&&(cancelAnimationFrame(T),T=null),N=!0,P=!1,s.classList.add("dragging"),D=e.clientX,R=e.clientY,q=L,O=I,window.addEventListener("pointermove",j),window.addEventListener("pointerup",B),window.addEventListener("pointercancel",B)});let Y=z();L=Y.x,I=Y.y+56,U(L,I);let G=()=>{if(!N){let e=z();L=e.x,I=e.y+56,U(L,I)}};function V(e){if(i===e)return;i=e,m.setAttribute("data-active",e),u.classList.toggle("active","signin"===e),p.classList.toggle("active","register"===e);let a="signin"===e?u:p,n="signin"===e?p:u,o=PALETTES[activeColor]||PALETTES.amber;a.style.background=o.accent,n.style.background="#1e2232","signin"===e?(g.textContent=t("auth_welcome"),h.textContent=t("auth_welcome_sub"),_.textContent=t("auth_btn_signin"),b.style.display="none",f.style.display="none",$("#authEmail").value="azizbek@foundhub.app",$("#authPass").value="12345678"):(g.textContent=t("auth_signup"),h.textContent=t("auth_signup_sub"),_.textContent=t("auth_btn_signup"),b.style.display="block",f.style.display="block",$("#authEmail").value="",$("#authPass").value="")}window.addEventListener("resize",G),requestAnimationFrame(()=>{if(!N){let e=z();L=e.x,I=e.y+56,U(L,I)}}),$("#btnClAuth").addEventListener("click",()=>{T&&cancelAnimationFrame(T),window.removeEventListener("resize",G),window.removeEventListener("pointermove",j),window.removeEventListener("pointerup",B),window.removeEventListener("pointercancel",B)}),l.querySelectorAll(".color-dot-btn").forEach(e=>{e.onclick=()=>{applyThemeColor(e.dataset.color)}}),u.onclick=()=>V("signin"),p.onclick=()=>V("register");let K=$("#dustCanvas");if(K){let e=K.getContext("2d");function Q(){K.width=window.innerWidth,K.height=window.innerHeight}Q(),window.addEventListener("resize",Q);let a=[];class i{constructor(){this.reset()}reset(){this.x=Math.random()*K.width,this.y=.75*K.height*Math.random(),this.size=2.2*Math.random()+.8,this.vx=(Math.random()-.5)*.4,this.vy=.35*Math.random()+.15,this.alpha=.65*Math.random()+.2,this.oscillation=Math.random()*Math.PI*2}update(){this.oscillation+=.02,this.x+=this.vx+.28*Math.sin(this.oscillation),this.y+=this.vy,(this.y>K.height||this.x<0||this.x>K.width)&&(this.reset(),this.y=50)}draw(){e.save(),e.globalAlpha=this.alpha,e.fillStyle=PALETTES[activeColor].accent,e.shadowColor=PALETTES[activeColor].accent,e.shadowBlur=5,e.beginPath(),e.arc(this.x,this.y,this.size,0,2*Math.PI),e.fill(),e.restore()}}for(let e=0;e<45;e++)a.push(new i);!function i(){e.clearRect(0,0,K.width,K.height),n&&a.forEach(e=>{e.update(),e.draw()}),o=requestAnimationFrame(i)}()}function J(){o&&cancelAnimationFrame(o),dlg.removeAttribute("data-mode"),dlg.close()}$("#btnClAuth").onclick=J,dlg.onclose=()=>{o&&cancelAnimationFrame(o),dlg.removeAttribute("data-mode")},$("#authForm").onsubmit=e=>{let a,n,o;e.preventDefault();let l=$("#authEmail").value.trim(),s=l.toLowerCase(),r=s===ADMIN_EMAIL.toLowerCase();S.profiles||(S.profiles={});let d=S.profiles[s]||(r?{id:MY_ID,name:OWNER_NAME,email:ADMIN_EMAIL,telegram:"@muhammadaziz_dev",phone:"+998 90 123 45 67",role:"ADMIN",isAdmin:!0,node:"PLATFORM OWNER"}:null);"register"===i?(a=$("#authName").value.trim()||(d?d.name:"Community Member"),n=$("#authTg")?.value.trim()||(d?d.telegram:"@"+a.toLowerCase()),o=$("#authPhone")?.value.trim()||(d?d.phone:"")):d?(a=d.name||l.split("@")[0]||"Community Member",n=void 0!==d.telegram?d.telegram:"@"+a.toLowerCase(),o=void 0!==d.phone?d.phone:""):(n="@"+(a=l.split("@")[0]||"Community Member").toLowerCase(),o="");try{localStorage.setItem("fh_registered_name",a)}catch(e){}if(S.user={id:d&&d.id||(r?MY_ID:"usr-"+Date.now()),name:a,email:l,telegram:n,phone:o,role:r?"ADMIN":d&&d.role||"USER",isAdmin:r||d&&d.isAdmin||!1,node:r?"PLATFORM OWNER":d&&d.node||"COMMUNITY MEMBER"},S.profiles[s]={...S.user},save(),J(),confetti({particleCount:90,spread:75}),toast("Welcome, "+a+"! Logged in successfully."),sbClient)try{sbClient.from("profiles").upsert({id:S.user.id,full_name:S.user.name,email:S.user.email,phone:S.user.phone,telegram_username:S.user.telegram,updated_at:new Date().toISOString()}).then(()=>console.log("Profile synced to Supabase on auth"))}catch(e){}if(authSuccessCallback){let e=authSuccessCallback;authSuccessCallback=null,e()}else render()},dlg.showModal(),applyThemeColor(activeColor)}function go(e){if("report"===e&&!S.user){toast("Please log in to report an item."),openAuthModal("login",()=>go("report"));return}if("dash"===e&&!S.user){toast("Please log in to access your dashboard."),openAuthModal("login",()=>go("dash"));return}view=e,"report"===e&&(W={step:1,d:{type:"FOUND",cat:"ELECTRONICS"}}),render(),window.scrollTo(0,0)}function render(){updateDashBadge(),updateNavAuth(),"home"===view?home():"report"===view?report():"dash"===view&&dash()}function getFilteredItems(){let e=(currentFilter.q||"").toLowerCase().trim(),a=S.items.filter(a=>"ARCHIVED"!==a.status&&("ALL"===currentFilter.type||a.type===currentFilter.type)&&(!currentFilter.cat||a.cat===currentFilter.cat)&&("ACTIVE"!==currentFilter.status||"ACTIVE"===a.status)&&("RETURNED"!==currentFilter.status||"RETURNED_TO_OWNER"===a.status)&&(!currentFilter.rewardOnly||!!a.reward&&!!a.reward.trim())&&(!e||!!(String(a.title||"")+" "+String(a.desc||"")+" "+String(a.where||"")+" "+String(a.holding||"")+" "+String(a.contact||"")).toLowerCase().includes(e)));return"OLDEST"===currentFilter.sort?a.sort((e,a)=>new Date(e.date)-new Date(a.date)):a.sort((e,a)=>new Date(a.date)-new Date(e.date)),a}function home(){let e=S.items.filter(e=>"FOUND"===e.type&&"ARCHIVED"!==e.status).length,a=S.items.filter(e=>"LOST"===e.type&&"ARCHIVED"!==e.status).length,i=S.items.filter(e=>"RETURNED_TO_OWNER"===e.status).length,n=getFilteredItems();app.innerHTML=`
+  `,applyThemeColor(activeColor),document.addEventListener("click",e=>{let a=e.target.closest(".color-dot-btn");a&&a.dataset.color&&applyThemeColor(a.dataset.color)});let l=$("#lampModalWrap"),s=$("#lampCord"),r=$("#authCard"),d=document.querySelector(".auth-stage"),c=$("#lampStatusText"),u=$("#tabSignIn"),p=$("#tabRegister"),m=$("#authTabs"),g=$("#cardTitle"),h=$("#cardSubtitle"),_=$("#btnText"),b=$("#regFields"),f=$("#regMoreFields"),y=0,v=0,w=$("#lampStage"),x=$("#cordShadow"),E=$("#cordCore"),C=$("#cordBeads"),A=$("#cordGlint"),D=null,T=0,k=0,M=0,I=0,L=!1,N=0,R=0,q=0,O=0,P=!1;function z(){return{x:Math.round((w&&w.offsetWidth||500)/2+22),y:68}}function F(){n=!n,l.setAttribute("data-on",n?"true":"false"),c.textContent=n?t("lamp_status"):"DARK MODE",playMechanicalClick(n?"high":"low")}function U(e,a){let i=z();x&&(x.setAttribute("x1",i.x+1.5),x.setAttribute("y1",i.y+1.5),x.setAttribute("x2",e+1.5),x.setAttribute("y2",a+1.5)),E&&(E.setAttribute("x1",i.x),E.setAttribute("y1",i.y),E.setAttribute("x2",e),E.setAttribute("y2",a)),C&&(C.setAttribute("x1",i.x),C.setAttribute("y1",i.y),C.setAttribute("x2",e),C.setAttribute("y2",a)),A&&(A.setAttribute("x1",i.x),A.setAttribute("y1",i.y),A.setAttribute("x2",e),A.setAttribute("y2",a));let n=e-i.x,o=Math.max(8,a-i.y);s.style.transform=`translate3d(${e-8}px, ${a}px, 0) rotate(${180*Math.atan2(n,o)/Math.PI*.75}deg)`,function(){if(!r||!d)return;if(!L){(0!==y||0!==v)&&(y=0,v=0,r.style.transform="translate3d(0, 0, 0)");return}let e=s.getBoundingClientRect(),a=e.left+e.width/2,i=e.top+e.height/2,n=window.innerWidth,o=window.innerHeight,l=d.getBoundingClientRect(),c=r.offsetWidth,u=r.offsetHeight,p=l.left+l.width/2-c/2,m=l.top,g=n<640,h=g?8:15,_=Math.max(h,n-c-(g?8:15)),b=g?55:65,f=Math.max(b,o-u-(g?8:15)),w=p+y,x=m+v;if(!(a>=w-8&&a<=w+c+8&&i>=x-8&&i<=x+u+8))return;let E=w+c/2-a,C=x+u/2-i,A=Math.hypot(E,C);A<1&&(A=Math.hypot(E=Math.random()-.5||1,C=Math.random()-.5||1));let D=E/A,T=C/A,k=Math.atan2(C,E);function M(e,n){return a<e-25||a>e+c+25||i<n-25||i>n+u+25}let I=null,N=g?1.25:.75,R=[0,.45,-.45,.9,-.9,1.4,-1.4,Math.PI];for(let e of[Math.max(.55*c,g?180:260),Math.max(.75*c,g?240:340),Math.max(.95*c,g?300:420)]){for(let a of R){let i=k+a,n=Math.max(h,Math.min(_,w+Math.cos(i)*e)),o=Math.max(b,Math.min(f,x+e*N*Math.sin(i)));if(M(n,o)&&Math.hypot(n-w,o-x)>50){I={x:n,y:o};break}}if(I)break}if(!I){let e=[.15,.35,.5,.65,.85],n=[];for(let a of e)for(let i of e){let e=h+a*(_-h),o=b+i*(f-b);M(e,o)&&n.push({x:e,y:o})}let o=-1/0;for(let e of n){let n=Math.hypot(e.x+c/2-a,e.y+u/2-i),l=.5*((e.x+c/2-a)*D+(e.y+u/2-i)*T)+(n>=320?100:n-320);l>o&&(o=l,I=e)}}I&&(y=Math.round(I.x-p),v=Math.round(I.y-m),r.style.transform=`translate3d(${y}px, ${v}px, 0)`)}()}function H(){D&&cancelAnimationFrame(D),D=requestAnimationFrame(function e(){let a=z(),i=a.x,n=a.y+56,o=(n-I)*.16;T=(T+(i-M)*.16)*.74,k=(k+o)*.74,M+=T,I+=k,U(M,I),Math.abs(T)>.08||Math.abs(k)>.08||Math.hypot(i-M,n-I)>.4?D=requestAnimationFrame(e):(T=0,k=0,U(M=i,I=n),D=null)})}function j(e){if(!L)return;let a=e.clientX-N,i=e.clientY-R,n=z();M=q+a,I=Math.max(n.y+12,O+i),Math.hypot(M-n.x,I-n.y)>=76&&(P=!0),U(M,I)}function B(e){if(L){if(L=!1,s.classList.remove("dragging"),window.removeEventListener("pointermove",j),window.removeEventListener("pointerup",B),window.removeEventListener("pointercancel",B),(0!==y||0!==v)&&(y=0,v=0,r&&(r.style.transform="translate3d(0, 0, 0)")),8>Math.hypot(e.clientX-N,e.clientY-R)){let e,a,i,n;D&&cancelAnimationFrame(D),F(),e=z(),a=I,i=e.y+56+26,n=performance.now(),D=requestAnimationFrame(function o(l){let s=l-n;s<110?(I=a+(i-a)*Math.sin(s/110*(Math.PI/2)),U(M=e.x,I),D=requestAnimationFrame(o)):(I=i,U(M=e.x,I),T=0,k=-3.5,H())});return}P&&(F(),P=!1),H()}}s.addEventListener("pointerdown",e=>{e.preventDefault(),D&&(cancelAnimationFrame(D),D=null),L=!0,P=!1,s.classList.add("dragging"),N=e.clientX,R=e.clientY,q=M,O=I,window.addEventListener("pointermove",j),window.addEventListener("pointerup",B),window.addEventListener("pointercancel",B)});let Y=z();M=Y.x,I=Y.y+56,U(M,I);let G=()=>{if(!L){let e=z();M=e.x,I=e.y+56,U(M,I)}};function V(e){if(i===e)return;i=e,m.setAttribute("data-active",e),u.classList.toggle("active","signin"===e),p.classList.toggle("active","register"===e);let a="signin"===e?u:p,n="signin"===e?p:u,o=PALETTES[activeColor]||PALETTES.amber;a.style.background=o.accent,n.style.background="#1e2232","signin"===e?(g.textContent=t("auth_welcome"),h.textContent=t("auth_welcome_sub"),_.textContent=t("auth_btn_signin"),b.style.display="none",f.style.display="none",$("#authEmail").value="azizbek@foundhub.app",$("#authPass").value="12345678"):(g.textContent=t("auth_signup"),h.textContent=t("auth_signup_sub"),_.textContent=t("auth_btn_signup"),b.style.display="block",f.style.display="block",$("#authEmail").value="",$("#authPass").value="")}window.addEventListener("resize",G),requestAnimationFrame(()=>{if(!L){let e=z();M=e.x,I=e.y+56,U(M,I)}}),$("#btnClAuth").addEventListener("click",()=>{D&&cancelAnimationFrame(D),window.removeEventListener("resize",G),window.removeEventListener("pointermove",j),window.removeEventListener("pointerup",B),window.removeEventListener("pointercancel",B)}),l.querySelectorAll(".color-dot-btn").forEach(e=>{e.onclick=()=>{applyThemeColor(e.dataset.color)}}),u.onclick=()=>V("signin"),p.onclick=()=>V("register");let K=$("#dustCanvas");if(K){let e=K.getContext("2d");function Q(){K.width=window.innerWidth,K.height=window.innerHeight}Q(),window.addEventListener("resize",Q);let a=[];class i{constructor(){this.reset()}reset(){this.x=Math.random()*K.width,this.y=.75*K.height*Math.random(),this.size=2.2*Math.random()+.8,this.vx=(Math.random()-.5)*.4,this.vy=.35*Math.random()+.15,this.alpha=.65*Math.random()+.2,this.oscillation=Math.random()*Math.PI*2}update(){this.oscillation+=.02,this.x+=this.vx+.28*Math.sin(this.oscillation),this.y+=this.vy,(this.y>K.height||this.x<0||this.x>K.width)&&(this.reset(),this.y=50)}draw(){e.save(),e.globalAlpha=this.alpha,e.fillStyle=PALETTES[activeColor].accent,e.shadowColor=PALETTES[activeColor].accent,e.shadowBlur=5,e.beginPath(),e.arc(this.x,this.y,this.size,0,2*Math.PI),e.fill(),e.restore()}}for(let e=0;e<45;e++)a.push(new i);!function i(){e.clearRect(0,0,K.width,K.height),n&&a.forEach(e=>{e.update(),e.draw()}),o=requestAnimationFrame(i)}()}function J(){o&&cancelAnimationFrame(o),dlg.removeAttribute("data-mode"),dlg.close()}$("#btnClAuth").onclick=J,dlg.onclose=()=>{o&&cancelAnimationFrame(o),dlg.removeAttribute("data-mode")},$("#authForm").onsubmit=e=>{let a,n,o;e.preventDefault();let l=$("#authEmail").value.trim(),s=l.toLowerCase(),r=s===ADMIN_EMAIL.toLowerCase();S.profiles||(S.profiles={});let d=S.profiles[s]||(r?{id:MY_ID,name:OWNER_NAME,email:ADMIN_EMAIL,telegram:"@muhammadaziz_dev",phone:"+998 90 123 45 67",role:"ADMIN",isAdmin:!0,node:"PLATFORM OWNER"}:null);"register"===i?(a=$("#authName").value.trim()||(d?d.name:"Community Member"),n=$("#authTg")?.value.trim()||(d?d.telegram:"@"+a.toLowerCase()),o=$("#authPhone")?.value.trim()||(d?d.phone:"")):d?(a=d.name||l.split("@")[0]||"Community Member",n=void 0!==d.telegram?d.telegram:"@"+a.toLowerCase(),o=void 0!==d.phone?d.phone:""):(n="@"+(a=l.split("@")[0]||"Community Member").toLowerCase(),o="");try{localStorage.setItem("fh_registered_name",a)}catch(e){}if(S.user={id:d&&d.id||(r?MY_ID:"usr-"+Date.now()),name:a,email:l,telegram:n,phone:o,role:r?"ADMIN":d&&d.role||"USER",isAdmin:r||d&&d.isAdmin||!1,node:r?"PLATFORM OWNER":d&&d.node||"COMMUNITY MEMBER"},S.profiles[s]={...S.user},save(),J(),confetti({particleCount:90,spread:75}),toast("Welcome, "+a+"! Logged in successfully."),sbClient)try{sbClient.from("profiles").upsert({id:S.user.id,full_name:S.user.name,email:S.user.email,phone:S.user.phone,telegram_username:S.user.telegram,updated_at:new Date().toISOString()}).then(()=>console.log("Profile synced to Supabase on auth"))}catch(e){}if(authSuccessCallback){let e=authSuccessCallback;authSuccessCallback=null,e()}else render()},dlg.showModal(),applyThemeColor(activeColor)}function go(e){if("report"===e&&!S.user){toast("Please log in to report an item."),openAuthModal("login",()=>go("report"));return}if("dash"===e&&!S.user){toast("Please log in to access your dashboard."),openAuthModal("login",()=>go("dash"));return}view=e,"report"===e&&(W={step:1,d:{type:"FOUND",cat:"ELECTRONICS"}}),render(),window.scrollTo(0,0)}function render(){updateDashBadge(),updateNavAuth(),"home"===view?home():"report"===view?report():"dash"===view&&dash()}function getFilteredItems(){let e=(currentFilter.q||"").toLowerCase().trim(),a=S.items.filter(a=>"ARCHIVED"!==a.status&&("ALL"===currentFilter.type||a.type===currentFilter.type)&&(!currentFilter.cat||a.cat===currentFilter.cat)&&("ACTIVE"!==currentFilter.status||"ACTIVE"===a.status)&&("RETURNED"!==currentFilter.status||"RETURNED_TO_OWNER"===a.status)&&(!currentFilter.rewardOnly||!!a.reward&&!!a.reward.trim())&&(!e||!!(String(a.title||"")+" "+String(a.desc||"")+" "+String(a.where||"")+" "+String(a.holding||"")+" "+String(a.contact||"")).toLowerCase().includes(e)));return"OLDEST"===currentFilter.sort?a.sort((e,a)=>new Date(e.date)-new Date(a.date)):a.sort((e,a)=>new Date(a.date)-new Date(e.date)),a}function home(){let e=S.items.filter(e=>"FOUND"===e.type&&"ARCHIVED"!==e.status).length,a=S.items.filter(e=>"LOST"===e.type&&"ARCHIVED"!==e.status).length,i=S.items.filter(e=>"RETURNED_TO_OWNER"===e.status).length,n=getFilteredItems();app.innerHTML=`
     <!-- Hero Banner -->
     <section class="hero">
       <div class="hero-tagline">
@@ -1703,7 +1768,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
     <h2 class="visually-hidden">${t("nav_explore")}</h2>
     <div id="viewContainer"></div>
   `,$("#rf").onclick=()=>{if(!S.user){toast("Please log in to report a found item."),openAuthModal("login",()=>{W.d.type="FOUND",go("report")});return}W.d.type="FOUND",go("report")},$("#rl").onclick=()=>{if(!S.user){toast("Please log in to report a lost item."),openAuthModal("login",()=>{W.d.type="LOST",go("report")});return}W.d.type="LOST",go("report")},$("#q").oninput=e=>{currentFilter.q=e.target.value,renderViewArea(getFilteredItems())},$("#fc").onchange=e=>{currentFilter.cat=e.target.value,home()};let o=$("#fStatus");o&&(o.onchange=e=>{currentFilter.status=e.target.value,home()});let l=$("#fSort");l&&(l.onchange=e=>{currentFilter.sort=e.target.value,renderViewArea(getFilteredItems())});let s=$("#pillRewardOnly");s&&(s.onclick=()=>{currentFilter.rewardOnly=!currentFilter.rewardOnly,home()}),document.querySelectorAll("[data-tp]").forEach(e=>{e.onclick=()=>{currentFilter.type=e.dataset.tp,home()}}),renderViewArea(n)}function renderViewArea(e){let a=$("#viewContainer");if(a){if(0===e.length){a.innerHTML=`
-      <div class="panel" style="text-align:center; padding:44px 20px;">
+      <div class="panel empty-panel">
         <p class="empty-title" style="font-family:'Archivo Black',sans-serif; font-size:18px; margin:0 0 6px;">${t("no_items_found")}</p>
         <p class="meta">${t("no_items_desc")}</p>
         <p style="margin-top:14px;">
@@ -1748,62 +1813,62 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
       <a href="mailto:${esc(e)}" class="btn s" style="text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
         ✉️ ${t("btn_contact_email")} (${esc(e)})
       </a>
-    `)}return 0===a.length?"":`<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">${a.join("")}</div>`}function openItemModal(e){let a=S.items.find(a=>String(a.id)===String(e));if(!a)return;let i=S.items.filter(e=>"ARCHIVED"!==e.status),n=i.findIndex(a=>String(a.id)===String(e)),o=i.length>0?n>0?n-1:i.length-1:-1,l=i.length>0?n<i.length-1&&n>=0?n+1:0:-1,s=S.comments.filter(a=>String(a.item)===String(e)&&!a.flag),r="FOUND"===a.type,d=S.user&&(S.user.isAdmin||"ADMIN"===S.user.role||a.owner===S.user.name||a.ownerId===S.user.id||S.user.id===MY_ID&&(a.owner===OWNER_NAME||a.ownerId===MY_ID));db.innerHTML=`
+    `)}return 0===a.length?"":`<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">${a.join("")}</div>`}function openItemModal(e){let a,i=S.items.find(a=>String(a.id)===String(e));if(!i)return;let n=S.items.filter(e=>"ARCHIVED"!==e.status),o=n.findIndex(a=>String(a.id)===String(e)),l=n.length>0?o>0?o-1:n.length-1:-1,s=n.length>0?o<n.length-1&&o>=0?o+1:0:-1,r=S.comments.filter(a=>String(a.item)===String(e)&&!a.flag),d="FOUND"===i.type,c=S.user&&(S.user.isAdmin||"ADMIN"===S.user.role||i.owner===S.user.name||i.ownerId===S.user.id||S.user.id===MY_ID&&(i.owner===OWNER_NAME||i.ownerId===MY_ID));db.innerHTML=`
     <div class="dlg-header">
       <div>
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-          <span class="badge ${a.type}">${r?t("badge_found"):t("badge_lost")}</span>
-          ${"RETURNED_TO_OWNER"===a.status?`<span class="badge" style="background:#10b981; color:#fff; border-color:#000;">✓ ${t("badge_returned")}</span>`:`<span class="meta" style="font-size:11px; font-weight:700;">${a.status.replace(/_/g," ")}</span>`}
-          ${d?`
-            <button type="button" class="btn s" id="btnToggleReturnedDirect" style="font-size:11px; padding:2px 8px; font-weight:800; ${"RETURNED_TO_OWNER"===a.status?"background:#fef08a; color:#000;":"background:#10b981; color:#fff;"}">
-              ${"RETURNED_TO_OWNER"===a.status?t("btn_reopen_listing"):t("btn_mark_returned")}
+          <span class="badge ${i.type}">${d?t("badge_found"):t("badge_lost")}</span>
+          ${"RETURNED_TO_OWNER"===i.status?`<span class="badge" style="background:#10b981; color:#fff; border-color:#000;">✓ ${t("badge_returned")}</span>`:`<span class="meta" style="font-size:11px; font-weight:700;">${i.status.replace(/_/g," ")}</span>`}
+          ${c?`
+            <button type="button" class="btn s" id="btnToggleReturnedDirect" style="font-size:11px; padding:2px 8px; font-weight:800; ${"RETURNED_TO_OWNER"===i.status?"background:#fef08a; color:#000;":"background:#10b981; color:#fff;"}">
+              ${"RETURNED_TO_OWNER"===i.status?t("btn_reopen_listing"):t("btn_mark_returned")}
             </button>
           `:""}
-          ${d?`<span class="pill" style="font-size:10px; font-weight:800; background:var(--found);">${t("your_listing")}</span>`:""}
+          ${c?`<span class="pill" style="font-size:10px; font-weight:800; background:var(--found);">${t("your_listing")}</span>`:""}
         </div>
-        <h2>${esc(a.title)}</h2>
+        <h2>${esc(i.title)}</h2>
       </div>
       <div class="row">
-        ${d?`<button class="btn s" id="btnEditTopListing">${t("btn_edit")}</button>`:""}
+        ${c?`<button class="btn s" id="btnEditTopListing">${t("btn_edit")}</button>`:""}
         <button class="btn s" id="btnDlgClose">${t("btn_close")}</button>
       </div>
     </div>
 
-    ${a.img?`
+    ${i.img?`
       <div style="margin-bottom:14px; border:2.5px solid var(--ink); border-radius:6px; overflow:hidden; max-height:280px; aspect-ratio:16/9; background:var(--code-bg); box-shadow:4px 4px 0 var(--sh);">
-        <img src="${a.img}" alt="${esc(a.title)}" width="600" height="340" style="width:100%; height:100%; max-height:280px; aspect-ratio:16/9; object-fit:cover; display:block;">
+        <img src="${i.img}" alt="${esc(i.title)}" width="600" height="340" style="width:100%; height:100%; max-height:280px; aspect-ratio:16/9; object-fit:cover; display:block;">
       </div>
     `:""}
 
-    <p style="font-size:16px; margin:0 0 14px; font-weight:500;">${esc(a.desc)}</p>
+    <p style="font-size:16px; margin:0 0 14px; font-weight:500;">${esc(i.desc)}</p>
 
-    ${a.reward?`
+    ${i.reward?`
       <div class="safe-box">
-        💰 <strong>${t("reward_offered")} ${esc(a.reward)}</strong>
+        💰 <strong>${t("reward_offered")} ${esc(i.reward)}</strong>
       </div>
     `:""}
 
     <dl class="panel">
-      <dt>${r?t("found_at"):t("lost_near")}</dt>
-      <dd>${esc(a.where)}</dd>
+      <dt>${d?t("found_at"):t("lost_near")}</dt>
+      <dd>${esc(i.where)}</dd>
       
       <dt>${t("field_datetime")}</dt>
-      <dd>${fmt(a.date)}</dd>
+      <dd>${fmt(i.date)}</dd>
       
       <dt>${t("field_holding")}</dt>
-      <dd>${esc(a.holding)}</dd>
+      <dd>${esc(i.holding)}</dd>
       
       <dt>${t("posted_by")}</dt>
       <dd>
-        ${esc(a.owner)} \xb7 ${esc(a.contact)}
-        ${renderQuickContactButtons(a.contact)}
+        ${esc(i.owner)} \xb7 ${esc(i.contact)}
+        ${renderQuickContactButtons(i.contact)}
       </dd>
     </dl>
 
 
 
     <!-- If User is Finder of this Found Item: CANNOT CLAIM IT! -->
-    ${r&&d?`
+    ${d&&c?`
       <div class="panel" style="background:var(--code-bg); border:2.5px dashed var(--ink); margin:16px 0;">
         <div style="font-weight:800; font-size:15px; margin-bottom:4px; color:var(--ink);">${t("finder_panel_title")}</div>
         <p class="meta" style="margin:0 0 12px; font-size:13px;">${t("finder_panel_desc")}</p>
@@ -1812,7 +1877,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
           <button type="button" class="btn s" id="btnEditFoundItem">${t("btn_edit_listing")}</button>
         </div>
 
-        ${(()=>{let a=S.claims.filter(a=>a.item===e);return 0===a.length?"":`
+        ${0===(a=S.claims.filter(a=>a.item===e)).length?"":`
             <div style="margin-top:14px; border-top:1.5px dashed var(--ink); padding-top:10px;">
               <div style="font-weight:800; font-size:13px; margin-bottom:8px;">
                 📋 ${t("incoming_claims_modal_title")} (${a.length}):
@@ -1835,12 +1900,12 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
                 </div>
               `).join("")}
             </div>
-          `})()}
+          `}
       </div>
     `:""}
 
     <!-- If User Lost This Item: They Can Edit Their Lost Report! -->
-    ${!r&&d?`
+    ${!d&&c?`
       <div class="panel" style="background:#fff8db; border:2.5px solid var(--ink); margin:16px 0; box-shadow:3px 3px 0 var(--sh);">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <div>
@@ -1853,15 +1918,15 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
     `:""}
 
     <!-- Anti-Fraud Ownership Challenge Section (Only for other claimants) -->
-    ${r&&!d&&"ACTIVE"===a.status?`
+    ${d&&!c&&"ACTIVE"===i.status?`
       <div class="safe-box">
         <strong>${t("safe_protocol_title")}</strong>
         <br>${t("safe_protocol_desc")}
       </div>
 
       ${S.user?`
-        <form id="claimForm" style="margin:16px 0;">
-          <label for="claimProof"><strong>${esc(a.q||t("claim_secret_title"))}</strong></label>
+        <form id="claimForm" name="claim_item_form" aria-label="Item Claim Submission Form" data-agent-form="claim" style="margin:16px 0;">
+          <label for="claimProof"><strong>${esc(i.q||t("claim_secret_title"))}</strong></label>
           <textarea id="claimProof" rows="3" required placeholder="${t("claim_placeholder")}"></textarea>
           <p style="margin:10px 0 0;">
             <button class="btn p">${t("btn_send_claim")}</button>
@@ -1883,7 +1948,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
       <h3 style="font-size:17px; margin-bottom:8px;">${t("community_leads_title")}</h3>
       
       <div style="margin-bottom:12px;">
-        ${s.map(e=>`
+        ${r.map(e=>`
           <div class="panel" style="margin:8px 0; padding:10px 14px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <strong>${esc(e.by)}</strong>
@@ -1899,7 +1964,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
       </div>
 
       ${S.user?`
-        <form id="commentForm">
+        <form id="commentForm" name="comment_form" aria-label="Community Comment Form" data-agent-form="comment">
           <label for="commentText"><strong>${t("add_lead_label")}</strong></label>
           <textarea id="commentText" rows="2" required placeholder="${t("comment_placeholder")}"></textarea>
           <div class="row" style="margin-top:8px; justify-content:space-between;">
@@ -1927,14 +1992,14 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
         <span>${t("btn_prev")}</span>
       </button>
 
-      <span class="meta" style="font-weight:700; font-size:12px;">${n+1} / ${i.length}</span>
+      <span class="meta" style="font-weight:700; font-size:12px;">${o+1} / ${n.length}</span>
 
       <button class="btn s" id="btnNextItem" style="display:flex; align-items:center; gap:6px;">
         <span>${t("btn_next")}</span>
         <span>❯</span>
       </button>
     </div>
-  `,dlg.showModal(),$("#btnDlgClose").onclick=()=>dlg.close();let c=$("#btnEditTopListing");c&&(c.onclick=()=>openEditItemModal(e));let u=$("#btnGoToDashFromItem");u&&(u.onclick=()=>{dlg.close(),go("dash")});let p=$("#btnEditFoundItem");p&&(p.onclick=()=>openEditItemModal(e));let m=$("#btnEditLostNotice");m&&(m.onclick=()=>openEditItemModal(e));let g=$("#btnLoginToClaim");g&&(g.onclick=()=>openAuthModal("login",()=>openItemModal(e)));let h=$("#btnLoginToComment");h&&(h.onclick=()=>openAuthModal("login",()=>openItemModal(e)));let _=$("#btnToggleReturnedDirect");_&&(_.onclick=()=>{"RETURNED_TO_OWNER"===a.status?a.status="ACTIVE":(a.status="RETURNED_TO_OWNER",confetti({particleCount:90,spread:70})),save(),toast(t("toast_status_updated")),openItemModal(e),home()}),db.querySelectorAll("[data-modal-accept]").forEach(i=>{i.onclick=()=>{let n=i.dataset.modalAccept,o=S.claims.find(e=>String(e.id)===String(n));if(o){o.status="ACCEPTED";let i=S.myClaims&&S.myClaims.find(e=>String(e.item)===String(o.item));if(i&&(i.status="ACCEPTED"),a.status="RETURNED_TO_OWNER",save(),confetti({particleCount:90,spread:70}),toast(t("toast_status_updated")),openItemModal(e),"home"===view&&home(),sbClient)try{sbClient.from("claims").update({status:"ACCEPTED"}).eq("id",String(o.id)).then(),sbClient.from("items").update({status:"RETURNED_TO_OWNER"}).eq("id",String(a.id)).then()}catch(e){}}}}),db.querySelectorAll("[data-modal-reject]").forEach(a=>{a.onclick=()=>{let i=a.dataset.modalReject,n=S.claims.find(e=>String(e.id)===String(i));if(n){n.status="REJECTED";let a=S.myClaims&&S.myClaims.find(e=>String(e.item)===String(n.item));if(a&&(a.status="REJECTED"),save(),toast("Claim rejected."),openItemModal(e),sbClient)try{sbClient.from("claims").update({status:"REJECTED"}).eq("id",String(n.id)).then()}catch(e){}}}});let b=$("#btnPrevItem");b&&(i.length>1&&o>=0&&i[o]?b.onclick=()=>openItemModal(i[o].id):(b.style.opacity="0.4",b.style.pointerEvents="none"));let f=$("#btnNextItem");f&&(i.length>1&&l>=0&&i[l]?f.onclick=()=>openItemModal(i[l].id):(f.style.opacity="0.4",f.style.pointerEvents="none")),db.querySelectorAll("[data-flag]").forEach(a=>{a.onclick=()=>{if(!S.user){toast("Please log in to report a comment."),openAuthModal("login",()=>openItemModal(e));return}let i=S.comments.find(e=>String(e.id)===String(a.dataset.flag));i&&(i.flag=1,save(),toast("Comment hidden for review."),openItemModal(e))}}),db.querySelectorAll("[data-delcomm]").forEach(a=>{a.onclick=()=>{let i=a.dataset.delcomm;if(!S.user){toast("Please log in to delete comments."),openAuthModal("login",()=>openItemModal(e));return}if(S.comments=S.comments.filter(e=>String(e.id)!==String(i)),save(),toast("Comment deleted."),openItemModal(e),sbClient)try{sbClient.from("comments").delete().eq("id",String(i)).then()}catch(e){}}});let y=$("#claimForm");y&&(y.onsubmit=i=>{if(i.preventDefault(),!S.user){toast("Please log in to submit a claim."),openAuthModal("login",()=>openItemModal(e));return}if(d){toast("You cannot claim an item you reported!");return}let n=$("#claimProof").value.trim();if(!n)return;let o=S.user.name,l=S.user.id,s=S.n++,r={id:s,item:e,claimantId:l,by:o,proof:n,status:"PENDING",date:new Date().toISOString()};if(S.claims.push(r),S.myClaims||(S.myClaims=[]),S.myClaims.push(r),a.status="CLAIM_PENDING",save(),dlg.close(),confetti({particleCount:70,spread:60}),toast("Claim sent to the finder!"),render(),sbClient)try{sbClient.from("claims").insert({id:String(s),item_id:String(e),claimant_id:l,claimant_data:{fullName:o,email:S.user.email,phone:S.user.phone},proof_message:n,status:"PENDING"}).then(),sbClient.from("items").update({status:"CLAIM_PENDING"}).eq("id",String(e)).then()}catch(e){}});let v=$("#commentForm");v&&(v.onsubmit=a=>{if(a.preventDefault(),!S.user){toast("Please log in to post a comment."),openAuthModal("login",()=>openItemModal(e));return}let i=S.n++,n=$("#isLead")?.checked?"OWNER_LEAD":"GENERAL",o=$("#commentText").value.trim();if(o&&(S.comments.push({id:i,item:e,by:S.user.name,type:n,text:o}),save(),openItemModal(e),sbClient))try{sbClient.from("comments").insert({id:String(i),item_id:String(e),user_id:S.user.id,user_data:{fullName:S.user.name},content:o,comment_type:n}).then()}catch(e){}})}function report(){if(!S.user){app.innerHTML=`
+  `,dlg.showModal(),$("#btnDlgClose").onclick=()=>dlg.close();let u=$("#btnEditTopListing");u&&(u.onclick=()=>openEditItemModal(e));let p=$("#btnGoToDashFromItem");p&&(p.onclick=()=>{dlg.close(),go("dash")});let m=$("#btnEditFoundItem");m&&(m.onclick=()=>openEditItemModal(e));let g=$("#btnEditLostNotice");g&&(g.onclick=()=>openEditItemModal(e));let h=$("#btnLoginToClaim");h&&(h.onclick=()=>openAuthModal("login",()=>openItemModal(e)));let _=$("#btnLoginToComment");_&&(_.onclick=()=>openAuthModal("login",()=>openItemModal(e)));let b=$("#btnToggleReturnedDirect");b&&(b.onclick=()=>{"RETURNED_TO_OWNER"===i.status?i.status="ACTIVE":(i.status="RETURNED_TO_OWNER",confetti({particleCount:90,spread:70})),save(),toast(t("toast_status_updated")),openItemModal(e),home()}),db.querySelectorAll("[data-modal-accept]").forEach(a=>{a.onclick=()=>{let n=a.dataset.modalAccept,o=S.claims.find(e=>String(e.id)===String(n));if(o){o.status="ACCEPTED";let a=S.myClaims&&S.myClaims.find(e=>String(e.item)===String(o.item));if(a&&(a.status="ACCEPTED"),i.status="RETURNED_TO_OWNER",save(),confetti({particleCount:90,spread:70}),toast(t("toast_status_updated")),openItemModal(e),"home"===view&&home(),sbClient)try{sbClient.from("claims").update({status:"ACCEPTED"}).eq("id",String(o.id)).then(),sbClient.from("items").update({status:"RETURNED_TO_OWNER"}).eq("id",String(i.id)).then()}catch(e){}}}}),db.querySelectorAll("[data-modal-reject]").forEach(a=>{a.onclick=()=>{let i=a.dataset.modalReject,n=S.claims.find(e=>String(e.id)===String(i));if(n){n.status="REJECTED";let a=S.myClaims&&S.myClaims.find(e=>String(e.item)===String(n.item));if(a&&(a.status="REJECTED"),save(),toast("Claim rejected."),openItemModal(e),sbClient)try{sbClient.from("claims").update({status:"REJECTED"}).eq("id",String(n.id)).then()}catch(e){}}}});let f=$("#btnPrevItem");f&&(n.length>1&&l>=0&&n[l]?f.onclick=()=>openItemModal(n[l].id):(f.style.opacity="0.4",f.style.pointerEvents="none"));let y=$("#btnNextItem");y&&(n.length>1&&s>=0&&n[s]?y.onclick=()=>openItemModal(n[s].id):(y.style.opacity="0.4",y.style.pointerEvents="none")),db.querySelectorAll("[data-flag]").forEach(a=>{a.onclick=()=>{if(!S.user){toast("Please log in to report a comment."),openAuthModal("login",()=>openItemModal(e));return}let i=S.comments.find(e=>String(e.id)===String(a.dataset.flag));i&&(i.flag=1,save(),toast("Comment hidden for review."),openItemModal(e))}}),db.querySelectorAll("[data-delcomm]").forEach(a=>{a.onclick=()=>{let i=a.dataset.delcomm;if(!S.user){toast("Please log in to delete comments."),openAuthModal("login",()=>openItemModal(e));return}if(S.comments=S.comments.filter(e=>String(e.id)!==String(i)),save(),toast("Comment deleted."),openItemModal(e),sbClient)try{sbClient.from("comments").delete().eq("id",String(i)).then()}catch(e){}}});let v=$("#claimForm");v&&(v.onsubmit=a=>{if(a.preventDefault(),!S.user){toast("Please log in to submit a claim."),openAuthModal("login",()=>openItemModal(e));return}if(c){toast("You cannot claim an item you reported!");return}let n=$("#claimProof").value.trim();if(!n)return;let o=S.user.name,l=S.user.id,s=S.n++,r={id:s,item:e,claimantId:l,by:o,proof:n,status:"PENDING",date:new Date().toISOString()};if(S.claims.push(r),S.myClaims||(S.myClaims=[]),S.myClaims.push(r),i.status="CLAIM_PENDING",save(),dlg.close(),confetti({particleCount:70,spread:60}),toast("Claim sent to the finder!"),render(),sbClient)try{sbClient.from("claims").insert({id:String(s),item_id:String(e),claimant_id:l,claimant_data:{fullName:o,email:S.user.email,phone:S.user.phone},proof_message:n,status:"PENDING"}).then(),sbClient.from("items").update({status:"CLAIM_PENDING"}).eq("id",String(e)).then()}catch(e){}});let w=$("#commentForm");w&&(w.onsubmit=a=>{if(a.preventDefault(),!S.user){toast("Please log in to post a comment."),openAuthModal("login",()=>openItemModal(e));return}let i=S.n++,n=$("#isLead")?.checked?"OWNER_LEAD":"GENERAL",o=$("#commentText").value.trim();if(o&&(S.comments.push({id:i,item:e,by:S.user.name,type:n,text:o}),save(),openItemModal(e),sbClient))try{sbClient.from("comments").insert({id:String(i),item_id:String(e),user_id:S.user.id,user_data:{fullName:S.user.name},content:o,comment_type:n}).then()}catch(e){}})}function report(){if(!S.user){app.innerHTML=`
       <div style="max-width:540px; margin:40px auto; text-align:center; padding:32px 20px; border:2.5px solid var(--ink); border-radius:8px; background:var(--surf); box-shadow:5px 5px 0 var(--sh);">
         <div style="font-size:42px; margin-bottom:12px;">🔒</div>
         <h2>Sign In Required</h2>
@@ -2057,7 +2122,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
     `),app.innerHTML=`
     <div style="max-width:580px; margin:0 auto; padding:20px 0;">
       ${n}
-      <form id="wizardForm">
+      <form id="wizardForm" name="report_item_wizard" aria-label="Report Lost or Found Item Form" data-agent-form="report">
         ${o}
         <p class="row" style="margin-top:22px; justify-content:space-between;">
           ${a>1?'<button type="button" class="btn" id="btnWizBack">'+t("btn_back")+"</button>":"<span></span>"}
@@ -2202,7 +2267,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
       <h2>${t("edit_profile_title")}</h2>
       <button class="btn s" id="btnClProf">${t("btn_close")}</button>
     </div>
-    <form id="profForm">
+    <form id="profForm" name="edit_profile_form" aria-label="Edit Profile Form" data-agent-form="profile">
       <label for="pName">Display Name</label>
       <input id="pName" required value="${esc(S.user.name)}">
       
