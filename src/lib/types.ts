@@ -28,6 +28,8 @@ export interface User {
   phone?: string | null;
   telegramUsername?: string | null;
   avatarUrl?: string | null;
+  role?: "ADMIN" | "USER";
+  isAdmin?: boolean;
   createdAt: string;
 }
 

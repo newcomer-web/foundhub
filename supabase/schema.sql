@@ -60,6 +60,27 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+
+-- 4b. Platform Administrator Role & Account
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'USER';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false;
+
+INSERT INTO public.profiles (id, full_name, email, role, is_admin, telegram_username, created_at, updated_at)
+VALUES (
+    'usr-admin-muhammadaziz',
+    'Muhammadaziz Abdullayev',
+    'muhammadaziz09092009@gmail.com',
+    'ADMIN',
+    true,
+    '@muhammadaziz_dev',
+    NOW(),
+    NOW()
+)
+ON CONFLICT (email) DO UPDATE SET
+    role = 'ADMIN',
+    is_admin = true,
+    full_name = 'Muhammadaziz Abdullayev';
+
 -- 5. Enable Row Level Security (RLS) & Public access policies
 ALTER TABLE public.items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;

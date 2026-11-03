@@ -1670,7 +1670,8 @@ const LANDMARKS = [
   { name: "Engineering Quad Cafe Pathway", lat: 37.7735, lng: -122.4240 }
 ];
 
-const OWNER_EMAIL = "muhammadaziz09092009@gmail.com";
+const ADMIN_EMAIL = "muhammadaziz09092009@gmail.com";
+const OWNER_EMAIL = ADMIN_EMAIL;
 const OWNER_NAME = "Muhammadaziz Abdullayev";
 const MY_ID = "usr-muhammadaziz";
 
@@ -2407,22 +2408,19 @@ function updateNavAuth() {
   const navArea = $("#navAuthArea");
   if (!navArea) return;
 
-  const regName = (S.user && S.user.name) || localStorage.getItem("fh_registered_name") || "Muhammadaziz Abdullayev";
-
   if (S.user) {
+    const isAdmin = S.user.role === "ADMIN" || S.user.email === ADMIN_EMAIL;
     navArea.innerHTML = `
       <button class="btn s" id="btnNavLogout">${t("nav_logout")}</button>
       <span class="nav-user-label" style="font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700; background:var(--found); color:#000; border:2px solid var(--ink); border-radius:6px; padding:4px 10px; box-shadow:2px 2px 0 var(--sh); display:inline-flex; align-items:center; gap:5px;" title="User Profile">
-        👤 ${esc(S.user.name)}
+        👤 ${esc(S.user.name)}${isAdmin ? ' <span style="background:#000; color:#ffd93d; font-size:9px; padding:1px 5px; border-radius:3px; font-weight:800; margin-left:3px;">ADMIN</span>' : ''}
       </span>
     `;
     $("#btnNavLogout").onclick = logout;
   } else {
+    // When logged out, the name disappears completely, leaving only the Log In button!
     navArea.innerHTML = `
       <button class="btn s p" id="btnNavLogin">${t("nav_login")}</button>
-      <span class="nav-user-label" style="font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700; background:var(--surf); color:var(--ink); border:2px solid var(--ink); border-radius:6px; padding:4px 10px; box-shadow:2px 2px 0 var(--sh); display:inline-flex; align-items:center; gap:5px;" title="Registered Name">
-        👤 ${esc(regName)}
-      </span>
     `;
     $("#btnNavLogin").onclick = () => openAuthModal("login");
   }
@@ -2430,8 +2428,9 @@ function updateNavAuth() {
 
 function logout() {
   S.user = null;
+  try { localStorage.removeItem("fh_registered_name"); } catch(e) {}
   save();
-  toast("Logged out successfully.");
+  toast(t("toast_logged_out") || "Logged out successfully.");
   render();
 }
 
@@ -2520,7 +2519,7 @@ function openAuthModal(initialMode = "login", onSuccess = null) {
 
             <div class="auth-form-group">
               <label for="authEmail">${t("auth_email")}</label>
-              <input id="authEmail" type="email" required placeholder="user@example.com" value="${activeTab==='signin'?'muhammadaziz09092009@gmail.com':''}">
+              <input id="authEmail" type="email" required placeholder="user@example.com" value="">
             </div>
 
             <div class="auth-form-group">
@@ -3084,13 +3083,16 @@ document.addEventListener("click", e => {
     const phone = activeTab === "register" ? ($("#authPhone")?.value.trim() || "") : "";
 
     try { localStorage.setItem("fh_registered_name", name); } catch(e) {}
+    const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
     S.user = {
-      id: "usr-" + Date.now(),
+      id: isAdmin ? "usr-admin-muhammadaziz" : "usr-" + Date.now(),
       name: name,
       email: email,
       telegram: tg,
       phone: phone,
-      node: "COMMUNITY MEMBER"
+      role: isAdmin ? "ADMIN" : "USER",
+      isAdmin: isAdmin,
+      node: isAdmin ? "PLATFORM ADMIN" : "COMMUNITY MEMBER"
     };
     save();
     closeModal();
