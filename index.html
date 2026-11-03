@@ -1113,11 +1113,11 @@ dialog[data-mode="auth"] .dlg {
 .auth-card {
   position: relative;
   width: 100%;
-  max-width: 550px;
+  max-width: 485px; /* Clean 90% proportional sizing */
   background: #141622;
   border: 3px solid #000;
-  box-shadow: 6px 6px 0 #000;
-  padding: 28px 32px;
+  box-shadow: 5px 5px 0 #000;
+  padding: 22px 26px; /* Proportioned at 90% */
   z-index: 6;
   border-radius: 4px;
   transition: border-color 0.3s, box-shadow 0.3s, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.25);
@@ -1138,7 +1138,7 @@ dialog[data-mode="auth"] .dlg {
 
 .tab-btn {
   flex: 1;
-  padding: 11px 16px;
+  padding: 9px 14px;
   background: #1e2232;
   border: 2.5px solid #000;
   color: #9aa0b4;
@@ -1163,7 +1163,7 @@ dialog[data-mode="auth"] .dlg {
 .card-title {
   margin: 0 0 6px;
   font-family: 'Archivo Black', sans-serif;
-  font-size: 26px;
+  font-size: 22px;
   color: #fff;
   letter-spacing: -0.5px;
 }
@@ -1193,7 +1193,7 @@ dialog[data-mode="auth"] .dlg {
 
 .auth-form-group input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 10px 12px;
   background: #0d0f17;
   border: 2.5px solid #000;
   border-radius: 3px;
@@ -1215,7 +1215,7 @@ dialog[data-mode="auth"] .dlg {
 .submit-btn {
   position: relative;
   width: 100%;
-  padding: 14px 20px;
+  padding: 12px 18px;
   border-radius: 4px;
   border: 2.5px solid #000;
   background: linear-gradient(135deg, var(--lamp-accent) 0%, var(--lamp-secondary) 100%);
@@ -1409,7 +1409,7 @@ dialog[data-mode="auth"] .dlg {
     </div>
 
     <div>
-      <span>Muhammadaziz Abdullayev</span>
+      <span>by Muhammadaziz Abdullayev</span>
     </div>
   </div>
 </div>
@@ -1670,133 +1670,38 @@ const LANDMARKS = [
   { name: "Engineering Quad Cafe Pathway", lat: 37.7735, lng: -122.4240 }
 ];
 
-const MY_ID = "usr-current-1";
+const OWNER_EMAIL = "muhammadaziz09092009@gmail.com";
+const OWNER_NAME = "Muhammadaziz Abdullayev";
+const MY_ID = "usr-muhammadaziz";
 
 const seed = () => ({
   user: {
     id: MY_ID,
-    name: "Azizbek",
-    email: "azizbek@foundhub.app",
-    telegram: "@azizbek_lostfound",
-    phone: "+998 90 555 12 34",
-    node: "VERIFIED NODE"
+    name: OWNER_NAME,
+    email: OWNER_EMAIL,
+    telegram: "@muhammadaziz_dev",
+    phone: "+998 90 123 45 67",
+    node: "PLATFORM OWNER"
   },
-  items: [
-    {
-      id: 1,
-      owner: "Azizbek",
-      ownerId: MY_ID,
-      type: "FOUND",
-      title: "Black laptop backpack with stickers",
-      cat: "WALLETS_AND_BAGS",
-      desc: "Black backpack with a grey zipper, found under a table. A white cat sticker on the front pocket.",
-      where: "University Central Library 2nd Floor",
-      lat: 37.7749,
-      lng: -122.4194,
-      date: "2026-10-27T15:30",
-      holding: "Campus Security Office, Room 102",
-      contact: "In-app message & Telegram: @campus_desk",
-      q: "What sticker is on the front pocket?",
-      reward: "",
-      beaconCode: "SIG-2026-01",
-      img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80",
-      status: "ACTIVE"
-    },
-    {
-      id: 2,
-      owner: "Dilnoza",
-      ownerId: "usr-2",
-      type: "FOUND",
-      title: "Passport holder with masked ID",
-      cat: "DOCUMENTS_AND_IDS",
-      desc: "Blue passport cover with an ID card inside. Number is protected: AB ****45.",
-      where: "Downtown Metro Station, Platform 3",
-      lat: 37.7833,
-      lng: -122.4167,
-      date: "2026-10-28T08:10",
-      holding: "Metro Security Dispatch Hub",
-      contact: "Telegram: @dilnoza_safe",
-      q: "What is the card holder’s full middle name?",
-      reward: "",
-      beaconCode: "SIG-2026-02",
-      img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&auto=format&fit=crop&q=80",
-      status: "ACTIVE"
-    },
-    {
-      id: 3,
-      owner: "Timur",
-      ownerId: "usr-3",
-      type: "LOST",
-      title: "Silver watch, cracked leather strap",
-      cat: "JEWELRY_AND_WATCHES",
-      desc: "Lost near the central park fountain on Sunday afternoon. Back bezel has personal initials engraving.",
-      where: "Maplewood Community Park Fountain",
-      lat: 37.7810,
-      lng: -122.4110,
-      date: "2026-10-25T11:00",
-      holding: "Still searching area",
-      contact: "Phone after 5 PM (+998 90 999 88 77)",
-      q: "What initials are engraved on the back?",
-      reward: "$100 Bounty",
-      beaconCode: "SIG-2026-03",
-      img: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&auto=format&fit=crop&q=80",
-      status: "ACTIVE"
-    },
-    {
-      id: 4,
-      owner: "Aziza",
-      ownerId: "usr-4",
-      type: "FOUND",
-      title: "Ring of keys with red keychain",
-      cat: "KEYS",
-      desc: "Three door keys and one mailbox key on a red fabric woven lanyard keychain.",
-      where: "Engineering Quad Cafe Pathway",
-      lat: 37.7735,
-      lng: -122.4240,
-      date: "2026-10-26T18:45",
-      holding: "With finder at student union desk",
-      contact: "In-app message",
-      q: "What word is written on the fabric keychain?",
-      reward: "",
-      beaconCode: "SIG-2026-04",
-      img: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=800&auto=format&fit=crop&q=80",
-      status: "ACTIVE"
-    }
-  ],
-  comments: [
-    { id: 1, item: 1, by: "Malika", type: "OWNER_LEAD", text: "Looks like Jasur’s backpack from the design studio.", flag: 0 }
-  ],
-  claims: [
-    {
-      id: 1,
-      item: 1,
-      claimantId: "usr-jasur",
-      by: "Jasur",
-      proof: "A white cat sticker with 'Meow' text, plus a dark blue laptop sleeve inside.",
-      status: "PENDING",
-      date: "2026-10-28T16:00"
-    }
-  ],
-  myClaims: [
-    {
-      id: 101,
-      item: 3,
-      by: "Azizbek",
-      proof: "Engraving on back has 'T.M. 2022' from my graduation.",
-      status: "PENDING",
-      date: "2026-10-28T18:20"
-    }
-  ],
-  n: 20
+  items: [],
+  comments: [],
+  claims: [],
+  myClaims: [],
+  n: 1
 });
 
 let S;
 try {
   S = JSON.parse(localStorage.getItem("fh_telemetry_v2"));
 } catch (e) {}
-S = S || seed();
-if (S.user === undefined) S.user = seed().user;
-if (!S.myClaims) S.myClaims = seed().myClaims;
+
+// If storage is empty or contains old demo data, initialize with clean owner account
+if (!S || !S.user || S.user.email === "azizbek@foundhub.app" || (Array.isArray(S.items) && S.items.some(x => x.beaconCode === "SIG-2026-01"))) {
+  S = seed();
+  try { localStorage.setItem("fh_telemetry_v2", JSON.stringify(S)); } catch (e) {}
+}
+if (!S.user) S.user = seed().user;
+if (!S.myClaims) S.myClaims = [];
 
 const save = () => {
   try {
@@ -2000,7 +1905,6 @@ const I18N = {
     auth_signup_sub: "Create an account to get started",
     auth_btn_signin: "Sign In →",
     auth_btn_signup: "Create Account →",
-    auth_btn_demo: "⚡ 1-Click Demo Log In (Azizbek)",
     auth_full_name: "Full Name",
     auth_email: "Email Address",
     auth_pass: "Password",
@@ -2175,7 +2079,6 @@ const I18N = {
     auth_signup_sub: "Boshlash uchun yangi akkaunt yarating",
     auth_btn_signin: "Kirish →",
     auth_btn_signup: "Akkaunt yaratish →",
-    auth_btn_demo: "⚡ 1-Tugma bilan Demo Kirish (Azizbek)",
     auth_full_name: "To'liq ism-familiya",
     auth_email: "Elektron pochta manzili",
     auth_pass: "Parol",
@@ -2350,7 +2253,6 @@ const I18N = {
     auth_signup_sub: "Создайте аккаунт, чтобы начать",
     auth_btn_signin: "Войти →",
     auth_btn_signup: "Создать аккаунт →",
-    auth_btn_demo: "⚡ Быстрый демо-вход (Azizbek)",
     auth_full_name: "Полное имя",
     auth_email: "Адрес электронной почты",
     auth_pass: "Пароль",
@@ -2505,14 +2407,22 @@ function updateNavAuth() {
   const navArea = $("#navAuthArea");
   if (!navArea) return;
 
+  const regName = (S.user && S.user.name) || localStorage.getItem("fh_registered_name") || "Muhammadaziz Abdullayev";
+
   if (S.user) {
     navArea.innerHTML = `
       <button class="btn s" id="btnNavLogout">${t("nav_logout")}</button>
+      <span class="nav-user-label" style="font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700; background:var(--found); color:#000; border:2px solid var(--ink); border-radius:6px; padding:4px 10px; box-shadow:2px 2px 0 var(--sh); display:inline-flex; align-items:center; gap:5px;" title="User Profile">
+        👤 ${esc(S.user.name)}
+      </span>
     `;
     $("#btnNavLogout").onclick = logout;
   } else {
     navArea.innerHTML = `
       <button class="btn s p" id="btnNavLogin">${t("nav_login")}</button>
+      <span class="nav-user-label" style="font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700; background:var(--surf); color:var(--ink); border:2px solid var(--ink); border-radius:6px; padding:4px 10px; box-shadow:2px 2px 0 var(--sh); display:inline-flex; align-items:center; gap:5px;" title="Registered Name">
+        👤 ${esc(regName)}
+      </span>
     `;
     $("#btnNavLogin").onclick = () => openAuthModal("login");
   }
@@ -2584,7 +2494,7 @@ function openAuthModal(initialMode = "login", onSuccess = null) {
 
         <!-- Interactive Draggable Pull Handle -->
         <div class="lamp-cord-wrapper" id="lampCord" title="Drag or click to toggle lamp">
-          <div class="cord-handle">💡</div>
+          <div class="cord-handle"></div>
           <div class="cord-hint">${t("pull_cord")}</div>
         </div>
       </div>
@@ -2610,7 +2520,7 @@ function openAuthModal(initialMode = "login", onSuccess = null) {
 
             <div class="auth-form-group">
               <label for="authEmail">${t("auth_email")}</label>
-              <input id="authEmail" type="email" required placeholder="user@example.com" value="${activeTab==='signin'?'azizbek@foundhub.app':''}">
+              <input id="authEmail" type="email" required placeholder="user@example.com" value="${activeTab==='signin'?'muhammadaziz09092009@gmail.com':''}">
             </div>
 
             <div class="auth-form-group">
@@ -2634,9 +2544,7 @@ function openAuthModal(initialMode = "login", onSuccess = null) {
               <span id="btnText">${activeTab==='signin'?t("auth_btn_signin"):t("auth_btn_signup")}</span>
             </button>
 
-            <button type="button" class="demo-btn" id="btnDemoLogin">
-              ${t("auth_btn_demo")}
-            </button>
+            
           </form>
         </div>
       </div>
@@ -3167,29 +3075,6 @@ document.addEventListener("click", e => {
     dlg.removeAttribute("data-mode");
   };
 
-  // Demo Login
-  $("#btnDemoLogin").onclick = () => {
-    S.user = {
-      id: MY_ID,
-      name: "Azizbek",
-      email: "azizbek@foundhub.app",
-      telegram: "@azizbek_lostfound",
-      phone: "+998 90 555 12 34",
-      node: "VERIFIED NODE"
-    };
-    save();
-    closeModal();
-    if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 70 });
-    toast("Logged in as Azizbek!");
-    if (authSuccessCallback) {
-      const cb = authSuccessCallback;
-      authSuccessCallback = null;
-      cb();
-    } else {
-      render();
-    }
-  };
-
   // Auth Form Submit
   $("#authForm").onsubmit = e => {
     e.preventDefault();
@@ -3198,6 +3083,7 @@ document.addEventListener("click", e => {
     const tg = activeTab === "register" ? ($("#authTg")?.value.trim() || "") : "@" + name.toLowerCase();
     const phone = activeTab === "register" ? ($("#authPhone")?.value.trim() || "") : "";
 
+    try { localStorage.setItem("fh_registered_name", name); } catch(e) {}
     S.user = {
       id: "usr-" + Date.now(),
       name: name,

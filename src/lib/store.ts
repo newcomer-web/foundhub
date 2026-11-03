@@ -29,8 +29,8 @@ export const INITIAL_ITEMS: Item[] = [
     userId: 'usr-finder-1',
     user: {
       id: 'usr-finder-1',
-      fullName: 'Alex Vance',
-      email: 'alex.v@campus.edu',
+      fullName: 'Muhammadaziz Abdullayev',
+      email: 'muhammadaziz09092009@gmail.com',
       phone: '+1 (555) 234-5678',
       telegramUsername: 'alex_campus_guard',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
@@ -72,7 +72,7 @@ export const INITIAL_ITEMS: Item[] = [
     userId: 'usr-owner-1',
     user: {
       id: 'usr-owner-1',
-      fullName: 'Elena Rostova',
+      fullName: 'Muhammadaziz Abdullayev',
       email: 'elena.r@design.org',
       phone: '+1 (555) 876-5432',
       telegramUsername: 'elena_designer',
