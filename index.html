@@ -457,21 +457,26 @@ nav {
   align-items: center;
 }
 .pill {
-  border: 2px solid var(--ink);
+  border: 2.5px solid var(--ink);
   border-radius: 6px;
   padding: 6px 14px;
   font-size: 13px;
   font-weight: 700;
   background: var(--surf);
   cursor: pointer;
-  box-shadow: 2px 2px 0 var(--sh);
+  box-shadow: 3px 3px 0 var(--sh);
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: transform .1s;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), filter 0.12s ease;
+  user-select: none;
+}
+.pill:hover {
+  filter: brightness(0.97);
 }
 .pill:active {
-  transform: translate(1px, 1px);
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--sh);
 }
 .pill.active {
   background: var(--ink);
@@ -784,10 +789,16 @@ dialog::backdrop {
   font-weight: 600;
   padding: 4px 8px;
   cursor: pointer;
-  transition: transform 0.1s ease, opacity 0.1s ease;
+  box-shadow: 2px 2px 0 var(--sh);
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), background 0.12s ease;
+  user-select: none;
 }
 .chip:hover {
   background: var(--found);
+}
+.chip:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--sh);
 }
 
 /* Dashboard Tabs */
@@ -901,6 +912,20 @@ dialog[data-mode="auth"] {
   -webkit-overflow-scrolling: touch;
 }
 
+dialog[data-mode="auth"]::-webkit-scrollbar {
+  width: 8px;
+}
+dialog[data-mode="auth"]::-webkit-scrollbar-track {
+  background: #090a10;
+}
+dialog[data-mode="auth"]::-webkit-scrollbar-thumb {
+  background: #222634;
+  border-radius: 4px;
+}
+dialog[data-mode="auth"]::-webkit-scrollbar-thumb:hover {
+  background: var(--lamp-accent, #ffd93d);
+}
+
 dialog[data-mode="auth"]::backdrop {
   background: #090a10 !important;
 }
@@ -921,10 +946,9 @@ dialog[data-mode="auth"] .dlg {
   background: radial-gradient(circle at 50% 140px, #141724 0%, #090a10 75%);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   box-sizing: border-box;
-  padding-bottom: 40px;
+  padding-bottom: 80px;
 }
 
 /* Quick Controls Bar */
@@ -988,14 +1012,16 @@ dialog[data-mode="auth"] .dlg {
   border: 2px solid #000;
   background: var(--dot-color);
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
   box-shadow: 2px 2px 0 #000;
-  outline: none;
-  padding: 0;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  user-select: none;
 }
-
 .color-dot-btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
+}
+.color-dot-btn:active {
+  transform: translate(2px, 2px) scale(0.95);
+  box-shadow: 0 0 0 #000;
 }
 
 .color-dot-btn.active {
@@ -1013,17 +1039,16 @@ dialog[data-mode="auth"] .dlg {
   font-size: 12px;
   cursor: pointer;
   box-shadow: 3px 3px 0 #000;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s;
+  user-select: none;
 }
-
 .btn-close-modal:hover {
   background: #ff4757;
   color: #fff;
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #000;
+}
+.btn-close-modal:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #000;
 }
 
 /* Ambient glow */
@@ -1211,9 +1236,9 @@ dialog[data-mode="auth"] .dlg {
   position: relative;
   width: 100%;
   max-width: 485px;
-  max-height: calc(100vh - 160px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  height: auto;
+  max-height: none;
+  overflow: visible;
   background: #141622;
   border: 3px solid #000;
   box-shadow: 5px 5px 0 #000;
@@ -1222,21 +1247,6 @@ dialog[data-mode="auth"] .dlg {
   border-radius: 4px;
   transition: border-color 0.3s, box-shadow 0.3s, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.25);
   will-change: transform;
-}
-
-.auth-card::-webkit-scrollbar {
-  width: 6px;
-}
-.auth-card::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 3px;
-}
-.auth-card::-webkit-scrollbar-thumb {
-  background: var(--lamp-accent, #ffd93d);
-  border-radius: 3px;
-}
-.auth-card::-webkit-scrollbar-thumb:hover {
-  background: var(--lamp-secondary, #ff8c00);
 }
 
 .lamp-modal-wrap[data-on="true"] .auth-card {
@@ -1259,14 +1269,20 @@ dialog[data-mode="auth"] .dlg {
   color: #9aa0b4;
   font-family: 'Archivo Black', sans-serif;
   font-size: 13px;
+  font-weight: 900;
   text-transform: none;
   cursor: pointer;
   box-shadow: 3px 3px 0 #000;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.12s ease;
+  user-select: none;
 }
-
 .tab-btn:hover {
+  filter: brightness(1.1);
   color: #fff;
+}
+.tab-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #000;
 }
 
 .tab-btn.active {
@@ -1333,29 +1349,29 @@ dialog[data-mode="auth"] .dlg {
   padding: 12px 18px;
   border-radius: 4px;
   border: 2.5px solid #000;
-  background: linear-gradient(135deg, var(--lamp-accent) 0%, var(--lamp-secondary) 100%);
+  background: linear-gradient(135deg, var(--lamp-accent, #ffd93d) 0%, var(--lamp-secondary, #ff8c00) 100%);
   color: #0b0d10;
   font-family: 'Archivo Black', sans-serif;
   font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   cursor: pointer;
-  overflow: hidden;
   box-shadow: 4px 4px 0 #000;
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  gap: 8px;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.12s ease;
+  user-select: none;
 }
-
 .submit-btn:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #000, 0 0 28px var(--lamp-glow);
+  filter: brightness(1.05);
 }
-
 .submit-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #000;
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 #000;
 }
 
 .btn-glow-layer {
@@ -2235,6 +2251,7 @@ document.addEventListener("click", e => {
     inactiveBtn.style.background = "#1e2232";
 
     if (tab === "signin") {
+      if (dlg) dlg.scrollTop = 0;
       cardTitle.textContent = t("auth_welcome");
       cardSubtitle.textContent = t("auth_welcome_sub");
       btnText.textContent = t("auth_btn_signin");
