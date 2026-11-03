@@ -302,14 +302,16 @@ nav {
   box-shadow: 0 0 0 var(--sh);
 }
 .btn.p {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--lamp-accent, #ffd93d);
+  color: #000;
   border-color: var(--ink);
+  font-weight: 800;
 }
 .btn.f {
-  background: var(--found);
-  color: #0a0a0a;
+  background: var(--lamp-accent, var(--found, #ffd93d));
+  color: #000;
   border-color: var(--ink);
+  font-weight: 800;
 }
 .btn.l {
   background: var(--lost);
@@ -320,10 +322,11 @@ nav {
   padding: 5px 12px;
   font-size: 13px;
 }
-.btn.on {
-  background: var(--ink);
-  color: var(--bg);
+.btn.on, .btn.active {
+  background: var(--lamp-accent, #ffd93d);
+  color: #000;
   border-color: var(--ink);
+  font-weight: 800;
 }
 
 /* Hero Section */
@@ -446,8 +449,9 @@ nav {
 }
 .view-switch button:last-child { border-right: none; }
 .view-switch button.active {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--lamp-accent, #ffd93d);
+  color: #000;
+  font-weight: 800;
 }
 
 .type-pills {
@@ -479,12 +483,15 @@ nav {
   box-shadow: 0 0 0 var(--sh);
 }
 .pill.active {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--lamp-accent, #ffd93d);
+  color: #000;
+  border-color: var(--ink);
+  font-weight: 800;
 }
 .pill.active.f {
-  background: var(--found);
-  color: #0a0a0a;
+  background: var(--lamp-accent, var(--found, #ffd93d));
+  color: #000;
+  font-weight: 800;
 }
 .pill.active.l {
   background: var(--lost);
