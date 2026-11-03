@@ -1682,7 +1682,21 @@ const seed = () => ({
     email: OWNER_EMAIL,
     telegram: "@muhammadaziz_dev",
     phone: "+998 90 123 45 67",
-    node: "PLATFORM OWNER"
+    node: "PLATFORM OWNER",
+    role: "ADMIN",
+    isAdmin: true
+  },
+  profiles: {
+    [OWNER_EMAIL.toLowerCase()]: {
+      id: MY_ID,
+      name: OWNER_NAME,
+      email: OWNER_EMAIL,
+      telegram: "@muhammadaziz_dev",
+      phone: "+998 90 123 45 67",
+      role: "ADMIN",
+      isAdmin: true,
+      node: "PLATFORM OWNER"
+    }
   },
   items: [],
   comments: [],
@@ -1697,11 +1711,24 @@ try {
 } catch (e) {}
 
 // If storage is empty or contains old demo data, initialize with clean owner account
-if (!S || !S.user || S.user.email === "azizbek@foundhub.app" || (Array.isArray(S.items) && S.items.some(x => x.beaconCode === "SIG-2026-01"))) {
+if (!S || (S.user && S.user.email === "azizbek@foundhub.app") || (Array.isArray(S.items) && S.items.some(x => x.beaconCode === "SIG-2026-01"))) {
   S = seed();
   try { localStorage.setItem("fh_telemetry_v2", JSON.stringify(S)); } catch (e) {}
 }
-if (!S.user) S.user = seed().user;
+if (!S.profiles) {
+  S.profiles = {
+    [ADMIN_EMAIL.toLowerCase()]: {
+      id: MY_ID,
+      name: OWNER_NAME,
+      email: OWNER_EMAIL,
+      telegram: "@muhammadaziz_dev",
+      phone: "+998 90 123 45 67",
+      role: "ADMIN",
+      isAdmin: true,
+      node: "PLATFORM OWNER"
+    }
+  };
+}
 if (!S.myClaims) S.myClaims = [];
 
 const save = () => {
@@ -1738,6 +1765,38 @@ try {
 
 async function syncWithSupabase() {
   if (!sbClient) return;
+  try {
+    // 1. Sync profiles from Supabase
+    const { data: pData } = await sbClient.from("profiles").select("*");
+    if (Array.isArray(pData) && pData.length > 0) {
+      if (!S.profiles) S.profiles = {};
+      pData.forEach(p => {
+        if (p.email) {
+          const em = p.email.toLowerCase();
+          const isAdmin = em === ADMIN_EMAIL.toLowerCase();
+          S.profiles[em] = {
+            id: p.id || ("usr-" + em),
+            name: p.full_name || p.email.split('@')[0],
+            email: p.email,
+            telegram: p.telegram_username || "",
+            phone: p.phone || "",
+            role: isAdmin ? "ADMIN" : "USER",
+            isAdmin: isAdmin,
+            node: isAdmin ? "PLATFORM OWNER" : "COMMUNITY MEMBER"
+          };
+          if (S.user && S.user.email && S.user.email.toLowerCase() === em) {
+            S.user.name = S.profiles[em].name;
+            S.user.telegram = S.profiles[em].telegram;
+            S.user.phone = S.profiles[em].phone;
+            try { localStorage.setItem("fh_registered_name", S.user.name); } catch(e) {}
+          }
+        }
+      });
+      save();
+    }
+  } catch (err) {
+    console.warn("Supabase profiles sync:", err);
+  }
   try {
     const { data, error } = await sbClient.from("items").select("*").order("created_at", { ascending: false });
     if (!error && Array.isArray(data) && data.length > 0) {
@@ -3078,26 +3137,70 @@ document.addEventListener("click", e => {
   $("#authForm").onsubmit = e => {
     e.preventDefault();
     const email = $("#authEmail").value.trim();
-    const name = activeTab === "register" ? ($("#authName").value.trim() || "Community Member") : (email.split('@')[0] || "Community Member");
-    const tg = activeTab === "register" ? ($("#authTg")?.value.trim() || "") : "@" + name.toLowerCase();
-    const phone = activeTab === "register" ? ($("#authPhone")?.value.trim() || "") : "";
+    const emailLower = email.toLowerCase();
+    const isAdmin = emailLower === ADMIN_EMAIL.toLowerCase();
+
+    if (!S.profiles) S.profiles = {};
+    const existingProfile = S.profiles[emailLower] || (isAdmin ? {
+      id: MY_ID,
+      name: OWNER_NAME,
+      email: ADMIN_EMAIL,
+      telegram: "@muhammadaziz_dev",
+      phone: "+998 90 123 45 67",
+      role: "ADMIN",
+      isAdmin: true,
+      node: "PLATFORM OWNER"
+    } : null);
+
+    let name, tg, phone;
+    if (activeTab === "register") {
+      name = $("#authName").value.trim() || (existingProfile ? existingProfile.name : "Community Member");
+      tg = ($("#authTg")?.value.trim()) || (existingProfile ? existingProfile.telegram : "@" + name.toLowerCase());
+      phone = ($("#authPhone")?.value.trim()) || (existingProfile ? existingProfile.phone : "");
+    } else {
+      // Sign In: Restore previously edited profile info!
+      if (existingProfile) {
+        name = existingProfile.name || (email.split('@')[0] || "Community Member");
+        tg = existingProfile.telegram !== undefined ? existingProfile.telegram : ("@" + name.toLowerCase());
+        phone = existingProfile.phone !== undefined ? existingProfile.phone : "";
+      } else {
+        name = email.split('@')[0] || "Community Member";
+        tg = "@" + name.toLowerCase();
+        phone = "";
+      }
+    }
 
     try { localStorage.setItem("fh_registered_name", name); } catch(e) {}
-    const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
     S.user = {
-      id: isAdmin ? "usr-admin-muhammadaziz" : "usr-" + Date.now(),
+      id: (existingProfile && existingProfile.id) || (isAdmin ? MY_ID : "usr-" + Date.now()),
       name: name,
       email: email,
       telegram: tg,
       phone: phone,
-      role: isAdmin ? "ADMIN" : "USER",
-      isAdmin: isAdmin,
-      node: isAdmin ? "PLATFORM ADMIN" : "COMMUNITY MEMBER"
+      role: isAdmin ? "ADMIN" : ((existingProfile && existingProfile.role) || "USER"),
+      isAdmin: isAdmin || (existingProfile && existingProfile.isAdmin) || false,
+      node: isAdmin ? "PLATFORM OWNER" : ((existingProfile && existingProfile.node) || "COMMUNITY MEMBER")
     };
+
+    S.profiles[emailLower] = { ...S.user };
     save();
     closeModal();
     if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 75 });
     toast("Welcome, " + name + "! Logged in successfully.");
+
+    if (sbClient) {
+      try {
+        sbClient.from("profiles").upsert({
+          id: S.user.id,
+          full_name: S.user.name,
+          email: S.user.email,
+          phone: S.user.phone,
+          telegram_username: S.user.telegram,
+          updated_at: new Date().toISOString()
+        }).then(() => console.log("Profile synced to Supabase on auth"));
+      } catch (err) {}
+    }
+
     if (authSuccessCallback) {
       const cb = authSuccessCallback;
       authSuccessCallback = null;
@@ -4435,14 +4538,50 @@ function openEditProfileModal() {
   $("#btnClProf").onclick = () => dlg.close();
   $("#profForm").onsubmit = e => {
     e.preventDefault();
-    S.user.name = $("#pName").value;
-    S.user.email = $("#pEmail").value;
-    S.user.telegram = $("#pTg").value;
-    S.user.phone = $("#pPh").value;
+    const newName = $("#pName").value.trim() || S.user.name;
+    const newEmail = $("#pEmail").value.trim() || S.user.email;
+    const newTg = $("#pTg").value.trim();
+    const newPh = $("#pPh").value.trim();
+    
+    S.user.name = newName;
+    S.user.email = newEmail;
+    S.user.telegram = newTg;
+    S.user.phone = newPh;
+
+    if (!S.profiles) S.profiles = {};
+    const emailKey = S.user.email.toLowerCase();
+    const isAdmin = emailKey === ADMIN_EMAIL.toLowerCase();
+    S.profiles[emailKey] = {
+      id: S.user.id,
+      name: newName,
+      email: S.user.email,
+      telegram: newTg,
+      phone: newPh,
+      role: S.user.role || (isAdmin ? "ADMIN" : "USER"),
+      isAdmin: S.user.isAdmin || isAdmin,
+      node: S.user.node || (isAdmin ? "PLATFORM OWNER" : "COMMUNITY MEMBER")
+    };
+
+    try { localStorage.setItem("fh_registered_name", newName); } catch(e) {}
     save();
     dlg.close();
     toast("Profile updated!");
     dash();
+
+    if (sbClient) {
+      try {
+        sbClient.from("profiles").upsert({
+          id: S.user.id,
+          full_name: newName,
+          email: S.user.email,
+          phone: newPh,
+          telegram_username: newTg,
+          updated_at: new Date().toISOString()
+        }).then(() => console.log("Profile synced to Supabase cloud!"));
+      } catch (err) {
+        console.warn("Supabase profile sync error:", err);
+      }
+    }
   };
 }
 
