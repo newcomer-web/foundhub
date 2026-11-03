@@ -4,17 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FoundHub - Community-Driven Lost and Found Platform</title>
+
+<!-- SEO Meta Tags -->
+<meta name="description" content="FoundHub — Community-driven Lost and Found platform. Easily report lost items, browse verified found belongings, and securely reconnect with finders.">
+<meta name="keywords" content="lost and found, foundhub, report lost item, community lost and found, recover belongings, tashkent lost and found">
+<meta name="author" content="Muhammadaziz Abdullayev">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://foundhub-alpha.vercel.app/">
+<meta name="theme-color" content="#ffd93d">
+
+<!-- Social / Open Graph & Twitter Card Meta -->
+<meta property="og:title" content="FoundHub — Community Lost & Found Network">
+<meta property="og:description" content="Community-driven Lost and Found platform. Easily report lost items, browse verified found belongings, and securely reconnect with finders.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://foundhub-alpha.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FoundHub — Community Lost & Found Network">
+<meta name="twitter:description" content="Community-driven Lost and Found platform. Easily report lost items, browse verified found belongings, and securely reconnect with finders.">
+
+<!-- Performance Resource Hints: DNS Prefetch & Preconnect -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<!-- Leaflet Map CSS & JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Canvas Confetti -->
-<!-- Canvas Confetti -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<!-- Supabase Client JS CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://gxvjkfpqnubriabieugl.supabase.co">
+<link rel="dns-prefetch" href="https://gxvjkfpqnubriabieugl.supabase.co">
+
+<!-- Non-Render-Blocking Web Fonts -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+</noscript>
+
+<!-- Deferred Non-Critical JavaScript Libraries (Non-Render-Blocking) -->
+<script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 /* ==========================================================================
@@ -139,20 +164,32 @@ button { cursor: pointer; }
   flex-wrap: wrap;
 }
 .pulse-dot {
+  position: relative;
   display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  animation: pulse 1.8s infinite;
   margin-right: 6px;
   vertical-align: middle;
 }
-@keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+.pulse-dot::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #10b981;
+  animation: pulse-ring 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  70% { transform: scale(2.4); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
 }
 
 /* Navigation */
@@ -457,12 +494,13 @@ input[type="checkbox"], input[type="radio"] {
   padding: 16px;
   background: var(--surf);
   text-align: left;
-  transition: transform .15s, box-shadow .15s;
+  transition: transform .15s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 160px;
 }
 .card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 var(--sh);
 }
 .card > *:not(.glyph) {
   grid-column: 2;
@@ -485,6 +523,8 @@ input[type="checkbox"], input[type="radio"] {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  aspect-ratio: 1 / 1;
+  display: block;
 }
 .card .glyph svg {
   width: 28px;
@@ -2429,8 +2469,6 @@ const $ = s => document.querySelector(s);
 const app = $("#app"), dlg = $("#dlg"), db = $("#dbody");
 let view = "home", currentFilter = { q: "", type: "ALL", cat: "", status: "ALL", rewardOnly: false, sort: "NEWEST" }, activeViewMode = "grid";
 let W = { step: 1, d: { type: "FOUND", cat: "ELECTRONICS" } };
-let leafletMapInstance = null;
-
 // Global ESC keyboard listener to close open modals instantly
 window.addEventListener("keydown", e => {
   if (e.key === "Escape" || e.keyCode === 27) {
@@ -3459,7 +3497,7 @@ function renderViewArea(items) {
       ${items.map(i => `
         <div class="card" data-id="${i.id}">
           <div class="glyph">
-            ${i.img ? `<img src="${i.img}" alt="" loading="lazy">` : CAT[i.cat][1]}
+            ${i.img ? `<img src="${i.img}" alt="${esc(i.title)}" width="56" height="56" loading="lazy" style="aspect-ratio:1/1;width:100%;height:100%;object-fit:cover;">` : CAT[i.cat][1]}
           </div>
           
           <div class="card-top">
@@ -3579,8 +3617,8 @@ function openItemModal(id) {
     </div>
 
     ${i.img ? `
-      <div style="margin-bottom:14px; border:2.5px solid var(--ink); border-radius:6px; overflow:hidden; max-height:280px; box-shadow:4px 4px 0 var(--sh);">
-        <img src="${i.img}" alt="${esc(i.title)}" style="width:100%; height:100%; object-fit:cover; display:block;">
+      <div style="margin-bottom:14px; border:2.5px solid var(--ink); border-radius:6px; overflow:hidden; max-height:280px; aspect-ratio:16/9; background:var(--code-bg); box-shadow:4px 4px 0 var(--sh);">
+        <img src="${i.img}" alt="${esc(i.title)}" width="600" height="340" style="width:100%; height:100%; max-height:280px; aspect-ratio:16/9; object-fit:cover; display:block;">
       </div>
     ` : ''}
 
