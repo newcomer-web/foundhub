@@ -949,10 +949,12 @@ dialog[data-mode="auth"] .dlg {
 
 
 /* ==========================================================================
-   CUSTOM INTERACTIVE CURSOR FOR AUTH / SIGN-IN MODAL
+   SITE-WIDE CUSTOM INTERACTIVE TRAILING CURSOR & SPOTLIGHT GLOW INTERACTION
    ========================================================================== */
-dialog[data-mode="auth"],
-dialog[data-mode="auth"] * {
+html, body, button, a, input, select, textarea, [role="button"], label {
+  cursor: none !important;
+}
+dialog, dialog * {
   cursor: none !important;
 }
 
@@ -965,10 +967,12 @@ dialog[data-mode="auth"] * {
   background: #ffffff;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 999999;
+  z-index: 9999999;
   transform: translate3d(-100px, -100px, 0);
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.95);
   will-change: transform;
+  mix-blend-mode: screen;
+  transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .custom-cursor-ring {
@@ -981,9 +985,10 @@ dialog[data-mode="auth"] * {
   border: 2px solid var(--cursor-color, var(--lamp-accent, #ffd93d));
   background: transparent;
   pointer-events: none;
-  z-index: 999998;
+  z-index: 9999998;
   transform: translate3d(-100px, -100px, 0);
   box-shadow: 0 0 14px var(--cursor-glow, var(--lamp-glow, rgba(255, 217, 61, 0.45)));
+  mix-blend-mode: screen;
   transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               height 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.25s ease,
@@ -993,28 +998,86 @@ dialog[data-mode="auth"] * {
   will-change: transform;
 }
 
+/* Interactive hover over clickable elements */
 .custom-cursor-ring.hovering {
   width: 50px;
   height: 50px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   border-width: 2.5px;
   box-shadow: 0 0 24px var(--cursor-color, var(--lamp-accent, #ffd93d));
 }
 
+/* Clicking / Pressed down */
 .custom-cursor-ring.clicking {
-  width: 26px;
-  height: 26px;
-  background: var(--cursor-glow, var(--lamp-glow, rgba(255, 217, 61, 0.35)));
+  width: 24px;
+  height: 24px;
+  background: var(--cursor-glow, var(--lamp-glow, rgba(255, 217, 61, 0.4)));
   border-width: 2px;
 }
 
+/* Reactive Hover / Proximity Interaction with Glowing Elements (.active-glow) */
+/* Background glowing stars / dots for Sign In stage */
+.glowing-star {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lamp-accent, #ffd93d);
+  box-shadow: 0 0 14px var(--lamp-glow, rgba(255, 217, 61, 0.65)), 0 0 24px var(--lamp-accent, #ffd93d);
+  pointer-events: auto;
+  z-index: 2;
+  padding: 12px;
+  margin: -12px;
+  background-clip: content-box;
+  animation: starTwinkle 2.5s ease-in-out infinite alternate;
+}
+.star-2 { animation-delay: 0.8s; width: 9px; height: 9px; }
+.star-3 { animation-delay: 1.4s; width: 6px; height: 6px; }
+.star-4 { animation-delay: 1.9s; width: 8px; height: 8px; }
+
+@keyframes starTwinkle {
+  0% { opacity: 0.55; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1.25); box-shadow: 0 0 18px var(--lamp-accent, #ffd93d), 0 0 32px var(--lamp-glow, rgba(255, 217, 61, 0.8)); }
+}
+
+.custom-cursor-ring.active-glow {
+  width: 62px;
+  height: 62px;
+  border-width: 2.5px;
+  border-color: #ffffff;
+  border-style: dashed;
+  background: radial-gradient(circle, var(--cursor-glow, rgba(255, 217, 61, 0.35)) 0%, transparent 70%);
+  box-shadow: 0 0 32px var(--cursor-color, var(--lamp-accent, #ffd93d)), inset 0 0 16px var(--cursor-color, var(--lamp-accent, #ffd93d));
+  mix-blend-mode: exclusion;
+  animation: cursorPulseGlow 0.8s ease-in-out infinite alternate;
+}
+
+.custom-cursor-dot.active-glow {
+  width: 10px;
+  height: 10px;
+  background: var(--cursor-color, var(--lamp-accent, #ffd93d));
+  box-shadow: 0 0 16px var(--cursor-color, var(--lamp-accent, #ffd93d)), 0 0 30px #ffffff;
+  mix-blend-mode: exclusion;
+}
+
+@keyframes cursorPulseGlow {
+  0% {
+    opacity: 0.75;
+    box-shadow: 0 0 20px var(--cursor-color, var(--lamp-accent, #ffd93d)), inset 0 0 10px var(--cursor-color, var(--lamp-accent, #ffd93d));
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 38px var(--cursor-color, var(--lamp-accent, #ffd93d)), inset 0 0 22px #ffffff;
+  }
+}
+
+/* Fallback for Touch / Mobile Devices */
 @media (pointer: coarse) {
   .custom-cursor-dot,
   .custom-cursor-ring {
     display: none !important;
   }
-  dialog[data-mode="auth"],
-  dialog[data-mode="auth"] * {
+  html, body, button, a, input, select, textarea, [role="button"], label, dialog, dialog * {
     cursor: auto !important;
   }
 }
@@ -1654,6 +1717,10 @@ dialog[data-mode="auth"] * {
 </head>
 <body>
 
+<!-- Site-Wide Custom Interactive Trailing Cursor -->
+<div class="custom-cursor-dot" id="cursorDot"></div>
+<div class="custom-cursor-ring" id="cursorRing"></div>
+
 <!-- Telemetry Top Ribbon (With Live Site Theme Color Selector) -->
 <div class="telemetry-ribbon">
   <div class="wrap">
@@ -1795,10 +1862,11 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
   
   db.innerHTML = `
     <div class="lamp-modal-wrap" id="lampModalWrap" data-on="true">
-      <!-- Custom Interactive Cursor -->
-      <div class="custom-cursor-dot" id="cursorDot"></div>
-      <div class="custom-cursor-ring" id="cursorRing"></div>
-      <div class="ambient-glow"></div>
+      <div class="ambient-glow lamp-glow"></div>
+      <div class="glowing-star star-1" style="top:110px; left:12%;"></div>
+      <div class="glowing-star star-2" style="top:170px; right:13%;"></div>
+      <div class="glowing-star star-3" style="top:290px; left:9%;"></div>
+      <div class="glowing-star star-4" style="top:360px; right:11%;"></div>
       <canvas id="dustCanvas"></canvas>
 
       <!-- Quick Controls Bar -->
@@ -1822,7 +1890,7 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#6c8cff",g
 
       <!-- Lamp Stage & Cone -->
       <div class="lamp-stage" id="lampStage">
-        <div class="light-cone"></div>
+        <div class="light-cone lamp-glow"></div>
 
         <!-- Grand SVG Industrial Desk Lamp -->
         <svg class="lamp-svg" viewBox="0 0 280 130" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2414,73 +2482,10 @@ document.addEventListener("click", e => {
     animateParticles();
   }
 
-  // Custom Interactive Cursor trailing and physics
-  let mouseX = -100, mouseY = -100;
-  let ringX = -100, ringY = -100;
-  let cursorAnimId = null;
-  let isCursorActive = false;
-
-  const cursorDot = $("#cursorDot");
-  const cursorRing = $("#cursorRing");
-
-  const onPointerMoveCursor = e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    if (!isCursorActive) {
-      isCursorActive = true;
-      ringX = mouseX;
-      ringY = mouseY;
-    }
-    if (cursorDot) {
-      cursorDot.style.transform = `translate3d(${mouseX - 3.5}px, ${mouseY - 3.5}px, 0)`;
-    }
-  };
-
-  const onPointerDownCursor = () => {
-    if (cursorRing) cursorRing.classList.add("clicking");
-  };
-
-  const onPointerUpCursor = () => {
-    if (cursorRing) cursorRing.classList.remove("clicking");
-  };
-
-  const onMouseOverCursor = e => {
-    if (!cursorRing) return;
-    const target = e.target;
-    if (target && target.closest("button, input, select, textarea, a, .tab-btn, .color-dot-btn, .cord-handle, .lamp-cord-wrapper, .btn-close-modal, .submit-btn")) {
-      cursorRing.classList.add("hovering");
-    } else {
-      cursorRing.classList.remove("hovering");
-    }
-  };
-
-  function updateCursorRing() {
-    if (isCursorActive && cursorRing) {
-      // High-performance spring easing towards mouse coordinates
-      const ease = 0.18;
-      ringX += (mouseX - ringX) * ease;
-      ringY += (mouseY - ringY) * ease;
-      const size = cursorRing.offsetWidth || 34;
-      const halfSize = size / 2;
-      cursorRing.style.transform = `translate3d(${ringX - halfSize}px, ${ringY - halfSize}px, 0)`;
-    }
-    cursorAnimId = requestAnimationFrame(updateCursorRing);
-  }
-
-  window.addEventListener("pointermove", onPointerMoveCursor);
-  window.addEventListener("pointerdown", onPointerDownCursor);
-  window.addEventListener("pointerup", onPointerUpCursor);
-  dlg.addEventListener("mouseover", onMouseOverCursor);
-
-  cursorAnimId = requestAnimationFrame(updateCursorRing);
-
   // Cleanup on close
   function closeModal() {
-    if (cursorAnimId) cancelAnimationFrame(cursorAnimId);
-    window.removeEventListener("pointermove", onPointerMoveCursor);
-    window.removeEventListener("pointerdown", onPointerDownCursor);
-    window.removeEventListener("pointerup", onPointerUpCursor);
-    dlg.removeEventListener("mouseover", onMouseOverCursor);
+    if (cursorDot) document.body.appendChild(cursorDot);
+    if (cursorRing) document.body.appendChild(cursorRing);
     if (animFrameId) cancelAnimationFrame(animFrameId);
     dlg.removeAttribute("data-mode");
     dlg.close();
@@ -2570,6 +2575,8 @@ document.addEventListener("click", e => {
   };
 
   dlg.showModal();
+  if (cursorDot && dlg) dlg.appendChild(cursorDot);
+  if (cursorRing && dlg) dlg.appendChild(cursorRing);
   applyThemeColor(activeColor);
 }
 
@@ -3186,6 +3193,111 @@ function go(e){if("report"===e&&!S.user){toast("Please log in to report an item.
       </div>
     </form>
   `,dlg.showModal(),$("#btnClEdit").onclick=()=>dlg.close(),$("#btnDeleteListing").onclick=()=>{if(S.items=S.items.filter(a=>String(a.id)!==String(e)),S.comments=S.comments.filter(a=>String(a.item)!==String(e)),S.claims=S.claims.filter(a=>String(a.item)!==String(e)),S.myClaims&&(S.myClaims=S.myClaims.filter(a=>String(a.item)!==String(e))),save(),dlg.close(),toast("Listing deleted successfully."),render(),sbClient)try{sbClient.from("items").delete().eq("id",String(e)).then()}catch(e){}},$("#editItemForm").onsubmit=e=>{if(e.preventDefault(),a.title=$("#eTitle").value.trim(),a.cat=$("#eCat").value,a.status=$("#eStatus").value,a.desc=$("#eDesc").value.trim(),a.where=$("#eWhere").value.trim(),a.holding=$("#eHolding").value.trim(),a.contact=$("#eContact").value.trim(),a.reward=$("#eReward").value.trim(),a.q=$("#eQ").value.trim(),save(),dlg.close(),toast("Listing updated!"),"dash"===view?dash():setTimeout(()=>openItemModal(a.id),200),sbClient)try{sbClient.from("items").update({title:a.title,category:a.cat,status:a.status,description:a.desc,incident_location:a.where,current_holding_location:a.holding,finder_contact_preference:a.contact,reward_amount:a.reward&&parseFloat(a.reward)||null,secret_verification_question:a.q,updated_at:new Date().toISOString()}).eq("id",String(a.id)).then()}catch(e){}}}}function registerWebMcpTools(){let e=[{name:"search_items",description:"Search community lost and found listings by keywords and category",inputSchema:{type:"object",properties:{query:{type:"string",description:"Search query string or item title"},category:{type:"string",description:"Optional category filter",enum:["ELECTRONICS","DOCUMENTS_AND_IDS","WALLETS_AND_BAGS","KEYS","JEWELRY_AND_WATCHES","CLOTHING","PETS","OTHER"]},status:{type:"string",description:"Filter by status: ALL, ACTIVE, or RETURNED",enum:["ALL","ACTIVE","RETURNED"]}},required:["query"],additionalProperties:!1},execute:async e=>(e.query&&(currentFilter.q=e.query),e.category&&(currentFilter.cat=e.category),e.status&&(currentFilter.status=e.status),render(),JSON.stringify({status:"success",count:getFilteredItems().length}))},{name:"report_found_item",description:"Submit a newly found item report into the community registry",inputSchema:{type:"object",properties:{title:{type:"string",description:"Title of the found item"},category:{type:"string",description:"Category of the item",enum:["ELECTRONICS","DOCUMENTS_AND_IDS","WALLETS_AND_BAGS","KEYS","JEWELRY_AND_WATCHES","CLOTHING","PETS","OTHER"]},where:{type:"string",description:"Location where found"},holding:{type:"string",description:"Current secure holding location"},contact:{type:"string",description:"Finder contact details"},secret_question:{type:"string",description:"Secret verification question for owner"}},required:["title","category","where"],additionalProperties:!1},execute:async e=>{let a={id:"found-"+Date.now(),type:"FOUND",title:e.title,cat:e.category||"OTHER",where:e.where,holding:e.holding||"Safe custody",contact:e.contact||"In-app",q:e.secret_question||"",date:new Date().toISOString(),status:"ACTIVE",owner:S.user&&S.user.name||"Community Finder",ownerId:S.user&&S.user.id||"usr-finder"};return S.items.unshift(a),save(),render(),JSON.stringify({status:"created",id:a.id})}},{name:"claim_item",description:"Submit an ownership verification proof answer to claim a found item",inputSchema:{type:"object",properties:{item_id:{type:"string",description:"ID of the found item to claim"},proof_answer:{type:"string",description:"Secret proof answer describing undisclosed markers"}},required:["item_id","proof_answer"],additionalProperties:!1},execute:async e=>{let a=S.items.find(a=>String(a.id)===String(e.item_id));if(!a)return JSON.stringify({status:"error",message:"Item not found"});let i={id:"clm-"+Date.now(),item:a.id,itemTitle:a.title,claimant:S.user&&S.user.name||"Claimant",claimantId:S.user&&S.user.id||"usr-claimant",answer:e.proof_answer,status:"PENDING",date:new Date().toISOString()};return S.claims.push(i),save(),JSON.stringify({status:"submitted",claim_id:i.id})}}];window.__WebMCP_tools=e,window.__WebMCP_schemas_valid=!0;let a=document.modelContext||navigator.modelContext||window.modelContext;a&&"function"==typeof a.registerTool&&e.forEach(e=>{try{a.registerTool(e)}catch(e){}})}render(),document.querySelectorAll(".top-palette .color-dot-btn").forEach(e=>{e.onclick=()=>applyThemeColor(e.dataset.color)}),applyThemeColor(activeColor),registerWebMcpTools();
+
+// ==========================================================================
+// SITE-WIDE INTERACTIVE TRAILING CURSOR & SPOTLIGHT PROXIMITY DETECTION
+// ==========================================================================
+let mouseX = -100, mouseY = -100;
+let ringX = -100, ringY = -100;
+let isCursorActive = false;
+let isOverGlow = false;
+
+const cursorDot = document.getElementById("cursorDot");
+const cursorRing = document.getElementById("cursorRing");
+
+// Keep custom cursor active in top-layer when <dialog id="dlg"> opens
+const mainDlg = document.getElementById("dlg");
+if (mainDlg) {
+  const dlgObserver = new MutationObserver(() => {
+    if (mainDlg.open) {
+      if (cursorDot && cursorDot.parentElement !== mainDlg) mainDlg.appendChild(cursorDot);
+      if (cursorRing && cursorRing.parentElement !== mainDlg) mainDlg.appendChild(cursorRing);
+    } else {
+      if (cursorDot && cursorDot.parentElement !== document.body) document.body.appendChild(cursorDot);
+      if (cursorRing && cursorRing.parentElement !== document.body) document.body.appendChild(cursorRing);
+    }
+  });
+  dlgObserver.observe(mainDlg, { attributes: true, attributeFilter: ["open"] });
+  mainDlg.addEventListener("close", () => {
+    if (cursorDot && cursorDot.parentElement !== document.body) document.body.appendChild(cursorDot);
+    if (cursorRing && cursorRing.parentElement !== document.body) document.body.appendChild(cursorRing);
+  });
+}
+
+window.addEventListener("pointermove", e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  if (!isCursorActive) {
+    isCursorActive = true;
+    ringX = mouseX;
+    ringY = mouseY;
+  }
+  if (cursorDot) {
+    cursorDot.style.transform = "translate3d(" + (mouseX - 3.5) + "px, " + (mouseY - 3.5) + "px, 0)";
+  }
+
+  // 1. Reactive Hover check: Glowing elements (.glowing-star, .lamp-glow, .pulse-dot, .status-indicator, etc.)
+  let glowFound = false;
+  const target = e.target;
+  if (target) {
+    if (target.closest(".glowing-star, .lamp-glow, .pulse-dot, .status-indicator, .badge.FOUND, .map-pin, .radar-beacon, #cordHandle, .lamp-cord-wrapper")) {
+      glowFound = true;
+    }
+  }
+
+  // 2. Proximity check inside the Auth / Desk Lamp modal light beam
+  const lampModal = document.getElementById("lampModalWrap");
+  if (!glowFound && lampModal && lampModal.getAttribute("data-on") === "true") {
+    const cx = window.innerWidth / 2;
+    // Illuminated cone area: top 65px to 540px, widening downwards
+    if (mouseY >= 65 && mouseY <= 540) {
+      const coneHalfWidth = (120 + (mouseY - 65) * 0.75) / 2;
+      if (Math.abs(mouseX - cx) <= coneHalfWidth) {
+        glowFound = true;
+      }
+    }
+  }
+
+  if (glowFound !== isOverGlow) {
+    isOverGlow = glowFound;
+    if (cursorRing) cursorRing.classList.toggle("active-glow", isOverGlow);
+    if (cursorDot) cursorDot.classList.toggle("active-glow", isOverGlow);
+  }
+}, { passive: true });
+
+window.addEventListener("pointerdown", () => {
+  if (cursorRing) cursorRing.classList.add("clicking");
+}, { passive: true });
+
+window.addEventListener("pointerup", () => {
+  if (cursorRing) cursorRing.classList.remove("clicking");
+}, { passive: true });
+
+// Interactive hover over clickable elements across the entire site
+document.addEventListener("mouseover", e => {
+  if (!cursorRing) return;
+  const target = e.target;
+  if (target && target.closest("button, a, input, select, textarea, .card, .pill, .chip, .color-dot-btn, .tab-btn, .btn, [data-go], [data-dtab], [data-tp], [role='button'], label")) {
+    cursorRing.classList.add("hovering");
+  } else {
+    cursorRing.classList.remove("hovering");
+  }
+}, { passive: true });
+
+// Continuous 60fps spring lerp easing loop
+function updateCursorLoop() {
+  if (isCursorActive && cursorRing) {
+    const ease = 0.18;
+    ringX += (mouseX - ringX) * ease;
+    ringY += (mouseY - ringY) * ease;
+    const size = cursorRing.offsetWidth || 34;
+    const halfSize = size / 2;
+    cursorRing.style.transform = "translate3d(" + (ringX - halfSize) + "px, " + (ringY - halfSize) + "px, 0)";
+  }
+  requestAnimationFrame(updateCursorLoop);
+}
+requestAnimationFrame(updateCursorLoop);
+
 </script>
 </body>
 </html>
