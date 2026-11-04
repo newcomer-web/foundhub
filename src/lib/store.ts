@@ -248,10 +248,21 @@ class StoreManager {
 
   private async loadFromSupabase() {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('items')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (error || !data || data.length === 0) {
+        const postsRes = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (!postsRes.error && postsRes.data && postsRes.data.length > 0) {
+          data = postsRes.data;
+          error = null;
+        }
+      }
 
       if (!error && data && data.length > 0) {
         const remoteItems: Item[] = data.map((row: any) => ({

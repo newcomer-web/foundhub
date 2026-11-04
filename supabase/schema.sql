@@ -118,3 +118,49 @@ USING (bucket_id = 'item-images');
 CREATE POLICY "Public Upload item images" 
 ON storage.objects FOR INSERT 
 WITH CHECK (bucket_id = 'item-images');
+
+
+-- ========================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES FOR GLOBAL FEED ACCESS
+-- Grant SELECT (read) access to all authenticated users & public
+-- ========================================================
+
+-- A) For 'posts' table:
+ALTER TABLE IF EXISTS public.posts ENABLE ROW LEVEL SECURITY;
+
+DO $$ 
+BEGIN
+    DROP POLICY IF EXISTS "Users can only see their own posts" ON public.posts;
+    DROP POLICY IF EXISTS "Users can view own posts" ON public.posts;
+    DROP POLICY IF EXISTS "Individuals can view their own posts" ON public.posts;
+    DROP POLICY IF EXISTS "Enable read access for own posts only" ON public.posts;
+    DROP POLICY IF EXISTS "Allow authenticated read access" ON public.posts;
+    DROP POLICY IF EXISTS "Public posts access" ON public.posts;
+    DROP POLICY IF EXISTS "Allow all users to view posts in global feed" ON public.posts;
+END $$;
+
+CREATE POLICY "Allow all users to view posts in global feed" 
+ON public.posts 
+FOR SELECT 
+TO authenticated, anon 
+USING (true);
+
+-- B) For 'items' table (FoundHub default posts table):
+ALTER TABLE IF EXISTS public.items ENABLE ROW LEVEL SECURITY;
+
+DO $$ 
+BEGIN
+    DROP POLICY IF EXISTS "Users can only see their own items" ON public.items;
+    DROP POLICY IF EXISTS "Users can view own items" ON public.items;
+    DROP POLICY IF EXISTS "Individuals can view their own items" ON public.items;
+    DROP POLICY IF EXISTS "Enable read access for own items only" ON public.items;
+    DROP POLICY IF EXISTS "Allow authenticated read access" ON public.items;
+    DROP POLICY IF EXISTS "Public items access" ON public.items;
+    DROP POLICY IF EXISTS "Allow all users to view items in global feed" ON public.items;
+END $$;
+
+CREATE POLICY "Allow all users to view items in global feed" 
+ON public.items 
+FOR SELECT 
+TO authenticated, anon 
+USING (true);
