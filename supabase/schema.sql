@@ -164,3 +164,26 @@ ON public.items
 FOR SELECT 
 TO authenticated, anon 
 USING (true);
+
+
+-- ========================================================
+-- RLS INSERT POLICIES FOR ITEMS AND POSTS
+-- Allow authenticated & anon users to insert new reports/posts
+-- ========================================================
+DO $$ 
+BEGIN
+    DROP POLICY IF EXISTS "Allow users to insert items" ON public.items;
+    DROP POLICY IF EXISTS "Allow users to insert posts" ON public.posts;
+END $$;
+
+CREATE POLICY "Allow users to insert items" 
+ON public.items 
+FOR INSERT 
+TO authenticated, anon 
+WITH CHECK (true);
+
+CREATE POLICY "Allow users to insert posts" 
+ON public.posts 
+FOR INSERT 
+TO authenticated, anon 
+WITH CHECK (true);
