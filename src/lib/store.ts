@@ -265,29 +265,34 @@ class StoreManager {
       }
 
       if (!error && data && data.length > 0) {
-        const remoteItems: Item[] = data.map((row: any) => ({
-          id: row.id,
-          userId: row.user_id,
-          user: row.user_data || DEFAULT_USER,
-          type: row.type,
-          title: row.title,
-          category: row.category,
-          description: row.description || '',
-          imageUrls: row.image_urls || [],
-          eventDate: row.event_date,
-          incidentLocation: row.incident_location,
-          latitude: row.latitude,
-          longitude: row.longitude,
-          currentHoldingLocation: row.current_holding_location,
-          finderContactPreference: row.finder_contact_preference || '',
-          secretVerificationQuestion: row.secret_verification_question || null,
-          status: row.status,
-          rewardAmount: row.reward_amount ? Number(row.reward_amount) : null,
-          createdAt: row.created_at,
-          updatedAt: row.updated_at,
-          comments: [],
-          claims: [],
-        }));
+        // Query logic: Fetch all public posts from all users (without restricting to user_id)
+        const remoteItems: Item[] = data
+          .filter((row: any) => row.visibility !== 'private' && row.is_private !== true)
+          .map((row: any) => ({
+            id: row.id,
+            userId: row.user_id,
+            user: row.user_data || DEFAULT_USER,
+            type: row.type || 'FOUND',
+            title: row.title,
+            category: row.category,
+            description: row.description || '',
+            imageUrls: row.image_urls || [],
+            eventDate: row.event_date,
+            incidentLocation: row.incident_location,
+            latitude: row.latitude,
+            longitude: row.longitude,
+            currentHoldingLocation: row.current_holding_location,
+            finderContactPreference: row.finder_contact_preference || '',
+            secretVerificationQuestion: row.secret_verification_question || null,
+            status: row.status || 'ACTIVE',
+            visibility: row.visibility || 'public',
+            isPrivate: row.is_private ?? false,
+            rewardAmount: row.reward_amount ? Number(row.reward_amount) : null,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+            comments: [],
+            claims: [],
+          }));
         this.items = remoteItems;
         this.save();
       }
@@ -399,6 +404,11 @@ class StoreManager {
     const newItem: Item = {
       ...item,
       id: `item-${Date.now()}`,
+      // 2. Post Status: default to ACTIVE / published, never draft / pending
+      status: item.status || 'ACTIVE',
+      // 3. Privacy/Visibility: default to public, isPrivate false
+      visibility: item.visibility || 'public',
+      isPrivate: item.isPrivate ?? false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       comments: [],
@@ -410,7 +420,7 @@ class StoreManager {
     if (isSupabaseConfigured) {
       (async () => {
         try {
-          const { error } = await supabase.from('items').insert({
+          const payload = {
             id: newItem.id,
             user_id: newItem.userId,
             user_data: newItem.user,
@@ -427,9 +437,19 @@ class StoreManager {
             finder_contact_preference: newItem.finderContactPreference,
             secret_verification_question: newItem.secretVerificationQuestion,
             status: newItem.status,
+            visibility: newItem.visibility || 'public',
+            is_private: newItem.isPrivate ?? false,
             reward_amount: newItem.rewardAmount,
-          });
-          if (error) console.warn('Supabase items sync warning:', error.message);
+          };
+          const { error } = await supabase.from('items').insert(payload);
+          if (error) {
+            console.warn('Supabase items sync warning:', error.message);
+            try {
+              await supabase.from('posts').insert(payload);
+            } catch {
+              // fallback ignore
+            }
+          }
         } catch (err) {
           console.warn('Supabase items sync exception:', err);
         }

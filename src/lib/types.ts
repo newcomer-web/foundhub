@@ -78,6 +78,8 @@ export interface Item {
   secretVerificationQuestion?: string | null;
   
   status: ItemStatus;
+  visibility?: 'public' | 'private';
+  isPrivate?: boolean;
   rewardAmount?: number | null;
   createdAt: string;
   updatedAt: string;

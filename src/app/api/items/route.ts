@@ -10,7 +10,11 @@ export async function GET(request: Request) {
   const category = searchParams.get('category') as ItemCategory | null;
   const status = searchParams.get('status') as ItemStatus | null;
 
-  let items = dataStore.getItems();
+  // 1. QUERY LOGIC: Fetch all public posts from all users.
+  // Note: We do NOT apply any filter by user_id or current_user_id on the global feed.
+  let items = dataStore.getItems().filter(
+    (item) => item.visibility !== 'private' && item.isPrivate !== true
+  );
 
   if (q) {
     items = items.filter(
@@ -56,6 +60,10 @@ export async function POST(request: Request) {
       finderContactPreference,
       secretVerificationQuestion,
       rewardAmount,
+      status,
+      visibility,
+      is_private,
+      isPrivate,
       relayToTelegram,
     } = body;
 
@@ -65,6 +73,17 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // 2. POST STATUS: Ensure default status is automatically set to 'ACTIVE' (or 'published'), never 'draft' or 'pending'
+    const finalStatus: ItemStatus =
+      status === 'ACTIVE' || status === 'CLAIM_PENDING' || status === 'RETURNED_TO_OWNER' || status === 'ARCHIVED'
+        ? status
+        : 'ACTIVE';
+
+    // 3. PRIVACY / VISIBILITY: Ensure default visibility is set to public (is_private: false, visibility: 'public')
+    const finalVisibility: 'public' | 'private' = visibility === 'private' ? 'private' : 'public';
+    const finalIsPrivate: boolean =
+      is_private !== undefined ? Boolean(is_private) : (isPrivate !== undefined ? Boolean(isPrivate) : false);
 
     const newItem = dataStore.addItem({
       userId: userId || 'usr-current-1',
@@ -81,7 +100,9 @@ export async function POST(request: Request) {
       currentHoldingLocation: currentHoldingLocation || 'With finder',
       finderContactPreference: finderContactPreference || 'In-app message',
       secretVerificationQuestion: secretVerificationQuestion || null,
-      status: 'ACTIVE',
+      status: finalStatus,
+      visibility: finalVisibility,
+      isPrivate: finalIsPrivate,
       rewardAmount: rewardAmount ? parseFloat(rewardAmount) : null,
     });
 

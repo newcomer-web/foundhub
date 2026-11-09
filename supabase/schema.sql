@@ -19,11 +19,46 @@ CREATE TABLE IF NOT EXISTS public.items (
     current_holding_location TEXT NOT NULL,
     finder_contact_preference TEXT,
     secret_verification_question TEXT,
-    status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'CLAIM_PENDING', 'RETURNED_TO_OWNER', 'ARCHIVED')),
+    status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'published', 'CLAIM_PENDING', 'RETURNED_TO_OWNER', 'ARCHIVED')),
+    visibility TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'private')),
+    is_private BOOLEAN NOT NULL DEFAULT false,
     reward_amount NUMERIC(10, 2),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Ensure visibility & privacy columns exist on public.items
+ALTER TABLE public.items ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'public';
+ALTER TABLE public.items ADD COLUMN IF NOT EXISTS is_private BOOLEAN DEFAULT false;
+
+-- 1b. Create posts table (for global feed posts fallback/compatibility)
+CREATE TABLE IF NOT EXISTS public.posts (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    user_data JSONB DEFAULT '{}'::jsonb,
+    type TEXT NOT NULL DEFAULT 'FOUND',
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    description TEXT,
+    image_urls TEXT[] DEFAULT '{}',
+    event_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    incident_location TEXT NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    current_holding_location TEXT,
+    finder_contact_preference TEXT,
+    secret_verification_question TEXT,
+    status TEXT NOT NULL DEFAULT 'published',
+    visibility TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'private')),
+    is_private BOOLEAN NOT NULL DEFAULT false,
+    reward_amount NUMERIC(10, 2),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Ensure visibility & privacy columns exist on public.posts
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'public';
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS is_private BOOLEAN DEFAULT false;
 
 -- 2. Create comments table
 CREATE TABLE IF NOT EXISTS public.comments (

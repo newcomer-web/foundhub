@@ -245,6 +245,8 @@ function ReportWizardContent() {
         finderContactPreference: finalContact,
         secretVerificationQuestion: secretVerificationQuestion.trim() || null,
         status: 'ACTIVE',
+        visibility: 'public',
+        isPrivate: false,
         rewardAmount: rewardAmount ? parseFloat(rewardAmount) : null,
       });
 
