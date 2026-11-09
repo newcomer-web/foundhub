@@ -116,7 +116,7 @@ ON CONFLICT (email) DO UPDATE SET
     is_admin = true,
     full_name = 'Muhammadaziz Abdullayev';
 
--- 5. Enable Row Level Security (RLS) & Public access policies
+-- 5. Enable Row Level Security (RLS)
 ALTER TABLE public.items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.claims ENABLE ROW LEVEL SECURITY;
@@ -124,13 +124,13 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 DO $$ 
 BEGIN
+    -- Drop legacy / insecure broad policies
     DROP POLICY IF EXISTS "Public items access" ON public.items;
     DROP POLICY IF EXISTS "Public comments access" ON public.comments;
     DROP POLICY IF EXISTS "Public claims access" ON public.claims;
     DROP POLICY IF EXISTS "Public profiles access" ON public.profiles;
 END $$;
 
-CREATE POLICY "Public items access" ON public.items FOR ALL USING (true);
 CREATE POLICY "Public comments access" ON public.comments FOR ALL USING (true);
 CREATE POLICY "Public claims access" ON public.claims FOR ALL USING (true);
 CREATE POLICY "Public profiles access" ON public.profiles FOR ALL USING (true);
@@ -180,7 +180,7 @@ FOR SELECT
 TO authenticated, anon 
 USING (true);
 
--- B) For 'items' table (FoundHub default posts table):
+-- B) For 'items' table (FoundHub default posts/items table):
 ALTER TABLE IF EXISTS public.items ENABLE ROW LEVEL SECURITY;
 
 DO $$ 
@@ -192,13 +192,32 @@ BEGIN
     DROP POLICY IF EXISTS "Allow authenticated read access" ON public.items;
     DROP POLICY IF EXISTS "Public items access" ON public.items;
     DROP POLICY IF EXISTS "Allow all users to view items in global feed" ON public.items;
+    DROP POLICY IF EXISTS "Allow everyone to read items" ON public.items;
+    DROP POLICY IF EXISTS "Allow users to update own items" ON public.items;
+    DROP POLICY IF EXISTS "Allow users to delete own items" ON public.items;
 END $$;
 
-CREATE POLICY "Allow all users to view items in global feed" 
+-- 1. Read (SELECT) access for everyone / public
+CREATE POLICY "Allow everyone to read items" 
 ON public.items 
 FOR SELECT 
-TO authenticated, anon 
-USING (true);
+TO public 
+USING ( true );
+
+-- 2. Edit (UPDATE) access restricted to item owner
+CREATE POLICY "Allow users to update own items" 
+ON public.items 
+FOR UPDATE 
+TO authenticated 
+USING ( (auth.uid())::text = user_id )
+WITH CHECK ( (auth.uid())::text = user_id );
+
+-- 3. Delete (DELETE) access restricted to item owner
+CREATE POLICY "Allow users to delete own items" 
+ON public.items 
+FOR DELETE 
+TO authenticated 
+USING ( (auth.uid())::text = user_id );
 
 
 -- ========================================================
