@@ -554,6 +554,11 @@ input[type="checkbox"], input[type="radio"] {
   gap: 18px;
   padding-bottom: 40px;
 }
+@media (max-width: 768px) {
+  .card {
+    cursor: default !important;
+  }
+}
 .card {
   display: grid;
   grid-template-columns: 56px 1fr;
@@ -3548,7 +3553,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
         </div>
       `).join("")}
     </div>
-  `,a.querySelectorAll("[data-open]").forEach(e=>{e.onclick=a=>{a.stopPropagation(),openItemModal(e.dataset.open)}}),a.querySelectorAll(".card").forEach(e=>{e.onclick=()=>openItemModal(e.dataset.id)})}}function renderQuickContactButtons(e){if(!e)return"";let a=[],i=e.match(/(?:@|t\.me\/)([a-zA-Z0-9_]{4,})/i);if(i){let e=i[1];a.push(`
+  `,a.querySelectorAll("[data-open]").forEach(e=>{e.onclick=a=>{a.stopPropagation(),openItemModal(e.dataset.open)}}),a.querySelectorAll(".card").forEach(e=>{e.onclick=()=>{if(window.matchMedia("(max-width: 768px)").matches||window.matchMedia("(pointer: coarse)").matches)return;openItemModal(e.dataset.id)}})}}function renderQuickContactButtons(e){if(!e)return"";let a=[],i=e.match(/(?:@|t\.me\/)([a-zA-Z0-9_]{4,})/i);if(i){let e=i[1];a.push(`
       <a href="https://t.me/${esc(e)}" target="_blank" rel="noopener" class="btn s" style="background:#229ED9; color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
         ✈️ ${t("btn_contact_tg")} (@${esc(e)})
       </a>
