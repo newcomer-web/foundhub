@@ -1541,8 +1541,8 @@ textarea::placeholder {
   animation: fadeInGate 0.3s ease;
 }
 @keyframes fadeInGate {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .auth-gate-box {
   max-width: 480px;
@@ -1771,7 +1771,7 @@ textarea::placeholder {
 }
 .g-head-sub {
   font-size: 12px;
-  color: #5f6368;
+  color: #3c4043;
   margin: 2px 0 0 0;
 }
 .g-close-btn {
@@ -1805,7 +1805,7 @@ textarea::placeholder {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #4285f4;
+  background: #1a73e8;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -1828,7 +1828,7 @@ textarea::placeholder {
 }
 .g-account-email {
   font-size: 12px;
-  color: #5f6368;
+  color: #3c4043;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1874,7 +1874,7 @@ textarea::placeholder {
 .g-verify-submit {
   width: 100%;
   padding: 9px;
-  background: #4285f4;
+  background: #1a73e8;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -2304,74 +2304,19 @@ textarea::placeholder {
   </div>
 </header>
 
-<main class="wrap" id="app" style="min-height:85vh; contain-intrinsic-size:auto 900px;">
-  <!-- Hero Banner -->
-  <section class="hero">
-    <div class="hero-tagline">
-      <span class="pulse-dot"></span> COMMUNITY LOST &amp; FOUND NETWORK
-    </div>
-    <h1>Found something? Lost something?</h1>
-    <p>Post what you picked up or search for what you lost. Finders keep the item safe, owners prove ownership with a question only they can answer.</p>
-    <div class="row">
-      <button class="btn f" id="rf">● Report a found item</button>
-      <button class="btn l" id="rl">● I lost something</button>
+<main class="wrap" id="app" style="min-height: calc(100vh - 120px); contain: layout;">
+  <section class="auth-gate-section" id="authGateSection">
+    <div class="auth-gate-box">
+      <div class="auth-gate-icon">🔒</div>
+      <h2 class="auth-gate-title">Protected Platform</h2>
+      <p class="auth-gate-sub">Please sign in or create an account to access FoundHub items and community listings.</p>
+      <div class="auth-gate-actions">
+        <button type="button" class="auth-gate-btn" id="btnGateOpenAuth">
+          🔑 Sign In / Register
+        </button>
+      </div>
     </div>
   </section>
-
-  <!-- Clean 3-Metric Summary -->
-  <div class="telemetry-grid">
-    <div class="metric-box">
-      <div class="label"><span style="color:#10b981">●</span> Reunited with Owners</div>
-      <div class="val" style="color:#10b981">0</div>
-    </div>
-    <div class="metric-box">
-      <div class="label"><span style="color:var(--found)">●</span> Found in Safe Custody</div>
-      <div class="val" style="color:var(--found)">0</div>
-    </div>
-    <div class="metric-box">
-      <div class="label"><span style="color:var(--lost)">●</span> Active Lost Reports</div>
-      <div class="val" style="color:var(--lost)">0</div>
-    </div>
-  </div>
-
-  <h2 class="visually-hidden">Explore Items</h2>
-
-  <!-- Filter & View Bar with Declarative WebMCP Tool Support -->
-  <div class="filter-bar">
-    <form id="searchForm" toolname="search_items" tooldescription="Search community lost and found listings by keywords and category" onsubmit="event.preventDefault();" style="display:flex; flex:1; gap:10px; align-items:center; width:100%;">
-      <input type="search" id="filterQ" name="query" toolparamdescription="Keywords, item title, or location" placeholder="Search by item, place, or detail..." style="flex:1;">
-      <select id="filterCat" name="category" toolparamdescription="Item category filter">
-        <option value="">All Categories</option>
-        <option value="ELECTRONICS">Electronics</option>
-        <option value="DOCUMENTS_AND_IDS">Documents &amp; IDs</option>
-        <option value="WALLETS_AND_BAGS">Wallets &amp; bags</option>
-        <option value="KEYS">Keys</option>
-        <option value="JEWELRY_AND_WATCHES">Jewelry &amp; watches</option>
-        <option value="CLOTHING">Clothing</option>
-        <option value="PETS">Pets</option>
-        <option value="OTHER">Other</option>
-      </select>
-      <select id="filterStatus" name="status" toolparamdescription="Listing status filter: ALL, ACTIVE, RETURNED">
-        <option value="ALL">All Statuses</option>
-        <option value="ACTIVE">Active Only</option>
-        <option value="RETURNED">Returned Only</option>
-      </select>
-    </form>
-    <div class="view-toggles">
-      <button class="btn s active" id="viewGrid" aria-label="Grid View">Grid</button>
-      <button class="btn s" id="viewMap" aria-label="Radar Map View">Radar Map</button>
-    </div>
-  </div>
-
-  <!-- Items or Empty State Container with Reserved Dimensions (CLS = 0) -->
-  <div id="viewContainer" style="min-height:480px;">
-    <div class="panel empty-panel" style="min-height:360px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:44px 20px;">
-      <div style="font-size:38px; margin-bottom:12px;">🔍</div>
-      <p class="empty-title" style="font-family:'Archivo Black',sans-serif; font-size:18px; margin:0 0 6px;">No items match your search</p>
-      <p style="color:var(--mute); margin:0 0 16px;">Try fewer search words or reset category filters.</p>
-      <button class="btn s" id="btnResetFilters">Reset Filters</button>
-    </div>
-  </div>
 </main>
 
 <!-- Main Dialog / Modal -->
@@ -3476,25 +3421,25 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
   updateNavAuth();
   // ROUTE PROTECTION: Foydalanuvchi tizimga kirmagan bo'lsa (mehmon bo'lsa), asosiy kontentni yashirish va login sahifasiga yo'naltirish
   if (!S || !S.user) {
-    app.innerHTML = `
-      <section class="auth-gate-section">
-        <div class="auth-gate-box">
-          <div class="auth-gate-icon">🔒</div>
-          <h2 class="auth-gate-title">${t("route_protected_title") || "Himoyalangan Tizim"}</h2>
-          <p class="auth-gate-sub">${t("route_protected_desc") || "FoundHub e'lonlari va imkoniyatlaridan foydalanish uchun hisobingizga kiring yoki ro'yxatdan o'ting."}</p>
-          <div class="auth-gate-actions">
-            <button type="button" class="auth-gate-btn" id="btnGateOpenAuth">
-              🔑 ${t("nav_login") || "Kirish / Ro'yxatdan o'tish"}
-            </button>
+    const existingGate = document.getElementById("authGateSection");
+    if (!existingGate) {
+      app.innerHTML = `
+        <section class="auth-gate-section" id="authGateSection">
+          <div class="auth-gate-box">
+            <div class="auth-gate-icon">🔒</div>
+            <h2 class="auth-gate-title">${t("route_protected_title") || "Himoyalangan Tizim"}</h2>
+            <p class="auth-gate-sub">${t("route_protected_desc") || "FoundHub e'lonlari va imkoniyatlaridan foydalanish uchun hisobingizga kiring yoki ro'yxatdan o'ting."}</p>
+            <div class="auth-gate-actions">
+              <button type="button" class="auth-gate-btn" id="btnGateOpenAuth">
+                🔑 ${t("nav_login") || "Kirish / Ro'yxatdan o'tish"}
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
-    `;
-    const gateBtn = document.getElementById("btnGateOpenAuth");
-    if (gateBtn) gateBtn.onclick = () => openAuthModal("login", null, true);
-    if (dlg && (!dlg.open && !dlg.hasAttribute("open"))) {
-      setTimeout(() => openAuthModal("login", null, true), 100);
+        </section>
+      `;
     }
+    const gateBtn = document.getElementById("btnGateOpenAuth");
+    if (gateBtn) gateBtn.onclick = () => openAuthModal("login");
     return;
   }
   "home"===view?home():"report"===view?report():"dash"===view&&dash();
