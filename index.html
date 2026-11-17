@@ -4084,14 +4084,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       <label>Photo (optional)</label>
       <input id="im" type="file" accept="image/*">
       
-      <div style="margin-top:10px;">
-        <span class="meta" style="font-weight:700;">Or use a sample photo:</span>
-        <div class="chips-row">
-          ${a.map((e,a)=>`
-            <button type="button" class="chip" data-sample-img="${e}">Sample Photo #${a+1}</button>
-          `).join("")}
-        </div>
-      </div>
+
 
       ${e.img?`
         <div style="margin-top:12px; display:inline-block; border:2.5px solid var(--ink); border-radius:6px; overflow:hidden; max-width:200px; box-shadow:3px 3px 0 var(--sh); background:var(--surf);">
