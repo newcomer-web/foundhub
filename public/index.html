@@ -549,6 +549,7 @@ input[type="checkbox"], input[type="radio"] {
 .row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -711,6 +712,35 @@ dialog::backdrop {
   margin-bottom: 14px;
   border-bottom: 2.5px solid var(--ink);
   padding-bottom: 12px;
+}
+.dlg form label, #wizardForm label {
+  display: block;
+  font-weight: 700;
+  font-size: 13px;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+.dlg form label:first-child, #wizardForm label:first-child {
+  margin-top: 0;
+}
+.dlg form input:not([type="checkbox"]):not([type="radio"]),
+.dlg form select,
+.dlg form textarea,
+#wizardForm input:not([type="checkbox"]):not([type="radio"]),
+#wizardForm select,
+#wizardForm textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.dlg form .fh-custom-select-wrap,
+#wizardForm .fh-custom-select-wrap {
+  width: 100%;
+  display: flex;
+  margin-bottom: 12px;
+}
+.dlg form .row, #wizardForm .row {
+  gap: 12px;
 }
 
 
@@ -4483,9 +4513,9 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
 
       ${S.user?`
         <form id="claimForm" name="ownership_proof_form" aria-label="Item Claim Submission Form" style="margin:16px 0;">
-          <label for="claimProof"><strong>${esc(i.q||t("claim_secret_title"))}</strong></label>
-          <textarea id="claimProof" rows="3" required placeholder="${t("claim_placeholder")}"></textarea>
-          <p style="margin:10px 0 0;">
+          <label for="claimProof" style="display:block; margin-bottom:6px;"><strong>${esc(i.q||t("claim_secret_title"))}</strong></label>
+          <textarea id="claimProof" rows="3" required placeholder="${t("claim_placeholder")}" style="margin-bottom:12px;"></textarea>
+          <p style="margin:0;">
             <button class="btn p">${t("btn_send_claim")}</button>
           </p>
         </form>
@@ -4521,10 +4551,10 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       </div>
 
       ${S.user?`
-        <form id="commentForm" name="comment_form" aria-label="Community Comment Form">
-          <label for="commentText"><strong>${t("add_lead_label")}</strong></label>
-          <textarea id="commentText" rows="2" required placeholder="${t("comment_placeholder")}"></textarea>
-          <div class="row" style="margin-top:8px; justify-content:space-between;">
+        <form id="commentForm" name="comment_form" aria-label="Community Comment Form" style="margin-top:10px;">
+          <label for="commentText" style="display:block; margin-bottom:6px;"><strong>${t("add_lead_label")}</strong></label>
+          <textarea id="commentText" rows="2" required placeholder="${t("comment_placeholder")}" style="margin-bottom:12px;"></textarea>
+          <div class="row" style="margin-top:4px; justify-content:space-between; flex-wrap:wrap; gap:10px;">
             <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:700; user-select:none; margin:0;">
               <input type="checkbox" id="isLead" style="width:18px; height:18px; margin:0; cursor:pointer; accent-color:var(--ink); flex-shrink:0;"> ${t("know_owner_check")}
             </label>
@@ -4798,21 +4828,29 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       <button class="btn s" id="btnClProf">${t("btn_close")}</button>
     </div>
     <form id="profForm" name="edit_profile_form" aria-label="Edit Profile Form">
-      <label for="pName">Display Name</label>
-      <input id="pName" required value="${esc(S.user.name)}">
+      <div style="margin-bottom:14px;">
+        <label for="pName" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Display Name</label>
+        <input id="pName" required value="${esc(S.user.name)}" style="width:100%;">
+      </div>
       
-      <label for="pEmail">Email</label>
-      <input id="pEmail" type="email" required value="${esc(S.user.email)}">
+      <div style="margin-bottom:14px;">
+        <label for="pEmail" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Email</label>
+        <input id="pEmail" type="email" required value="${esc(S.user.email)}" style="width:100%;">
+      </div>
       
-      <label for="pTg">Telegram Handle</label>
-      <input id="pTg" placeholder="@username" value="${esc(S.user.telegram||"")}">
+      <div style="margin-bottom:14px;">
+        <label for="pTg" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Telegram Handle</label>
+        <input id="pTg" placeholder="@username" value="${esc(S.user.telegram||"")}" style="width:100%;">
+      </div>
       
-      <label for="pPh">Phone Number</label>
-      <input id="pPh" placeholder="+998..." value="${esc(S.user.phone||"")}">
+      <div style="margin-bottom:14px;">
+        <label for="pPh" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Phone Number</label>
+        <input id="pPh" placeholder="+998..." value="${esc(S.user.phone||"")}" style="width:100%;">
+      </div>
 
-      <p class="row" style="margin-top:18px;">
+      <div class="row" style="margin-top:20px; gap:12px;">
         <button class="btn p">${t("btn_save_profile")}</button>
-      </p>
+      </div>
     </form>
   `,dlg.showModal(),$("#btnClProf").onclick=()=>dlg.close(),$("#profForm").onsubmit=e=>{e.preventDefault();let a=$("#pName").value.trim()||S.user.name,i=$("#pEmail").value.trim()||S.user.email,o=$("#pTg").value.trim(),n=$("#pPh").value.trim();S.user.name=a,S.user.email=i,S.user.telegram=o,S.user.phone=n,S.profiles||(S.profiles={});let l=S.user.email.toLowerCase(),s=l===ADMIN_EMAIL.toLowerCase();S.profiles[l]={id:S.user.id,name:a,email:S.user.email,telegram:o,phone:n,role:S.user.role||(s?"ADMIN":"USER"),isAdmin:S.user.isAdmin||s,node:S.user.node||(s?"PLATFORM OWNER":"COMMUNITY MEMBER")};try{localStorage.setItem("fh_registered_name",a)}catch(e){}if(save(),dlg.close(),toast("Profile updated!"),dash(),sbClient)try{sbClient.from("profiles").upsert({id:S.user.id,full_name:a,email:S.user.email,phone:n,telegram_username:o,updated_at:new Date().toISOString()}).then(()=>console.log("Profile synced to Supabase cloud!"))}catch(e){console.warn("Supabase profile sync error:",e)}})}function openEditItemModal(e){if(!S.user){toast("Please log in to edit listings."),openAuthModal("login");return}let a=S.items.find(a=>String(a.id)===String(e));if(a){if(!canUserManageItem(a)){toast("You can only edit your own listings.");return}db.innerHTML=`
     <div class="dlg-header">
@@ -4820,41 +4858,62 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       <button class="btn s" id="btnClEdit">${t("btn_close")}</button>
     </div>
     <form id="editItemForm" name="edit_item_form" aria-label="Edit Listing Form">
-      <label for="eTitle">Title</label>
-      <input id="eTitle" required value="${esc(a.title)}">
+      <div style="margin-bottom:14px;">
+        <label for="eTitle" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Title</label>
+        <input id="eTitle" required value="${esc(a.title)}" style="width:100%;">
+      </div>
 
-      <label for="eCat">Category</label>
-      <select id="eCat">
-        ${Object.entries(CAT).map(([e,i])=>`<option value="${e}" ${a.cat===e?"selected":""}>${catLabel(e)}</option>`).join("")}
-      </select>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:14px;">
+        <div>
+          <label for="eCat" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Category</label>
+          <select id="eCat" style="width:100%;">
+            ${Object.entries(CAT).map(([e,i])=>`<option value="${e}" ${a.cat===e?"selected":""}>${catLabel(e)}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label for="eStatus" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Status</label>
+          <select id="eStatus" style="width:100%;">
+            <option value="ACTIVE" ${"ACTIVE"===a.status?"selected":""}>Active</option>
+            <option value="CLAIM_PENDING" ${"CLAIM_PENDING"===a.status?"selected":""}>Claim Pending</option>
+            <option value="RETURNED_TO_OWNER" ${"RETURNED_TO_OWNER"===a.status?"selected":""}>Returned</option>
+            <option value="ARCHIVED" ${"ARCHIVED"===a.status?"selected":""}>Archived</option>
+          </select>
+        </div>
+      </div>
 
-      <label for="eStatus">Status</label>
-      <select id="eStatus">
-        <option value="ACTIVE" ${"ACTIVE"===a.status?"selected":""}>Active</option>
-        <option value="CLAIM_PENDING" ${"CLAIM_PENDING"===a.status?"selected":""}>Claim Pending</option>
-        <option value="RETURNED_TO_OWNER" ${"RETURNED_TO_OWNER"===a.status?"selected":""}>Returned</option>
-        <option value="ARCHIVED" ${"ARCHIVED"===a.status?"selected":""}>Archived</option>
-      </select>
+      <div style="margin-bottom:14px;">
+        <label for="eDesc" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Description</label>
+        <textarea id="eDesc" rows="3" required style="width:100%;">${esc(a.desc)}</textarea>
+      </div>
 
-      <label for="eDesc">Description</label>
-      <textarea id="eDesc" rows="3" required>${esc(a.desc)}</textarea>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:14px;">
+        <div>
+          <label for="eWhere" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Location</label>
+          <input id="eWhere" required value="${esc(a.where)}" style="width:100%;">
+        </div>
+        <div>
+          <label for="eHolding" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Current Holding Location</label>
+          <input id="eHolding" required value="${esc(a.holding)}" style="width:100%;">
+        </div>
+      </div>
 
-      <label for="eWhere">Location</label>
-      <input id="eWhere" required value="${esc(a.where)}">
+      <div style="margin-bottom:14px;">
+        <label for="eContact" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Contact</label>
+        <input id="eContact" required value="${esc(a.contact)}" style="width:100%;">
+      </div>
 
-      <label for="eHolding">Current Holding Location</label>
-      <input id="eHolding" required value="${esc(a.holding)}">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:14px;">
+        <div>
+          <label for="eReward" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Reward</label>
+          <input id="eReward" value="${esc(a.reward||"")}" style="width:100%;">
+        </div>
+        <div>
+          <label for="eQ" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">Secret Question</label>
+          <input id="eQ" value="${esc(a.q||"")}" style="width:100%;">
+        </div>
+      </div>
 
-      <label for="eContact">Contact</label>
-      <input id="eContact" required value="${esc(a.contact)}">
-
-      <label for="eReward">Reward</label>
-      <input id="eReward" value="${esc(a.reward||"")}">
-
-      <label for="eQ">Secret Question</label>
-      <input id="eQ" value="${esc(a.q||"")}">
-
-      <div class="row" style="margin-top:20px; justify-content:space-between; align-items:center;">
+      <div class="row" style="margin-top:22px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <button type="submit" class="btn p">${t("btn_save_changes")}</button>
         <button type="button" class="btn s" id="btnDeleteListing" style="color:var(--lost); border-color:var(--lost);">${t("btn_delete_listing")}</button>
       </div>
