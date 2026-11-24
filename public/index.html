@@ -1098,14 +1098,7 @@ html, body, button, a, input, select, textarea, [role="button"], label, dialog, 
   gap: 12px;
 }
 
-.palette-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  color: #cbd5e1;
-  text-transform: uppercase;
-  margin-right: 4px;
-}
+
 
 .color-dot-btn {
   width: 24px;
@@ -1927,14 +1920,7 @@ textarea::placeholder {
   align-items: center;
   gap: 10px;
 }
-.top-palette .palette-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #cbd5e1;
-  text-transform: uppercase;
-}
+.top-palette 
 .top-palette .color-dot-btn {
   width: 24px;
   height: 24px;
@@ -2274,7 +2260,7 @@ textarea::placeholder {
 
     <!-- Center: Site Theme Light Color Palette -->
     <div class="color-palette top-palette" id="mainColorPalette" title="Choose Site Theme Color">
-      <span class="palette-label sr-only" id="paletteRibbonLabel" style="display:none;" aria-hidden="true">LIGHT COLOR:</span>
+      
       <button type="button" class="color-dot-btn active" data-color="amber" style="--dot-color: #ffd93d;" aria-label="Amber Light" title="Amber (Warm Gold)"></button>
       <button type="button" class="color-dot-btn" data-color="cyan" style="--dot-color: #00f0ff;" aria-label="Cyan Light" title="Cyan (Cyber Blue)"></button>
       <button type="button" class="color-dot-btn" data-color="rose" style="--dot-color: #ff3385;" aria-label="Rose Light" title="Rose (Sunset Pink)"></button>
@@ -2294,11 +2280,11 @@ textarea::placeholder {
     <nav>
       <a href="/" class="logo" data-go="home">
         <i>Found</i>Hub
-        <span class="logo-tag">RADAR</span>
+        
       </a>
-      <button class="btn s" data-go="home" id="navExplore">Explore Items</button>
-      <button class="btn s" data-go="dash" id="navDash">My Dashboard <span id="dashBadge"></span></button>
-      <button class="btn p s" data-go="report" id="navReport">Report an Item</button>
+      <button class="btn s" data-go="home" id="navExplore" style="display:none;"></button>
+      <button class="btn s" data-go="dash" id="navDash" style="display:none;"></button>
+      <button class="btn p s" data-go="report" id="navReport" style="display:none;"></button>
 
       <!-- Language Switcher: EN, UZ, RU (Default: EN) -->
       <div class="lang-switch-group" id="langSwitchGroup" title="Language / Tilni tanlash / Выбор языка">
@@ -2465,7 +2451,12 @@ let S;let PALETTES={amber:{accent:"#ffd93d",secondary:"#ff8c00",lost:"#9bb5f5",l
   if (target.closest("button, .btn, .card, .pill, .color-dot-btn, .tab-btn, [data-go], [data-dtab], [data-tp], .logo, .logo i, .fh-select-trigger, .fh-select-option")) {
     playMechanicalClick("medium");
   }
-});let ic=e=>`<svg viewBox="0 0 24 24" aria-hidden="true">${e}</svg>`,CAT={ELECTRONICS:["Electronics",ic('<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/>')],DOCUMENTS_AND_IDS:["Documents & IDs",ic('<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.6 4.4-1.6 6 0M14.5 10h3M14.5 14h3"/>')],WALLETS_AND_BAGS:["Wallets & bags",ic('<path d="M9 7a3 3 0 016 0"/><rect x="5" y="7" width="14" height="14" rx="4"/><path d="M9 14h6"/>')],KEYS:["Keys",ic('<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>')],JEWELRY_AND_WATCHES:["Jewelry & watches",ic('<circle cx="12" cy="12" r="5"/><path d="M12 9.5V12l2 1M9 7l.7-4h4.6l.7 4M9 17l.7 4h4.6l.7-4"/>')],CLOTHING:["Clothing",ic('<path d="M8 3L3 6l2 4 3-1v12h8V9l3 1 2-4-5-3a4 4 0 01-8 0z"/>')],PETS:["Pets",ic('<circle cx="6" cy="11" r="1.7"/><circle cx="9.5" cy="6.5" r="1.7"/><circle cx="14.5" cy="6.5" r="1.7"/><circle cx="18" cy="11" r="1.7"/><path d="M8 17c0-3 2-4.5 4-4.5s4 1.5 4 4.5c0 2-2 2.5-4 2.5s-4-.5-4-2.5z"/>')],OTHER:["Other",ic('<path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/>')]},SAMPLE_PHOTOS={ELECTRONICS:["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80"],DOCUMENTS_AND_IDS:["https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&auto=format&fit=crop&q=80"],WALLETS_AND_BAGS:["https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80"],KEYS:["https://images.unsplash.com/photo-1582139329536-e7284fece509?w=800&auto=format&fit=crop&q=80"],JEWELRY_AND_WATCHES:["https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&auto=format&fit=crop&q=80"],CLOTHING:["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=80"],PETS:["https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80"],OTHER:["https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80"]},LANDMARKS=[{name:"University Central Library 2nd Floor",lat:37.7749,lng:-122.4194},{name:"Downtown Metro Station, Platform 3",lat:37.7833,lng:-122.4167},{name:"Arts & Design Quad, West Lawn",lat:37.7712,lng:-122.4289},{name:"Maplewood Community Park Fountain",lat:37.781,lng:-122.411},{name:"Engineering Quad Cafe Pathway",lat:37.7735,lng:-122.424}],ADMIN_EMAIL="muhammadaziz09092009@gmail.com",OWNER_EMAIL=ADMIN_EMAIL,OWNER_NAME="Muhammadaziz Abdullayev",MY_ID="usr-muhammadaziz",seed=()=>({user:null,profiles:{[ADMIN_EMAIL.toLowerCase()]:{id:MY_ID,name:OWNER_NAME,email:ADMIN_EMAIL,telegram:"@muhammadaziz_dev",phone:"+998 90 123 45 67",role:"ADMIN",isAdmin:!0,node:"PLATFORM OWNER"}},items:[],comments:[],claims:[],myClaims:[],n:1});try{S=JSON.parse(localStorage.getItem("fh_telemetry_v2"))}catch(e){}if(!S||S.user&&"azizbek@foundhub.app"===S.user.email||Array.isArray(S.items)&&S.items.some(e=>"SIG-2026-01"===e.beaconCode)){S=seed();try{localStorage.setItem("fh_telemetry_v2",JSON.stringify(S))}catch(e){}}S.profiles||(S.profiles={[ADMIN_EMAIL.toLowerCase()]:{id:MY_ID,name:OWNER_NAME,email:ADMIN_EMAIL,telegram:"@muhammadaziz_dev",phone:"+998 90 123 45 67",role:"ADMIN",isAdmin:!0,node:"PLATFORM OWNER"}}),S.myClaims||(S.myClaims=[]);let save=()=>{try{localStorage.setItem("fh_telemetry_v2",JSON.stringify(S))}catch(e){console.warn("Storage quota warning:",e),"function"==typeof toast&&toast(t("toast_quota_warn"))}updateDashBadge(),updateNavAuth()};let SUPABASE_URL = "https://gxvjkfpqnubriabieugl.supabase.co",
+});let ic=e=>`<svg viewBox="0 0 24 24" aria-hidden="true">${e}</svg>`,CAT={ELECTRONICS:["Electronics",ic('<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/>')],DOCUMENTS_AND_IDS:["Documents & IDs",ic('<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.6 4.4-1.6 6 0M14.5 10h3M14.5 14h3"/>')],WALLETS_AND_BAGS:["Wallets & bags",ic('<path d="M9 7a3 3 0 016 0"/><rect x="5" y="7" width="14" height="14" rx="4"/><path d="M9 14h6"/>')],KEYS:["Keys",ic('<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>')],JEWELRY_AND_WATCHES:["Jewelry & watches",ic('<circle cx="12" cy="12" r="5"/><path d="M12 9.5V12l2 1M9 7l.7-4h4.6l.7 4M9 17l.7 4h4.6l.7-4"/>')],CLOTHING:["Clothing",ic('<path d="M8 3L3 6l2 4 3-1v12h8V9l3 1 2-4-5-3a4 4 0 01-8 0z"/>')],PETS:["Pets",ic('<circle cx="6" cy="11" r="1.7"/><circle cx="9.5" cy="6.5" r="1.7"/><circle cx="14.5" cy="6.5" r="1.7"/><circle cx="18" cy="11" r="1.7"/><path d="M8 17c0-3 2-4.5 4-4.5s4 1.5 4 4.5c0 2-2 2.5-4 2.5s-4-.5-4-2.5z"/>')],OTHER:["Other",ic('<path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/>')]},SAMPLE_PHOTOS={ELECTRONICS:["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80"],DOCUMENTS_AND_IDS:["https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&auto=format&fit=crop&q=80"],WALLETS_AND_BAGS:["https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80"],KEYS:["https://images.unsplash.com/photo-1582139329536-e7284fece509?w=800&auto=format&fit=crop&q=80"],JEWELRY_AND_WATCHES:["https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&auto=format&fit=crop&q=80"],CLOTHING:["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=80"],PETS:["https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80"],OTHER:["https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80"]},LANDMARKS=[{name:"University Central Library 2nd Floor",lat:37.7749,lng:-122.4194},{name:"Downtown Metro Station, Platform 3",lat:37.7833,lng:-122.4167},{name:"Arts & Design Quad, West Lawn",lat:37.7712,lng:-122.4289},{name:"Maplewood Community Park Fountain",lat:37.781,lng:-122.411},{name:"Engineering Quad Cafe Pathway",lat:37.7735,lng:-122.424}],ADMIN_EMAIL="muhammadaziz09092009@gmail.com",OWNER_EMAIL=ADMIN_EMAIL,OWNER_NAME="Muhammadaziz Abdullayev",MY_ID="usr-muhammadaziz",seed=()=>({user:null,profiles:{[ADMIN_EMAIL.toLowerCase()]:{id:MY_ID,name:OWNER_NAME,email:ADMIN_EMAIL,telegram:"@muhammadaziz_dev",phone:"+998 90 123 45 67",role:"ADMIN",isAdmin:!0,node:"PLATFORM OWNER"}},items:[
+    {id:"sample-1",type:"FOUND",title:"Qora Lenovo noutbuk ryukzagi",cat:"ELECTRONICS",where:"Chorsu bozori yonidagi bekat",holding:"Topuvchi saqlovida (da'vo tasdiqlangach ko'rsatiladi)",contact:"@tashkent_finder",q:"Ryukzakning old cho'ntagida qanday quloqchin bor?",date:new Date(Date.now()-86400000).toISOString(),status:"ACTIVE",owner:"Toshkentlik Topuvchi",ownerId:"usr-sample-1"},
+    {id:"sample-2",type:"FOUND",title:"Charm hamyon va yo'l chiptasi",cat:"WALLETS_AND_BAGS",where:"Amir Temur xiyoboni metro bekati",holding:"Metro navbatchisida (da'vo tasdiqlangach ko'rsatiladi)",contact:"In-app",q:"Hamyon ichidagi karta qaysi bankka tegishli?",date:new Date(Date.now()-172800000).toISOString(),status:"ACTIVE",owner:"Metro Xodimi",ownerId:"usr-sample-2"},
+    {id:"sample-3",type:"FOUND",title:"Avtomobil kaliti (Chevrolet)",cat:"KEYS",where:"Toshkent Shimoliy vokzal avtoturargohi",holding:"Topuvchi saqlovida (da'vo tasdiqlangach ko'rsatiladi)",contact:"@vokzal_custody",q:"Brelogida qanday yozuv yoki belgi bor?",date:new Date(Date.now()-259200000).toISOString(),status:"ACTIVE",owner:"Haydovchi",ownerId:"usr-sample-3"},
+    {id:"sample-4",type:"LOST",title:"Siam zotli ko'k ko'zli mushuk",cat:"PETS",where:"Yunusobod 4-mavze",holding:"Egasida",contact:"@yunusobod_owner",reward:"500 000 UZS",q:"Bo'ynidagi tasma rangi qanaqa?",date:new Date(Date.now()-345600000).toISOString(),status:"ACTIVE",owner:"Lola Rahimova",ownerId:"usr-sample-4"}
+  ],comments:[],claims:[],myClaims:[],n:5});try{S=JSON.parse(localStorage.getItem("fh_telemetry_v2"))}catch(e){}if(!S||S.user&&"azizbek@foundhub.app"===S.user.email||!Array.isArray(S.items)||S.items.length===0||Array.isArray(S.items)&&S.items.some(e=>"SIG-2026-01"===e.beaconCode)){S=seed();try{localStorage.setItem("fh_telemetry_v2",JSON.stringify(S))}catch(e){}}S.profiles||(S.profiles={[ADMIN_EMAIL.toLowerCase()]:{id:MY_ID,name:OWNER_NAME,email:ADMIN_EMAIL,telegram:"@muhammadaziz_dev",phone:"+998 90 123 45 67",role:"ADMIN",isAdmin:!0,node:"PLATFORM OWNER"}}),S.myClaims||(S.myClaims=[]);let save=()=>{try{localStorage.setItem("fh_telemetry_v2",JSON.stringify(S))}catch(e){console.warn("Storage quota warning:",e),"function"==typeof toast&&toast(t("toast_quota_warn"))}updateDashBadge(),updateNavAuth()};let SUPABASE_URL = "https://gxvjkfpqnubriabieugl.supabase.co",
     SUPABASE_KEY = "sb_publishable_EpzY-RrxXebHizxNf1GAjA_Qujw83Og",
     sbClient = null,
     sbLoadPromise = null,
@@ -2765,7 +2756,7 @@ let I18N={
     nav_report: "Post an Item",
     nav_login: "Log In",
     nav_logout: "Log Out",
-    light_color: "Theme Color:",
+    
     lamp_status: "LAMP ON",
     pull_cord: "PULL CORD",
     return_site: "✕ RETURN TO SITE",
@@ -2785,7 +2776,7 @@ let I18N={
     badge_found: "Found",
     badge_lost: "Lost",
     no_items_found: "No listings match your search",
-    no_items_desc: "Try fewer keywords or reset your filters.",
+    no_items_desc: "Try different search terms or reset filters.",
     btn_reset_filters: "Reset Filters",
     CAT_ELECTRONICS: "Electronics",
     CAT_DOCUMENTS_AND_IDS: "Documents & Passports",
@@ -2934,7 +2925,7 @@ let I18N={
     nav_report: "E'lon berish",
     nav_login: "Kirish",
     nav_logout: "Chiqish",
-    light_color: "Chiroq rangi:",
+    
     lamp_status: "CHIROQ YOQILGAN",
     pull_cord: "SHNURNI TORTING",
     return_site: "✕ SAYTGA QAYTISH",
@@ -3103,7 +3094,7 @@ let I18N={
     nav_report: "Подать объявление",
     nav_login: "Войти",
     nav_logout: "Выйти",
-    light_color: "Цвет лампы:",
+    
     lamp_status: "ЛАМПА ВКЛЮЧЕНА",
     pull_cord: "ТЯНИТЕ ШНУР",
     return_site: "✕ ВЕРНУТЬСЯ НА САЙТ",
@@ -3267,7 +3258,7 @@ let I18N={
     how_step3_desc: "Встречайтесь в людном общественном месте (станция метро, стойка охраны) для безопасного возврата."
   }
 };
-currentLang="en";try{currentLang=localStorage.getItem("foundhub_lang")||"en"}catch(e){}function t(e){return I18N[currentLang]&&I18N[currentLang][e]?I18N[currentLang][e]:I18N.en&&I18N.en[e]?I18N.en[e]:e||""}function setLanguage(e){["en","uz","ru"].includes(e)||(e="en"),currentLang=e;try{localStorage.setItem("foundhub_lang",e)}catch(e){}updateLangButtons(),render()}function updateLangButtons(){document.querySelectorAll("[data-lang]").forEach(e=>{e.classList.toggle("active",e.dataset.lang===currentLang)});let e=$("#paletteRibbonLabel");e&&(e.textContent=t("light_color"))}function catLabel(e){return t("CAT_"+e)||(CAT[e]?CAT[e][0]:e)}let esc=e=>String(null==e?"":e).replace(/[&<>'"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[e]),fmt=e=>{if(!e)return"";try{let a=new Date(e);if(isNaN(a.getTime()))return String(e);return a.toLocaleString({en:"en-US",uz:"uz-UZ",ru:"ru-RU"}[currentLang]||"en-US",{dateStyle:"medium",timeStyle:"short"})}catch(a){return String(e||"")}},mask=e=>String(e||"").replace(/\b([A-Za-z]{0,2})(\d{4,})\b/g,(e,a,i)=>a+" ****"+i.slice(-2)),comp=e=>new Promise(a=>{if(!e||!e.type||!e.type.startsWith("image/"))return a("");let i=new Image;i.onload=()=>{try{URL.revokeObjectURL(i.src)}catch(e){}let e=Math.min(1,720/Math.max(i.width,i.height)),o=document.createElement("canvas");o.width=Math.round(i.width*e),o.height=Math.round(i.height*e),o.getContext("2d").drawImage(i,0,0,o.width,o.height);try{a(o.toDataURL("image/jpeg",.72))}catch(e){a("")}},i.onerror=()=>{try{URL.revokeObjectURL(i.src)}catch(e){}a("")},i.src=URL.createObjectURL(e)}),$=e=>document.querySelector(e),app=$("#app"),dlg=$("#dlg"),db=$("#dbody"),view="home",currentFilter={q:"",type:"ALL",cat:"",status:"ALL",rewardOnly:!1,sort:"NEWEST"},activeViewMode="grid",W={step:1,d:{type:"FOUND",cat:"ELECTRONICS"}};function toast(e){let a=document.createElement("div");a.className="toast",a.textContent=e,document.body.append(a),setTimeout(()=>a.remove(),2600)}function updateDashBadge(){if(!S||!S.user){let e=$("#dashBadge");e&&(e.innerHTML="");return}let e=new Set(S.items.filter(e=>e.owner===S.user.name||e.ownerId===S.user.id||S.user.id===MY_ID&&(e.owner===OWNER_NAME||e.ownerId===MY_ID)).map(e=>String(e.id))),a=S.claims.filter(a=>e.has(String(a.item))&&"PENDING"===a.status).length,i=$("#dashBadge");i&&(i.innerHTML=a>0?`<span style="background:var(--lost);color:#0a0a0a;padding:1px 6px;border-radius:10px;font-size:11px;margin-left:4px;">${a}</span>`:"")}function updateNavAuth(){let e=$("#navExplore");e&&(e.textContent=t("nav_explore"));let a=$("#navDash");if(a){if(!S||!S.user){a.style.display="none";}else{a.style.display="";a.innerHTML=`${t("nav_dashboard")} <span id="dashBadge"></span>`;updateDashBadge();}}let i=$("#navReport");i&&(i.textContent=t("nav_report")),updateLangButtons();let o=$("#navAuthArea");if(o){if(S&&S.user){let e="ADMIN"===S.user.role||S.user.email===ADMIN_EMAIL;o.innerHTML=`
+currentLang="uz";try{let qLang=new URLSearchParams(window.location.search).get("lang");if(["uz","ru","en"].includes(qLang)){currentLang=qLang;}else{currentLang=localStorage.getItem("foundhub_lang")||"uz";}}catch(e){}function t(e){return I18N[currentLang]&&I18N[currentLang][e]?I18N[currentLang][e]:I18N.en&&I18N.en[e]?I18N.en[e]:e||""}function setLanguage(e){["uz","ru","en"].includes(e)||(e="uz"),currentLang=e;try{localStorage.setItem("foundhub_lang",e);let u=new URL(window.location.href);u.searchParams.set("lang",e);window.history.replaceState({},"",u.pathname+u.search);}catch(e){}updateLangButtons(),render()}function updateLangButtons(){document.querySelectorAll("[data-lang]").forEach(e=>{e.classList.toggle("active",e.dataset.lang===currentLang)});}function catLabel(e){return t("CAT_"+e)||(CAT[e]?CAT[e][0]:e)}let esc=e=>String(null==e?"":e).replace(/[&<>'"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[e]),fmt=e=>{if(!e)return"";try{let a=new Date(e);if(isNaN(a.getTime()))return String(e);return a.toLocaleString({en:"en-US",uz:"uz-UZ",ru:"ru-RU"}[currentLang]||"en-US",{dateStyle:"medium",timeStyle:"short"})}catch(a){return String(e||"")}},mask=e=>String(e||"").replace(/\b([A-Za-z]{0,2})(\d{4,})\b/g,(e,a,i)=>a+" ****"+i.slice(-2)),comp=e=>new Promise(a=>{if(!e||!e.type||!e.type.startsWith("image/"))return a("");let i=new Image;i.onload=()=>{try{URL.revokeObjectURL(i.src)}catch(e){}let e=Math.min(1,720/Math.max(i.width,i.height)),o=document.createElement("canvas");o.width=Math.round(i.width*e),o.height=Math.round(i.height*e),o.getContext("2d").drawImage(i,0,0,o.width,o.height);try{a(o.toDataURL("image/jpeg",.72))}catch(e){a("")}},i.onerror=()=>{try{URL.revokeObjectURL(i.src)}catch(e){}a("")},i.src=URL.createObjectURL(e)}),$=e=>document.querySelector(e),app=$("#app"),dlg=$("#dlg"),db=$("#dbody"),view="home",currentFilter={q:"",type:"ALL",cat:"",status:"ALL",rewardOnly:!1,sort:"NEWEST"},activeViewMode="grid",W={step:1,d:{type:"FOUND",cat:"ELECTRONICS"}};function toast(e){let a=document.createElement("div");a.className="toast",a.textContent=e,document.body.append(a),setTimeout(()=>a.remove(),2600)}function updateDashBadge(){if(!S||!S.user){let e=$("#dashBadge");e&&(e.innerHTML="");return}let e=new Set(S.items.filter(e=>e.owner===S.user.name||e.ownerId===S.user.id||S.user.id===MY_ID&&(e.owner===OWNER_NAME||e.ownerId===MY_ID)).map(e=>String(e.id))),a=S.claims.filter(a=>e.has(String(a.item))&&"PENDING"===a.status).length,i=$("#dashBadge");i&&(i.innerHTML=a>0?`<span style="background:var(--lost);color:#0a0a0a;padding:1px 6px;border-radius:10px;font-size:11px;margin-left:4px;">${a}</span>`:"")}function updateNavAuth(){let e=$("#navExplore"),a=$("#navDash"),i=$("#navReport");if(!S||!S.user){if(e)e.style.display="none";if(a)a.style.display="none";if(i)i.style.display="none";}else{if(e){e.style.display="";e.textContent=t("nav_explore");}if(a){a.style.display="";a.innerHTML=`${t("nav_dashboard")} <span id="dashBadge"></span>`;updateDashBadge();}if(i){i.style.display="";i.textContent=t("nav_report");}}updateLangButtons();let o=$("#navAuthArea");if(o){if(S&&S.user){let e="ADMIN"===S.user.role||S.user.email===ADMIN_EMAIL;o.innerHTML=`
       <button class="btn s" id="btnNavLogout">${t("nav_logout")}</button>
       <span class="nav-user-label" style="font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700; background:var(--found); color:#000; border:2px solid var(--ink); border-radius:6px; padding:4px 10px; box-shadow:2px 2px 0 var(--sh); display:inline-flex; align-items:center; gap:5px;" title="User Profile">
         ${esc(S.user.name)}${e?' <span style="background:#000; color:#ffd93d; font-size:9px; padding:1px 5px; border-radius:3px; font-weight:800; margin-left:3px;">ADMIN</span>':""}
@@ -3311,7 +3302,7 @@ currentLang="en";try{currentLang=localStorage.getItem("foundhub_lang")||"en"}cat
         </div>
 
         <div class="color-palette" id="colorPalette" title="Choose Lamp Color">
-          <span class="palette-label sr-only" style="display:none;" aria-hidden="true">${t("light_color")}</span>
+          
           <button type="button" class="color-dot-btn ${activeColor==='amber'?'active':''}" data-color="amber" style="--dot-color: #ffd93d;" aria-label="Amber Light" title="Amber (Warm)"></button>
           <button type="button" class="color-dot-btn ${activeColor==='cyan'?'active':''}" data-color="cyan" style="--dot-color: #00f0ff;" aria-label="Cyan Light" title="Cyan (Cyber)"></button>
           <button type="button" class="color-dot-btn ${activeColor==='rose'?'active':''}" data-color="rose" style="--dot-color: #ff3385;" aria-label="Rose Light" title="Rose (Sunset)"></button>
@@ -4333,26 +4324,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
     <h2 class="visually-hidden">${t("nav_explore")}</h2>
     <div id="viewContainer"></div>
 
-    <!-- How It Works Section (Human, clear, helpful for guests & search engines) -->
-    <section class="how-it-works-section" style="margin:44px 0 24px; padding:26px 22px; border:2.5px solid var(--ink); border-radius:8px; background:var(--surf); box-shadow:4px 4px 0 var(--sh);">
-      <h3 style="font-family:'Archivo Black',sans-serif; font-size:19px; margin:0 0 16px; text-transform:uppercase; letter-spacing:0.5px;">
-        ${t("how_it_works_title")}
-      </h3>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
-        <div style="padding:16px; border:2px solid var(--ink); border-radius:6px; background:var(--code-bg); display:flex; flex-direction:column; gap:6px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-weight:800; font-size:12px; color:var(--mute);">01. ${t("how_step1_label")}</div>
-          <p style="margin:0; font-size:13px; line-height:1.5;">${t("how_step1_desc")}</p>
-        </div>
-        <div style="padding:16px; border:2px solid var(--ink); border-radius:6px; background:var(--code-bg); display:flex; flex-direction:column; gap:6px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-weight:800; font-size:12px; color:var(--mute);">02. ${t("how_step2_label")}</div>
-          <p style="margin:0; font-size:13px; line-height:1.5;">${t("how_step2_desc")}</p>
-        </div>
-        <div style="padding:16px; border:2px solid var(--ink); border-radius:6px; background:var(--code-bg); display:flex; flex-direction:column; gap:6px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-weight:800; font-size:12px; color:var(--mute);">03. ${t("how_step3_label")}</div>
-          <p style="margin:0; font-size:13px; line-height:1.5;">${t("how_step3_desc")}</p>
-        </div>
-      </div>
-    </section>
+
   `,$("#rf").onclick=()=>{if(!S.user){toast("Please log in to report a found item.");openAuthModal("login",()=>go("report","FOUND"));return;}go("report","FOUND");},$("#rl").onclick=()=>{if(!S.user){toast("Please log in to report a lost item.");openAuthModal("login",()=>go("report","LOST"));return;}go("report","LOST");},$("#q").oninput=e=>{currentFilter.q=e.target.value,renderViewArea(getFilteredItems())},$("#fc").onchange=e=>{currentFilter.cat=e.target.value,home()};let n=$("#fStatus");n&&(n.onchange=e=>{currentFilter.status=e.target.value,home()});let l=$("#fSort");l&&(l.onchange=e=>{currentFilter.sort=e.target.value,renderViewArea(getFilteredItems())});let s=$("#pillRewardOnly");s&&(s.onclick=()=>{currentFilter.rewardOnly=!currentFilter.rewardOnly,home()}),document.querySelectorAll("[data-tp]").forEach(e=>{e.onclick=()=>{currentFilter.type=e.dataset.tp,home()}}),renderViewArea(o); if(typeof enhanceSelects==="function") enhanceSelects(app); }function renderViewArea(e){let a=$("#viewContainer");if(a){if(0===e.length){a.innerHTML=`
       <div class="panel empty-panel">
         <p class="empty-title" style="font-family:'Archivo Black',sans-serif; font-size:18px; margin:0 0 6px;">${t("no_items_found")}</p>
@@ -4389,15 +4361,15 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
     </div>
   `,a.querySelectorAll("[data-open]").forEach(e=>{e.onclick=a=>{a.stopPropagation();if(typeof playMechanicalClick==="function")playMechanicalClick("medium");openItemModal(e.dataset.open)}}),a.querySelectorAll(".card").forEach(e=>{e.onclick=()=>{if(window.matchMedia("(max-width: 768px)").matches||window.matchMedia("(pointer: coarse)").matches)return;openItemModal(e.dataset.id)}})}}function renderQuickContactButtons(e){if(!e)return"";let a=[],i=e.match(/(?:@|t\.me\/)([a-zA-Z0-9_]{4,})/i);if(i){let e=i[1];a.push(`
       <a href="https://t.me/${esc(e)}" target="_blank" rel="noopener" class="btn s" style="background:#229ED9; color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
-        ✈️ ${t("btn_contact_tg")} (@${esc(e)})
+        ${t("btn_contact_tg")} (@${esc(e)})
       </a>
     `)}let o=e.match(/(?:\+?\d[\d\s\-\(\)]{6,}\d)/);if(o){let e=o[0].trim(),i=e.replace(/[^\d+]/g,"");i.length>=7&&a.push(`
         <a href="tel:${esc(i)}" class="btn s" style="background:#10b981; color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
-          📞 ${t("btn_contact_phone")} (${esc(e)})
+          ${t("btn_contact_phone")} (${esc(e)})
         </a>
       `)}let n=e.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);if(n){let e=n[1];a.push(`
       <a href="mailto:${esc(e)}" class="btn s" style="text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:12px;">
-        ✉️ ${t("btn_contact_email")} (${esc(e)})
+        ${t("btn_contact_email")} (${esc(e)})
       </a>
     `)}return 0===a.length?"":`<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">${a.join("")}</div>`}function openItemModal(e){currentOpenItemId=String(e);dlg.setAttribute("data-mode","item");let a,i=S.items.find(a=>String(a.id)===String(e));if(!i){if(dlg&&dlg.open)dlg.close();return;}let o=S.items.filter(e=>"ARCHIVED"!==e.status),n=o.findIndex(a=>String(a.id)===String(e)),l=o.length>0?n>0?n-1:o.length-1:-1,s=o.length>0?n<o.length-1&&n>=0?n+1:0:-1,r=S.comments.filter(a=>String(a.item)===String(e)&&!a.flag),d="FOUND"===i.type,c=canUserManageItem(i);db.innerHTML=`
     <div class="dlg-header">
@@ -4510,7 +4482,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       </div>
 
       ${S.user?`
-        <form id="claimForm" toolname="claim_item" tooldescription="Submit ownership claim proof to item finder" name="claim_item_form" aria-label="Item Claim Submission Form" data-agent-form="claim" style="margin:16px 0;">
+        <form id="claimForm" name="ownership_proof_form" aria-label="Item Claim Submission Form" style="margin:16px 0;">
           <label for="claimProof"><strong>${esc(i.q||t("claim_secret_title"))}</strong></label>
           <textarea id="claimProof" rows="3" required placeholder="${t("claim_placeholder")}"></textarea>
           <p style="margin:10px 0 0;">
@@ -4549,7 +4521,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       </div>
 
       ${S.user?`
-        <form id="commentForm" toolname="post_comment" tooldescription="Post a community clue or lead" name="comment_form" aria-label="Community Comment Form" data-agent-form="comment">
+        <form id="commentForm" name="comment_form" aria-label="Community Comment Form">
           <label for="commentText"><strong>${t("add_lead_label")}</strong></label>
           <textarea id="commentText" rows="2" required placeholder="${t("comment_placeholder")}"></textarea>
           <div class="row" style="margin-top:8px; justify-content:space-between;">
@@ -4586,9 +4558,9 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
     </div>
   `,dlg.showModal(),$("#btnDlgClose").onclick=()=>{currentOpenItemId=null;dlg.close();};let u=$("#btnEditTopListing");u&&(u.onclick=()=>openEditItemModal(e));let p=$("#btnGoToDashFromItem");p&&(p.onclick=()=>{dlg.close(),go("dash")});let m=$("#btnEditFoundItem");m&&(m.onclick=()=>openEditItemModal(e));let g=$("#btnEditLostNotice");g&&(g.onclick=()=>openEditItemModal(e));let h=$("#btnLoginToClaim");h&&(h.onclick=()=>openAuthModal("login",()=>openItemModal(e)));let _=$("#btnLoginToComment");_&&(_.onclick=()=>openAuthModal("login",()=>openItemModal(e)));let b=$("#btnToggleReturnedDirect");b&&(b.onclick=async ()=>{"RETURNED_TO_OWNER"===i.status?i.status="ACTIVE":(i.status="RETURNED_TO_OWNER",confetti({particleCount:90,spread:70})),save(),toast(t("toast_status_updated")),openItemModal(e),home();const client=await ensureSupabase();if(client){try{await Promise.allSettled([client.from("items").update({status:i.status,updated_at:new Date().toISOString()}).eq("id",String(i.id)),client.from("posts").update({status:i.status,updated_at:new Date().toISOString()}).eq("id",String(i.id))]);}catch(err){console.warn("Supabase toggle returned err:",err);}}}),db.querySelectorAll("[data-modal-accept]").forEach(a=>{a.onclick=()=>{let o=a.dataset.modalAccept,n=S.claims.find(e=>String(e.id)===String(o));if(n){n.status="ACCEPTED";let a=S.myClaims&&S.myClaims.find(e=>String(e.item)===String(n.item));if(a&&(a.status="ACCEPTED"),i.status="RETURNED_TO_OWNER",save(),confetti({particleCount:90,spread:70}),toast(t("toast_status_updated")),openItemModal(e),"home"===view&&home(),sbClient)try{sbClient.from("claims").update({status:"ACCEPTED"}).eq("id",String(n.id)).then(),sbClient.from("items").update({status:"RETURNED_TO_OWNER"}).eq("id",String(i.id)).then()}catch(e){}}}}),db.querySelectorAll("[data-modal-reject]").forEach(a=>{a.onclick=()=>{let i=a.dataset.modalReject,o=S.claims.find(e=>String(e.id)===String(i));if(o){o.status="REJECTED";let a=S.myClaims&&S.myClaims.find(e=>String(e.item)===String(o.item));if(a&&(a.status="REJECTED"),save(),toast("Claim rejected."),openItemModal(e),sbClient)try{sbClient.from("claims").update({status:"REJECTED"}).eq("id",String(o.id)).then()}catch(e){}}}});let f=$("#btnPrevItem");f&&(o.length>1&&l>=0&&o[l]?f.onclick=()=>openItemModal(o[l].id):(f.style.opacity="0.4",f.style.pointerEvents="none"));let y=$("#btnNextItem");y&&(o.length>1&&s>=0&&o[s]?y.onclick=()=>openItemModal(o[s].id):(y.style.opacity="0.4",y.style.pointerEvents="none")),db.querySelectorAll("[data-flag]").forEach(a=>{a.onclick=()=>{if(!S.user){toast("Please log in to report a comment."),openAuthModal("login",()=>openItemModal(e));return}let i=S.comments.find(e=>String(e.id)===String(a.dataset.flag));i&&(i.flag=1,save(),toast("Comment hidden for review."),openItemModal(e))}}),db.querySelectorAll("[data-delcomm]").forEach(a=>{a.onclick=()=>{let i=a.dataset.delcomm;if(!S.user){toast("Please log in to delete comments."),openAuthModal("login",()=>openItemModal(e));return}if(S.comments=S.comments.filter(e=>String(e.id)!==String(i)),save(),toast("Comment deleted."),openItemModal(e),sbClient)try{sbClient.from("comments").delete().eq("id",String(i)).then()}catch(e){}}});let v=$("#claimForm");v&&(v.onsubmit=a=>{if(a.preventDefault(),!S.user){toast("Please log in to submit a claim."),openAuthModal("login",()=>openItemModal(e));return}if(c){toast("You cannot claim an item you reported!");return}let o=$("#claimProof").value.trim();if(!o)return;let n=S.user.name,l=S.user.id,s=S.n++,r={id:s,item:e,claimantId:l,by:n,proof:o,status:"PENDING",date:new Date().toISOString()};if(S.claims.push(r),S.myClaims||(S.myClaims=[]),S.myClaims.push(r),i.status="CLAIM_PENDING",save(),dlg.close(),confetti({particleCount:70,spread:60}),toast("Claim sent to the finder!"),render(),sbClient)try{sbClient.from("claims").insert({id:String(s),item_id:String(e),claimant_id:l,claimant_data:{fullName:n,email:S.user.email,phone:S.user.phone},proof_message:o,status:"PENDING"}).then(),sbClient.from("items").update({status:"CLAIM_PENDING"}).eq("id",String(e)).then()}catch(e){}});let w=$("#commentForm");w&&(w.onsubmit=a=>{if(a.preventDefault(),!S.user){toast("Please log in to post a comment."),openAuthModal("login",()=>openItemModal(e));return}let i=S.n++,o=$("#isLead")?.checked?"OWNER_LEAD":"GENERAL",n=$("#commentText").value.trim();if(n&&(S.comments.push({id:i,item:e,by:S.user.name,type:o,text:n}),save(),openItemModal(e),sbClient))try{sbClient.from("comments").insert({id:String(i),item_id:String(e),user_id:S.user.id,user_data:{fullName:S.user.name},content:n,comment_type:o}).then()}catch(e){}})}function report(){if(!S.user){app.innerHTML=`
       <div style="max-width:540px; margin:40px auto; text-align:center; padding:32px 20px; border:2.5px solid var(--ink); border-radius:8px; background:var(--surf); box-shadow:5px 5px 0 var(--sh);">
-        <div style="font-size:42px; margin-bottom:12px;">🔒</div>
+        
         <h2>Sign In Required</h2>
-        <p class="meta" style="margin:12px 0 24px; font-size:15px;">Please log in to report a found or lost item. This keeps listings verified and ensures finders and owners can communicate safely.</p>
+        <p class="meta" style="margin:12px 0 24px; font-size:15px;">E'lon berish yoki qidiruv e'lonini joylashtirish uchun hisobingizga kiring.</p>
         <button class="btn p" id="btnReportAuthLogin" style="padding:12px 24px; font-size:15px;">Log In to Continue →</button>
       </div>
     `,$("#btnReportAuthLogin").onclick=()=>openAuthModal("login",()=>report());return}let e=W.d,a=W.step,i=[t("step1_title"),t("step2_title"),t("step3_title"),t("step4_title"),t("step5_title")],o=`
@@ -4680,7 +4652,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
     `),app.innerHTML=`
     <div style="max-width:580px; margin:0 auto; padding:20px 0;">
       ${o}
-      <form id="wizardForm" toolname="report_item" tooldescription="Report a found or lost item" name="report_item_wizard" aria-label="Report Lost or Found Item Form" data-agent-form="report">
+      <form id="wizardForm" name="report_item_wizard" aria-label="Report Lost or Found Item Form">
         ${n}
         <p class="row" style="margin-top:22px; justify-content:space-between;">
           ${a>1?'<button type="button" class="btn" id="btnWizBack">'+t("btn_back")+"</button>":"<span></span>"}
@@ -4691,7 +4663,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
   `,app.querySelectorAll("[data-t]").forEach(a=>{a.onclick=()=>{e.type=a.dataset.t,report()}});let l=$("#btnWizBack");if(l&&(l.onclick=()=>{let a=$("#ds");a&&(e.desc=a.value),W.step--,report()}),1===a){let tIn=$("#t");tIn&&(tIn.oninput=()=>{e.title=tIn.value});let cIn=$("#c");cIn&&(cIn.onchange=()=>{e.cat=cIn.value})}if(2===a){let a=$("#ds");a&&(a.oninput=()=>{e.desc=a.value});let i=()=>{let a=$("#ds");a&&(e.desc=a.value)},o=$("#piiInput"),n=$("#piiPreview");o&&n&&(o.oninput=()=>{let e=mask(o.value);n.textContent=e?"Masked Preview: "+e:""},$("#btnUseMask").onclick=()=>{let a=mask(o.value);if(a){let i=$("#ds");i&&(i.value+=(i.value?" ":"")+"(Masked ID: "+a+")",e.desc=i.value),toast("Masked ID inserted into description!")}}),app.querySelectorAll("[data-sample-img]").forEach(a=>{a.onclick=()=>{i(),e.img=a.dataset.sampleImg,report()}});let l=$("#im");l&&(l.onchange=()=>{let a=l.files&&l.files[0];a&&(i(),comp(a).then(a=>{e.img=a,report()}))});let s=$("#btnRemovePhoto");s&&(s.onclick=()=>{i(),e.img="";let a=$("#im");a&&(a.value=""),report()})}if(3===a){let wIn=$("#w");wIn&&(wIn.oninput=()=>{e.where=wIn.value});let dtIn=$("#dt");dtIn&&(dtIn.oninput=()=>{e.date=dtIn.value},dtIn.onchange=()=>{e.date=dtIn.value});app.querySelectorAll("[data-landmark]").forEach(a=>{a.onclick=()=>{let w=$("#w");if(w)w.value=a.dataset.landmark;e.where=a.dataset.landmark;e.lat=parseFloat(a.dataset.lat)||37.7749;e.lng=parseFloat(a.dataset.lng)||-122.4194;}}),(()=>{let btnGeo=$("#btnGeolocate");if(btnGeo){btnGeo.onclick=()=>{navigator.geolocation&&navigator.geolocation.getCurrentPosition(pos=>{e.lat=pos.coords.latitude;e.lng=pos.coords.longitude;toast("Location detected!");},()=>toast("Location access unavailable."));};}})()}if(4===a){let hIn=$("#h");hIn&&(hIn.oninput=()=>{e.holding=hIn.value});let ctIn=$("#ct");ctIn&&(ctIn.oninput=()=>{e.contact=ctIn.value});let rwIn=$("#rw");rwIn&&(rwIn.oninput=()=>{e.reward=rwIn.value})}if(5===a){let qIn=$("#q");qIn&&(qIn.oninput=()=>{e.q=qIn.value})}$("#wizardForm").onsubmit=i=>{i.preventDefault();let o=id=>{let el=$("#"+id);return el?el.value:void 0;};if(1===a){Object.assign(e,{title:o("t")||"Untitled Item",cat:o("c")||"OTHER"});}if(2===a){Object.assign(e,{desc:o("ds")||""});let file=$("#im")?.files[0];if(file){comp(file).then(compImg=>{e.img=compImg;W.step++;report();});return;}}if(3===a){Object.assign(e,{where:o("w")||"Location unstated",lat:e.lat||37.7749,lng:e.lng||-122.4194,date:o("dt")||new Date().toISOString().slice(0,16)});}if(4===a){Object.assign(e,{holding:o("h")||(e.type==="LOST"?"With owner":"With finder in safe custody"),contact:o("ct")||"",reward:o("rw")||""});}if(5===a){if(!S.user){toast("Please log in to publish your report.");openAuthModal("login",()=>report());return;}e.q=o("q")||"";if("DOCUMENTS_AND_IDS"===e.cat&&e.desc){e.desc=mask(e.desc);}const uniqueId="item-"+Date.now()+"-"+Math.random().toString(36).slice(2,7);S.n=(S.n||0)+1;let userName=S.user.name||"Community Member";let userId=S.user.id||("usr-"+Date.now());let newItem={id:uniqueId,owner:userName,ownerId:userId,beaconCode:"SIG-"+S.n,status:"ACTIVE",visibility:"public",is_private:false,...e};S.items.unshift(newItem);save();W={step:1,d:{type:"FOUND",cat:"ELECTRONICS"}};if(typeof confetti==="function")confetti({particleCount:90,spread:70,origin:{y:0.6}});toast(t("toast_published")||"Published successfully!");go("home");setTimeout(()=>openItemModal(uniqueId),300);if(sbClient){const payload={id:String(uniqueId),user_id:userId,user_data:{fullName:userName,email:S.user.email||"",phone:S.user.phone||""},type:e.type||"FOUND",title:e.title||"Untitled Item",category:e.cat||"OTHER",description:e.desc||"",image_urls:e.img?[e.img]:[],event_date:e.date?new Date(e.date).toISOString():new Date().toISOString(),incident_location:e.where||"Location unstated",latitude:e.lat||null,longitude:e.lng||null,current_holding_location:e.holding||(e.type==="LOST"?"With owner":"With finder"),finder_contact_preference:e.contact||"",secret_verification_question:e.q||"",status:"ACTIVE",visibility:"public",is_private:false,reward_amount:(e.reward&&parseFloat(e.reward))||null};sbClient.from("items").insert(payload).then(res=>{if(res&&res.error){console.warn("Supabase items insert fallback:",res.error.message);sbClient.from("posts").insert(payload).catch(()=>{});}else{console.log("Published item synced to Supabase items!");}}).catch(err=>{console.warn("Supabase item insert catch:",err);sbClient.from("posts").insert(payload).catch(()=>{});});}return;}W.step++;report();}; if(typeof enhanceSelects==="function") enhanceSelects(app); }document.querySelectorAll("[data-go]").forEach(e=>e.onclick=a=>{a&&a.preventDefault(),go(e.dataset.go)}),document.querySelectorAll("[data-lang]").forEach(e=>e.onclick=()=>setLanguage(e.dataset.lang));let dashTab="incoming";function dash(){if(!S.user){app.innerHTML=`
       <div class="panel" style="text-align:center; padding:50px 20px; max-width:540px; margin:40px auto; border:3px solid var(--ink); box-shadow:6px 6px 0 var(--sh);">
         <h2 style="font-size:24px; margin-bottom:8px;">Sign In to FoundHub</h2>
-        <p class="meta" style="margin-bottom:20px; font-size:15px;">Please log in or create an account to view your dashboard, manage your listings, and respond to ownership claims.</p>
+        <p class="meta" style="margin-bottom:20px; font-size:15px;">Kabinetingizni ko'rish va e'lonlarni boshqarish uchun hisobingizga kiring.</p>
         <button class="btn p" id="btnDashLogin" style="padding:10px 24px; font-size:15px;">Log In / Create Account →</button>
       </div>
     `,$("#btnDashLogin").onclick=()=>openAuthModal("login");return}let e=S.items.filter(e=>e.owner===S.user.name||e.ownerId===S.user.id),a=e.map(e=>e.id),i=S.claims.filter(e=>a.includes(e.item)),o=S.myClaims||[];app.innerHTML=`
@@ -4702,7 +4674,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
           <span class="user-node-badge">${esc(S.user.node||"COMMUNITY MEMBER")}</span>
         </div>
         <div class="meta" style="margin-top:4px;">
-          📧 ${esc(S.user.email)} \xb7 ✈️ ${esc(S.user.telegram||"Not set")} \xb7 📞 ${esc(S.user.phone||"Not set")}
+          📧 ${esc(S.user.email)} \xb7 ${esc(S.user.telegram||"Not set")} \xb7 ${esc(S.user.phone||"Not set")}
         </div>
       </div>
       <div class="row">
@@ -4825,7 +4797,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       <h2>${t("edit_profile_title")}</h2>
       <button class="btn s" id="btnClProf">${t("btn_close")}</button>
     </div>
-    <form id="profForm" toolname="edit_profile" tooldescription="Edit user profile information" name="edit_profile_form" aria-label="Edit Profile Form" data-agent-form="profile">
+    <form id="profForm" name="edit_profile_form" aria-label="Edit Profile Form">
       <label for="pName">Display Name</label>
       <input id="pName" required value="${esc(S.user.name)}">
       
@@ -4847,7 +4819,7 @@ function go(e,initialType){if("report"===e&&!S.user){toast("Please log in to rep
       <h2>${t("edit_listing_title")}</h2>
       <button class="btn s" id="btnClEdit">${t("btn_close")}</button>
     </div>
-    <form id="editItemForm" toolname="edit_item" tooldescription="Edit listing details or status" name="edit_item_form" aria-label="Edit Listing Form">
+    <form id="editItemForm" name="edit_item_form" aria-label="Edit Listing Form">
       <label for="eTitle">Title</label>
       <input id="eTitle" required value="${esc(a.title)}">
 

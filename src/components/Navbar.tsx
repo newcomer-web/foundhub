@@ -83,27 +83,22 @@ export default function Navbar() {
     }
   };
 
-  const navLinks = [
+  const navLinks = isAuthenticated ? [
     { label: 'Explore Items', href: '/', icon: Search },
     { label: 'Report Lost or Found', href: '/report', icon: PlusCircle, requiresAuth: true },
     { label: 'Dashboard & Claims', href: '/dashboard', icon: LayoutDashboard },
-  ];
+  ] : [];
 
   return (
     <>
-      {/* Top Telemetry Dispatch Bar */}
+      {/* Top Banner */}
       <div className="bg-[#0c0d12] text-zinc-400 text-[11px] font-mono py-1.5 px-4 sm:px-6 lg:px-8 border-b border-[#1b1e2a]">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 truncate">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="font-bold text-zinc-200 tracking-wider">FOUNDHUB TELEMETRY NETWORK</span>
+            <span className="font-bold text-zinc-200 tracking-wider">FoundHub Toshkent</span>
             <span className="hidden sm:inline text-zinc-600">·</span>
-            <span className="hidden sm:inline text-zinc-400">Civic Geolocation & Safe Custody Grid</span>
-          </div>
-          <div className="hidden md:flex items-center gap-4 text-zinc-500 text-[10px]">
-            <span>ZERO-KNOWLEDGE CHALLENGE</span>
-            <span>·</span>
-            <span>CARTODB RADAR INTEGRATED</span>
+            <span className="hidden sm:inline text-zinc-400">Topilgan va yo'qolgan buyumlar xizmati</span>
           </div>
         </div>
       </div>
@@ -118,12 +113,9 @@ export default function Navbar() {
                 <div className="flex items-center gap-1.5">
                   <span className="font-black text-xl tracking-tight text-white">Found</span>
                   <span className="font-black text-xl tracking-tight text-emerald-400">Hub</span>
-                  <span className="ml-1 text-[9px] font-mono uppercase bg-emerald-950/80 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800/60 font-bold">
-                    RADAR
-                  </span>
                 </div>
-                <p className="text-[10px] font-mono text-zinc-500 tracking-wider -mt-0.5 uppercase">
-                  Telemetry & Custody Network
+                <p className="text-[10px] font-mono text-zinc-500 tracking-wider -mt-0.5">
+                  Toshkent
                 </p>
               </div>
             </Link>

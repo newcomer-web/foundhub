@@ -16,35 +16,34 @@ export default function Footer() {
               <BrandLogo size={32} className="w-8 h-8 shrink-0" />
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-lg text-white">Found<span className="text-emerald-400">Hub</span></span>
-                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1.5 py-0.5 rounded font-bold">RADAR</span>
               </div>
             </div>
             <p className="text-zinc-400 text-xs leading-relaxed font-normal">
-              High-precision community geolocation network. Real-time geotagged radar beacons, holding hubs, and zero-knowledge ownership challenges.
+              Toshkent bo'ylab topilgan va yo'qolgan buyumlar xizmati. Buyumlarni xavfsiz saqlash va haqiqiy egasiga qaytarish tarmog'i.
             </p>
           </div>
 
           {/* Core Security Features */}
           <div className="space-y-2">
             <h4 className="font-bold text-zinc-200 text-xs uppercase tracking-wider font-mono">
-              TELEMETRY & PROTOCOL
+              XAVFSIZLIK VA PROTOKOL
             </h4>
             <ul className="space-y-1.5 text-xs text-zinc-400">
               <li className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                Proof-of-Ownership Challenge
+                Sirli savol orqali egalik tekshiruvi
               </li>
               <li className="flex items-center gap-2">
                 <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                Verified Custody Hub Chain
+                Himoyalangan saqlov ma'lumotlari
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                CartoDB Dark Matter Radar
+                Toshkent bo'yicha qidiruv xaritasi
               </li>
               <li className="flex items-center gap-2">
                 <Send className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                QR Street Beacons
+                Tezkor Telegram xabarnomalar
               </li>
             </ul>
           </div>
@@ -52,27 +51,27 @@ export default function Footer() {
           {/* Quick Links */}
           <div className="space-y-2">
             <h4 className="font-bold text-zinc-200 text-xs uppercase tracking-wider font-mono">
-              DISPATCH CONSOLE
+              BO'LIMLAR
             </h4>
             <ul className="space-y-1.5 text-xs">
               <li>
                 <Link href="/" className="hover:text-emerald-400 transition-colors">
-                  Live Radar Grid
+                  E'lonlar ro'yxati
                 </Link>
               </li>
               <li>
                 <Link href="/report?type=FOUND" className="hover:text-emerald-400 transition-colors">
-                  Register Secured Property
+                  Buyum topib oldim
                 </Link>
               </li>
               <li>
                 <Link href="/report?type=LOST" className="hover:text-emerald-400 transition-colors">
-                  Deploy Lost Beacon Alert
+                  Buyum yo'qotdim
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard" className="hover:text-emerald-400 transition-colors">
-                  My Terminal & Claims
+                  Mening kabinetim
                 </Link>
               </li>
             </ul>
@@ -82,16 +81,16 @@ export default function Footer() {
           <div className="p-4 bg-[#12151e] rounded-2xl border border-[#232733] space-y-2">
             <h5 className="font-bold text-zinc-200 text-xs flex items-center gap-2 font-mono">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              PHYSICAL HAND-OFF PROTOCOL
+              BUYUMNI TOPSHIRISH TARTIBI
             </h5>
             <p className="text-[11px] text-zinc-400 leading-relaxed font-normal">
-              Always conduct physical property handovers at designated security desks, public transit dispatch lobbies, or verified public locations.
+              Topshirish uchun har doim odam gavjum, yorug' jamoat joyini tanlang (metro bekati, bino xavfsizlik xizmati yoki savdo markazi).
             </p>
           </div>
         </div>
 
         <div className="pt-8 mt-8 border-t border-[#1f2330] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-500 font-mono">
-          <p>© {new Date().getFullYear()} FoundHub Telemetry Network. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} FoundHub Toshkent. Barcha huquqlar himoyalangan.</p>
           <p className="flex items-center gap-1 text-zinc-400">
             OpenStreetMap · CartoDB · Supabase
           </p>
