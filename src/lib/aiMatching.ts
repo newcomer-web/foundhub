@@ -7,6 +7,14 @@ export interface MatchResult {
   reasons: string[];
 }
 
+/**
+ * Multi-factor matching algorithm
+ * Total max score: 100 points
+ * - Category match: 30 pts
+ * - Keyword overlap: 35 pts
+ * - Geographic proximity: 25 pts
+ * - Date proximity: 10 pts
+ */
 export function findSmartMatches(
   target: {
     type: 'FOUND' | 'LOST';
@@ -20,31 +28,30 @@ export function findSmartMatches(
   allItems: Item[],
   limit = 4
 ): MatchResult[] {
-  // We want to match opposite types: FOUND items match LOST reports, and vice versa
+  // Counter-matching: FOUND items match LOST reports, and vice versa
   const counterType = target.type === 'FOUND' ? 'LOST' : 'FOUND';
   const candidates = allItems.filter(
     (item) => item.type === counterType && item.status !== 'RETURNED_TO_OWNER' && item.status !== 'ARCHIVED'
   );
 
   const results: MatchResult[] = [];
-
   const targetTokens = extractTokens(`${target.title} ${target.description}`);
 
   for (const candidate of candidates) {
     let score = 0;
     const reasons: string[] = [];
 
-    // 1. Category match (High weight: 35 points)
+    // 1. Category match (30 points)
     if (candidate.category === target.category) {
-      score += 35;
+      score += 30;
       reasons.push(`Exact category match: ${candidate.category.replace(/_/g, ' ')}`);
     }
 
-    // 2. Keyword / Title overlap (Up to 40 points)
+    // 2. Keyword / Title overlap (Up to 35 points)
     const candidateTokens = extractTokens(`${candidate.title} ${candidate.description}`);
     const commonTokens = targetTokens.filter((token) => candidateTokens.includes(token));
     if (commonTokens.length > 0) {
-      const keywordScore = Math.min(40, commonTokens.length * 10);
+      const keywordScore = Math.min(35, commonTokens.length * 10);
       score += keywordScore;
       reasons.push(`Matched keywords: ${commonTokens.slice(0, 4).join(', ')}`);
     }

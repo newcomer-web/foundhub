@@ -132,7 +132,29 @@ BEGIN
 END $$;
 
 CREATE POLICY "Public comments access" ON public.comments FOR ALL USING (true);
-CREATE POLICY "Public claims access" ON public.claims FOR ALL USING (true);
+-- Secure Claims RLS: Only claimant and item owner can access proof
+DROP POLICY IF EXISTS "Public claims access" ON public.claims;
+CREATE POLICY "Claimant and item owner can view claims" ON public.claims
+FOR SELECT USING (
+  auth.uid()::text = claimant_id 
+  OR EXISTS (
+    SELECT 1 FROM public.items WHERE items.id = claims.item_id AND items.user_id = auth.uid()::text
+  )
+  OR EXISTS (
+    SELECT 1 FROM public.posts WHERE posts.id = claims.item_id AND posts.user_id = auth.uid()::text
+  )
+);
+CREATE POLICY "Authenticated users can submit claims" ON public.claims
+FOR INSERT WITH CHECK (true);
+CREATE POLICY "Item owner can update claim status" ON public.claims
+FOR UPDATE USING (
+  EXISTS (
+    SELECT 1 FROM public.items WHERE items.id = claims.item_id AND items.user_id = auth.uid()::text
+  )
+  OR EXISTS (
+    SELECT 1 FROM public.posts WHERE posts.id = claims.item_id AND posts.user_id = auth.uid()::text
+  )
+);
 CREATE POLICY "Public profiles access" ON public.profiles FOR ALL USING (true);
 
 -- 6. Storage bucket for item images

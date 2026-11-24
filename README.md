@@ -1,78 +1,71 @@
-# FoundHub — Community-Driven Lost and Found Web Platform
+# FoundHub — Toshkentda topilgan va yo'qolgan buyumlar xizmati
 
-**FoundHub** is a modern, high-performance, mobile-first Lost & Found platform designed to securely connect finders and owners through geolocation tracking, anti-fraud proof-of-ownership verification, sensitive document PII masking, and instant community messaging channels.
-
----
-
-## 🌟 Key Features
-
-### 1. Dual Listing Modes
-- **Found Items**: Finders report recovered belongings with storage custody details.
-- **Lost Reports**: Owners publish descriptions, last seen coordinates, and optional recovery rewards.
-
-### 2. Dedicated Custody & Metadata Box
-Displayed prominently directly below the item photograph:
-- 📍 **Found Location**: Precise address / landmark + interactive mini OpenStreetMap.
-- 📅 **Found Date & Time**: Accurate recovery timestamp.
-- 🏢 **Current Holding Location**: Physical custody verification (e.g. *Campus Dean's Office Room 102*, *Metro Security Depot*, *Police Station*).
-- 👤 **Finder / Custodian Information**: Verified member badge, custody status, and preferred contact channel.
-
-### 3. Proof-of-Ownership Verification (Anti-Fraud System)
-- Finders configure an optional **Secret Verification Question** (e.g., *"What specific sticker is by the trackpad?"*, *"What are the last 4 digits on the card inside?"*).
-- Claimants must submit private proof that only the finder can review in their dashboard.
-- Sticky safety reminders enforce meeting in public, monitored safe zones (security desks, police stations) with strict prohibitions against advance monetary transfers.
-
-### 4. PII Masking (Sensitive Document Protection)
-- For `DOCUMENTS_AND_IDS` (passports, driver's licenses, student cards), sensitive alphanumeric identifiers are automatically obscured (e.g., `AB **** 45`) to prevent identity theft.
-- Integrated interactive privacy masking sandbox for instant text anonymization.
-
-### 5. Smart AI Matching Engine
-- Automatically correlates new Found reports with existing Lost reports (and vice-versa).
-- Multi-factor scoring algorithm weighing:
-  1. Exact or related category match (35 pts)
-  2. Keyword / tokenized similarity across title and description (40 pts)
-  3. Haversine geographic distance proximity (25 pts)
-  4. Temporal date proximity (10 pts)
-- Displays match confidence percentages and human-readable reasoning explanations.
-
-### 6. Telegram Instant Messaging Hook & QR Code Flyers
-- Real-time formatted broadcast relay to `@FoundHub_Official_Community` Telegram channels.
-- Printable lost/found flyer generator with high-resolution QR codes for physical campus bulletin boards.
-- One-click share buttons to Telegram and WhatsApp.
+FoundHub — Toshkent shahri bo'yicha topilgan va yo'qolgan buyumlarni qidirish, e'lon berish va haqiqiy egalariga xavfsiz qaytarish platformasi.
 
 ---
 
-## 🛠️ Tech Stack
-- **Framework**: Next.js 14+ (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS, Lucide React icons
-- **Mapping**: Leaflet & OpenStreetMap (`react-leaflet` / dynamic client mapping)
-- **Database Architecture**: Prisma ORM schema (`prisma/schema.prisma`) with relational models
-- **Utilities**: `canvas-confetti` (claim celebration), `qrcode` (flyer generator), `clsx`, `tailwind-merge`
+## Asosiy imkoniyatlar
+
+### 1. E'lon berish turlari
+- **Topilgan buyumlar**: Buyum topib olgan shaxs buyum holati, toifasi va taxminiy joylashuvini kiritadi.
+- **Yo'qolgan buyumlar**: Buyumini yo'qotgan shaxs qidiruv e'lonini joylashtiradi va ixtiyoriy ravishda mukofot (suyunchi) belgilashi mumkin.
+
+### 2. Maxfiylik va xavfsiz saqlash
+- **Holding location himoyasi**: Topilgan buyumning aniq saqlash manzili begona foydalanuvchilarga ko'rinmaydi. U faqat e'lon egasiga hamda da'vosi tasdiqlangan shaxsga ko'rsatiladi.
+- **Sirli savol orqali tekshirish**: Firibgarlikning oldini olish uchun faqat haqiqiy egasi bilishi mumkin bo'lgan belgilar (ekran rasmi, ichki belgi, stiker) so'raladi.
+
+### 3. Hujjatlar ma'lumotlarini niqoblash (PII Masking)
+- Pasport, guvohnoma yoki talabalik kartalari raqamlari avtomatik tarzda yulduzchalar bilan yashiriladi (masalan, `AB **** 45`).
+
+### 4. Moslikni aniqlash algoritmi (Matching algorithm)
+Topilgan va yo'qolgan buyumlar o'rtasida moslikni aniqlash uchun quyidagi 100 ballik ko'p omilli hisoblash qo'llaniladi:
+- Toifaning mosligi: 30 ball
+- Sarlavha va matndagi kalit so'zlar: 35 ball
+- Geografik yaqinlik (Haversine formulasi): 25 ball
+- Vaqt yaqinligi: 10 ball
+
+Jami maksimal ball: 100 ball.
+
+### 5. Telegram orqali ulashish
+- E'lonlarni Telegram guruh va kanallarida qulay formatda ulashish uchun to'g'ridan-to'g'ri havolalar yaratiladi.
 
 ---
 
-## 🚀 Getting Started
+## Texnologik tarkib
 
-The project is installed in:
-`C:\Users\HOME\.gemini\antigravity\scratch\foundhub`
+- **Foydalanuvchi interfeysi**: Next.js 14, TypeScript, Tailwind CSS
+- **Interaktiv xarita**: Leaflet va OpenStreetMap
+- **Ma'lumotlar bazasi va sinxronizatsiya**: Supabase (PostgreSQL, Realtime, Row Level Security)
+- **Ikonkalar**: Lucide React
 
-### Running the Project:
+---
+
+## Loyihani o'rnatish va ishga tushirish
+
+### Talablar
+- Node.js (18 yoki undan yuqori)
+- npm yoki pnpm
+
+### Qadamlar:
+
 ```bash
-cd C:\Users\HOME\.gemini\antigravity\scratch\foundhub
+git clone https://github.com/newcomer-web/foundhub.git
+cd foundhub
+npm install
 npm run dev
-# or for production
+```
+
+Loyiha brauzerda quyidagi manzilda ochiladi:
+`http://localhost:3000`
+
+Ishchi (production) yig'ish:
+```bash
 npm run build
 npm start
 ```
 
-Access the application in your browser at:
-`http://localhost:3000`
-
 ---
 
-## 📱 Page Sitemap
-- `/`: **Homepage & Exploration** — Hero with dual CTAs, debounced search, category filters, and Grid / Map view toggle.
-- `/report`: **5-Step Item Creation Wizard** — Classification, Media upload & PII masking, Leaflet pin picker, Custody location, and Anti-fraud question with live AI match preview.
-- `/item/[id]`: **Detailed Item Page** — Media carousel, Dedicated Metadata Box, Proof-of-Ownership claim modal, Community Clues & "Know the Owner" bystander thread, and Printable Flyer QR generator.
-- `/dashboard`: **User Dashboard** — Manage submitted listings, review and approve/reject ownership claims, and preview simulated Telegram channel broadcasts.
+## Litsenziya
+
+Loyiha ochiq kodli bo'lib, erkin foydalanish uchun taqdim etiladi.
