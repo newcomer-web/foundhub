@@ -19,7 +19,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-zinc-400 text-xs leading-relaxed font-normal">
-              Toshkent bo'ylab topilgan va yo'qolgan buyumlar xizmati. Buyumlarni xavfsiz saqlash va haqiqiy egasiga qaytarish tarmog'i.
+              Toshkent boʻylab topilgan va yoʻqolgan buyumlar xizmati. Buyumlarni xavfsiz saqlash va haqiqiy egasiga qaytarish tarmogʻi.
             </p>
           </div>
 
@@ -35,11 +35,11 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                Himoyalangan saqlov ma'lumotlari
+                Himoyalangan saqlov maʼlumotlari
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                Toshkent bo'yicha qidiruv xaritasi
+                Toshkent boʻyicha qidiruv xaritasi
               </li>
               <li className="flex items-center gap-2">
                 <Send className="w-3.5 h-3.5 text-sky-400 shrink-0" />
@@ -51,12 +51,12 @@ export default function Footer() {
           {/* Quick Links */}
           <div className="space-y-2">
             <h4 className="font-bold text-zinc-200 text-xs uppercase tracking-wider font-mono">
-              BO'LIMLAR
+              BOʻLIMLAR
             </h4>
             <ul className="space-y-1.5 text-xs">
               <li>
                 <Link href="/" className="hover:text-emerald-400 transition-colors">
-                  E'lonlar ro'yxati
+                  Eʼlonlar roʻyxati
                 </Link>
               </li>
               <li>
@@ -66,7 +66,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/report?type=LOST" className="hover:text-emerald-400 transition-colors">
-                  Buyum yo'qotdim
+                  Buyum yoʻqotdim
                 </Link>
               </li>
               <li>
@@ -84,7 +84,7 @@ export default function Footer() {
               BUYUMNI TOPSHIRISH TARTIBI
             </h5>
             <p className="text-[11px] text-zinc-400 leading-relaxed font-normal">
-              Topshirish uchun har doim odam gavjum, yorug' jamoat joyini tanlang (metro bekati, bino xavfsizlik xizmati yoki savdo markazi).
+              Topshirish uchun har doim odam gavjum, yorugʻ jamoat joyini tanlang (metro bekati, bino xavfsizlik xizmati yoki savdo markazi).
             </p>
           </div>
         </div>

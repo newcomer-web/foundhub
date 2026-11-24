@@ -22,10 +22,10 @@ export function formatTelegramPost(item: Item, baseUrl: string): string {
 <b>Manzil:</b> ${item.incidentLocation}
 <b>Saqlanayotgan joy:</b> ${item.currentHoldingLocation}
 <b>Sana:</b> ${new Date(item.eventDate).toLocaleDateString()}
-${isFound && item.secretVerificationQuestion ? '<b>Egalik tekshiruvi:</b> Sirli savol o\'rnatilgan' : ''}
-${item.rewardAmount ? `<b>Mukofot:</b> ${item.rewardAmount} so'm` : ''}
+${isFound && item.secretVerificationQuestion ? '<b>Egalik tekshiruvi:</b> Sirli savol oʻrnatilgan' : ''}
+${item.rewardAmount ? `<b>Mukofot:</b> ${item.rewardAmount} soʻm` : ''}
 
-<b>E'lonni ko'rish va da'vo qilish:</b>
+<b>Eʼlonni koʻrish va daʼvo qilish:</b>
 ${itemUrl}
 #FoundHub #${item.type} #${item.category}`;
 }
@@ -33,7 +33,7 @@ ${itemUrl}
 export function generateTelegramShareUrl(item: Item, baseUrl: string): string {
   const url = `${baseUrl}/item/${item.id}`;
   const text = encodeURIComponent(
-    `[${item.type === 'FOUND' ? 'Topilgan' : 'Yo\'qolgan'}] ${item.title} - Manzil: ${item.incidentLocation}. Saqlash joyi: ${item.currentHoldingLocation}. E'lon: `
+    `[${item.type === 'FOUND' ? 'Topilgan' : 'Yoʻqolgan'}] ${item.title} - Manzil: ${item.incidentLocation}. Saqlash joyi: ${item.currentHoldingLocation}. Eʼlon: `
   );
   return `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${text}`;
 }
@@ -41,7 +41,7 @@ export function generateTelegramShareUrl(item: Item, baseUrl: string): string {
 export function generateWhatsAppShareUrl(item: Item, baseUrl: string): string {
   const url = `${baseUrl}/item/${item.id}`;
   const text = encodeURIComponent(
-    `*FoundHub ${item.type === 'FOUND' ? 'Topilgan buyum' : 'Yo\'qolgan buyum'}*: ${item.title}\nManzil: ${item.incidentLocation}\nSaqlash joyi: ${item.currentHoldingLocation}\nKo'rish: ${url}`
+    `*FoundHub ${item.type === 'FOUND' ? 'Topilgan buyum' : 'Yoʻqolgan buyum'}*: ${item.title}\nManzil: ${item.incidentLocation}\nSaqlash joyi: ${item.currentHoldingLocation}\nKoʻrish: ${url}`
   );
   return `https://wa.me/?text=${text}`;
 }

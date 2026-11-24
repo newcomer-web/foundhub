@@ -98,7 +98,7 @@ export default function Navbar() {
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             <span className="font-bold text-zinc-200 tracking-wider">FoundHub Toshkent</span>
             <span className="hidden sm:inline text-zinc-600">·</span>
-            <span className="hidden sm:inline text-zinc-400">Topilgan va yo'qolgan buyumlar xizmati</span>
+            <span className="hidden sm:inline text-zinc-400">Topilgan va yoʻqolgan buyumlar xizmati</span>
           </div>
         </div>
       </div>

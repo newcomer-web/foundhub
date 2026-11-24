@@ -4,8 +4,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: "FoundHub — Toshkentda topilgan va yo'qolgan buyumlar",
-  description: "Toshkentda tushirib qoldirilgan yoki topib olingan buyumlar xizmati. E'lon berish, xavfsiz tekshirish va egasiga qaytarish tarmog'i.",
+  title: "FoundHub — Toshkentda topilgan va yoʻqolgan buyumlar",
+  description: "Toshkentda tushirib qoldirilgan yoki topib olingan buyumlar xizmati. Eʼlon berish, xavfsiz tekshirish va egasiga qaytarish tarmogʻi.",
   metadataBase: new URL('https://foundhub-alpha.vercel.app'),
   alternates: {
     canonical: 'https://foundhub-alpha.vercel.app/',
@@ -17,16 +17,16 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "FoundHub — Toshkentda topilgan va yo'qolgan buyumlar",
-    description: "Toshkentda tushirib qoldirilgan yoki topib olingan buyumlar xizmati. E'lon berish, xavfsiz tekshirish va egasiga qaytarish tarmog'i.",
+    title: "FoundHub — Toshkentda topilgan va yoʻqolgan buyumlar",
+    description: "Toshkentda tushirib qoldirilgan yoki topib olingan buyumlar xizmati. Eʼlon berish, xavfsiz tekshirish va egasiga qaytarish tarmogʻi.",
     url: 'https://foundhub-alpha.vercel.app/',
     siteName: 'FoundHub',
     images: [
       {
-        url: 'https://foundhub-alpha.vercel.app/icon.svg',
-        width: 512,
-        height: 512,
-        alt: 'FoundHub — Toshkentda topilgan va yo\'qolgan buyumlar',
+        url: 'https://foundhub-alpha.vercel.app/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: "FoundHub — Toshkentda topilgan va yoʻqolgan buyumlar",
       },
     ],
     locale: 'uz_UZ',
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "FoundHub — Toshkentda topilgan va yo'qolgan buyumlar",
-    description: "Toshkentda tushirib qoldirilgan yoki topib olingan buyumlar xizmati. E'lon berish, xavfsiz tekshirish va egasiga qaytarish tarmog'i.",
-    images: ['https://foundhub-alpha.vercel.app/icon.svg'],
+    title: "FoundHub — Toshkentda topilgan va yoʻqolgan buyumlar",
+    description: "Toshkentda tushirib qoldirilgan yoki topib olingan buyumlar xizmati. Eʼlon berish, xavfsiz tekshirish va egasiga qaytarish tarmogʻi.",
+    images: ['https://foundhub-alpha.vercel.app/og-image.png'],
   },
   icons: {
     icon: '/icon.svg',
